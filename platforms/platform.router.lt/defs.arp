@@ -1,0 +1,5 @@
+IP := tlm_memory tlm_lock 
+IS := tlm_router
+PROCESSOR := $(PROCESSOR)
+SW := $(SOFTWARE)
+WRAPPER := 

@@ -1,0 +1,16 @@
+--- mips.cpp	2013-05-01 15:59:10.746334916 -0300
++++ mips_acSynth.cpp	2013-05-01 15:59:43.710334000 -0300
+@@ -328,7 +328,12 @@
+       } // switch (ins_id)
+       break;
+     }
+-    if ((!ac_wait_sig) && (!ac_annul_sig)) ac_instr_counter+=1;
++    if ((!ac_wait_sig) && (!ac_annul_sig)) {
++      ac_instr_counter+=1;
++#ifdef POWER_SIM
++      ps.update_stat_power(ins_id);
++#endif
++    }
+     ac_annul_sig = 0;
+   }
+ //!Updating Regs for behavioral simulation.

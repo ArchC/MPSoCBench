@@ -1,0 +1,14 @@
+36d35
+< 
+39a39,45
+>   /****/
+>   sc_core::sc_time time_info;
+>   sc_core::sc_time getTimeInfo() { return time_info;} ;
+>   void setTimeInfo(sc_core::sc_time time) { time_info = time; };
+>   /****/
+> 
+> 
+56c62
+<   powerpc( sc_module_name name_ ): ac_module(name_), powerpc_arch(), ISA(*this) {
+---
+>   powerpc( sc_module_name name_ ): ac_module(name_), powerpc_arch(), ISA(*this), time_info(0,SC_NS) {

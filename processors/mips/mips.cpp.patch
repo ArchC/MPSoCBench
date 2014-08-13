@@ -1,0 +1,27 @@
+35a36,38
+> 	/******/
+>  	setTimeInfo(sc_time_stamp());
+>  	/******/
+64a68,70
+> 	/******/
+>  	setTimeInfo(sc_time_stamp());
+>  	/******/
+330a337,339
+> 	/******/
+>  	setTimeInfo(sc_time_stamp());
+>  	/******/
+332a342,344
+> 	/******/
+>  	setTimeInfo(sc_time_stamp());
+>  	/******/
+337a350,352
+> 	/******/
+>  	setTimeInfo(sc_time_stamp());
+>  	/******/
+340a356
+>       #if defined(WAIT_TRANSPORT)
+341a358,361
+>       #else 
+>       sc_core::sc_time aux (1,SC_NS);
+>       wait (APP_MEM->getTimeInfo()+aux);
+>       #endif

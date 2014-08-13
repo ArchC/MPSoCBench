@@ -1,0 +1,36 @@
+--- sparc.H	2013-04-27 13:00:01.000000000 -0300
++++ sparc_acSynth.H	2013-05-01 16:57:14.642273399 -0300
+@@ -24,6 +24,9 @@
+ #include "sparc_isa.H"
+ #include "sparc_syscall.H"
+ 
++#ifdef POWER_SIM
++#include "arch_power_stats.H"
++#endif
+ 
+ class sparc: public ac_module, public sparc_arch {
+ private:
+@@ -32,6 +35,10 @@
+ public:
+ 
+   unsigned bhv_pc;
++
++#ifdef POWER_SIM
++  power_stats ps;
++#endif
+  
+   /****/
+   sc_core::sc_time time_info;
+@@ -58,7 +65,12 @@
+   SC_HAS_PROCESS( sparc );
+ 
+   //!Constructor.
++#ifdef POWER_SIM
++  sparc( sc_module_name name_ ): ac_module(name_), sparc_arch(), ISA(*this), time_info(0,SC_NS), 
++  ps((const char*)name_) {
++#else
+   sparc( sc_module_name name_ ): ac_module(name_), sparc_arch(), ISA(*this), time_info(0,SC_NS) {
++#endif
+ 
+     SC_THREAD( behavior );
+     bhv_pc = 0; 

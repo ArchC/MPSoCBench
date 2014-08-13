@@ -1,0 +1,554 @@
+#!/usr/bin/env python
+# -*- coding: latin1 -*-
+
+
+# ********************************************************
+# * This is the part of the MPSoCBench benchmark suite   *
+# * If you want more information on MPSoCBench or ArchC, *
+# * please visit:                                        *
+# * http://archc.org/benchs/mpsocbench/ , or             *
+# * http://www.archc.org                                 *
+# * Computer Systems Laboratory (LSC)                    *
+# * IC-UNICAMP                                           *
+# * http://www.lsc.ic.unicamp.br                         *
+# ********************************************************
+
+# MPSoCBench frontend script 
+# by Matheus Boy and Liana Duenha - Unicamp - Campinas State University
+
+import os, sys
+
+# === AUXILIARY FUNCTIONS ===
+
+# command line arg parsing
+def arg_parse(cmdline):
+    # valid options
+    o = {'--nobuild':'-nb', '--run':'-r', '--build':'-b', '--power':'-pw', '--clean':'-l', '--distclean':'-d', '--help':'-h'}
+    # valid args
+    a = {'--processor':'-p', '--numcores':'-n', '--software':'-s', '--interconnection':'-i', '--condor':'-c'}
+    arg_values = []
+    # gets the args which have values and put them in a list
+    for i in cmdline:
+        arg_values.append(i.split('='))
+    opts = []
+    args = {}
+    # puts the options in a list and the args in a dictionary
+    for i in arg_values:
+        if (i[0] not in o.keys()) and (i[0] not in o.values()) and (i[0] not in a.keys()) and (i[0] not in a.values()):
+            help()
+            sys.exit(1)
+        # puts arg in short form
+        if len(i) == 1:
+            # opts
+            if i[0] in o.keys():
+                opts.append(o[i[0]])
+            elif i[0] in o.values():
+                opts.append(i[0])
+            else:
+                help()
+                sys.exit(1)
+        else:
+            # args
+            if i[0] in a.keys():
+                args.update({a[i[0]]:i[1]})
+            elif i[0] in a.values():
+                args.update({i[0]:i[1]})
+            else:
+                help()
+                sys.exit(1)
+    if (len(opts) > 1) and (args != {}):
+        # options that must be alone
+        if '-l' in opts:
+            help()
+            sys.exit(1)
+        if '-d' in opts:
+            help()
+            sys.exit(1)
+        if '-h' in opts:
+            help()
+            sys.exit(1)
+        # mutex
+        if ('-nb' in opts) and ('-b' in opts):
+            help()
+            sys.exit(1)
+        if ('-r' in opts) and ('-b' in opts):
+            help()
+            sys.exit(1)
+          
+        # nonsense
+        if ('-nb' in opts) and ('-r' not in opts):
+            help()
+            sys.exit(1)
+        if ('-pw' in opts) and (('-r' in opts) and ('-nb' in opts)):
+            help()
+            sys.exit(1)               
+        if ('-c' in args.keys()) and (('-r' in opts) and ('-nb' in opts)):
+            help()
+            sys.exit(1)
+        # mandatory args
+        if '-p' not in args.keys():
+            help()
+            sys.exit(1)
+        if '-n' not in args.keys():
+            help()
+            sys.exit(1)
+        if '-s' not in args.keys():
+            help()
+            sys.exit(1)
+        if '-i' not in args.keys():
+            help() 
+            sys.exit(1)
+    else:
+        # one option only validation
+        if len(opts) == 1:
+            if args != {}:
+                if '-nb' in opts:
+                    help()
+                    sys.exit(1)
+                if '-pw' in opts:
+                    help()
+                    sys.exit(1)
+                if '-l' in opts:
+                    help()
+                    sys.exit(1)
+                if '-d' in opts:
+                    help()
+                    sys.exit(1)
+                if '-h' in opts:
+                    help()
+                    sys.exit(1)
+                # mandatory args
+                if '-p' not in args.keys():
+                    help()
+                    sys.exit(1)
+                if '-n' not in args.keys():
+                    help()
+                    sys.exit(1)
+                if '-s' not in args.keys():
+                    help()
+                    sys.exit(1)
+                if '-i' not in args.keys():
+                    help() 
+                    sys.exit(1)
+            else:
+                if '-nb' in opts:
+                    help()
+                    sys.exit(1)
+                if '-pw' in opts:
+                    help()
+                    sys.exit(1)
+               
+        else:
+            help()
+            sys.exit(1)
+    return [opts, args]
+
+
+# cleans up the dir structure and removes the rundir
+# in order to commit to version control
+def clean():
+    right_files = []
+    for root, dirs, files in os.walk(os.getcwd()):
+        if '.svn' in dirs:
+            dirs.remove('.svn')
+        for f in files:
+            if f[-1] == '~':
+                os.remove(os.path.join(root, f))
+            elif f[-2] == '.' and (f[-1] == 'x' or f[-1] == 'o') or f[-1] == 'a':
+                os.remove(os.path.join(root, f))
+    os.system("rm -rf rundir/")
+
+# calls Makefile rule distclean for each processor
+def distclean():
+    bench_path = os.getcwd()
+    for i in procs:
+        os.chdir(bench_path + "/processors/" + i)
+        os.system("make distclean")
+    os.chdir(bench_path)
+
+# general Makefile creator
+def makefile(proc, nproc, sw, power, intercon, plat_rundir):
+    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := " \
+           + proc + "\nexport NUMPROCESSORS := " + nproc + \
+           "\nexport SOFTWARE := " + sw + "\nexport CROSS := " + proc + \
+           "-elf-gcc\nexport PLATFORM := platform." + intercon + "\n"
+    if power:
+        make = make + "export POWER_SIM_FLAG := -DPOWER_SIM\n"
+    else:
+        make = make + "export POWER_SIM_FLAG := \n"
+    if intercon == 'noc.at':
+        make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
+    else:
+        make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
+    make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
+    make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
+    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
+    return make
+
+
+# prints help
+def help():
+    print "Control Parameters:"
+    print "---------------------"
+    print "-b|--build: to build simulators"
+    print "-r|--run: to run simulators"
+    print "-nb|--nobuild: to run without recompiling the models"
+    print "-l|--clean: delete object files and the simulators previosly created"
+    print "-d|--distclean: delete processor model files previosly created by ArchC"
+    print "-h|--help: help"
+    print "---------------------"
+    print "Platform Parameters (mandatory):"
+    print "---------------------"
+    print "-p|--processor: to choose processor models (powerpc, mips, sparc, or arm)"
+    print "-n|--numcores: to choose the number of cores (1,2,4,8,16,32, or 64)"
+    print "-s|--software: to choose the application"
+    print "-i|--interconnection: to choose the interconnection device (router.lt, noc.lt, noc.at)"
+    print "---------------------"
+    print "Optional Parameters:"
+    print "---------------------"
+    print "-pw|--power: to enable power consumption for SPARC and MIPS platforms"
+    print "-c|--condor: to enable execution on HTCondor"
+    print "---------------------"
+    print "Usage:"
+    print "       ./MPSoCBench -b -p=<processor> -n=<n_cores> -s=<software> -i=<device>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -nb"
+    print ""
+    print "       ./MPSoCBench -b -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw -nb"
+    print ""
+    print "       ./MPSoCBench -b -p=<processor> -n=<n_cores> -s=<software> -i=<device> -c=<queue>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -c=<queue>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -c=<queue> -nb"
+    print ""
+    print "       ./MPSoCBench -b -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw -c=<queue>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw -c=<queue>"
+    print "       ./MPSoCBench -r -p=<processor> -n=<n_cores> -s=<software> -i=<device> -pw -c=<queue> -nb"
+    print ""
+    print ""
+    print "       ./MPSoCBench -b -n=<n_cores> -i=<device> -ht -c=<queue> -pw"
+    print "       ./MPSoCBench -r -n=<n_cores> -i=<device> -ht -c=<queue> -pw"
+    print "       ./MPSoCBench -r -n=<n_cores> -i=<device> -ht -c=<queue> -pw -nb"
+    print ""
+    print "       ./MPSoCBench -l"
+    print "       ./MPSoCBench -d"
+    print "       ./MPSoCBench -h"
+
+# rundir Makefile creator
+
+def run_make(path, proc, nproc, sw, intercon):
+    #make = "export LD_LIBRARY_PATH:=/home/liana/repository/tools/systemc/lib-linux64\nrun:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n" + "compare:\n\techo \"\\n\\nTESTING RESULTS\"\n\tsort output > output.sorted \n\tif diff output.sorted base_output." + sw + "." + nproc + " > diff.txt ; then echo \"\\nTest Passed.\"; else echo \"\\nTest Failed.\"; fi"
+    make = "include Makefile.conf\nrun:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n"
+    f = open(path + "/Makefile", "w")
+    f.write(make)
+    f.close()
+
+# condor submission file creator
+# build only, never run
+# FIXME: fix platform exec file name
+def condor_task(path, proc, nproc, sw, queue, intercon):
+    task = "Universe = vanilla\nLog = MPSoCBench.log\nOutput = MPSoCBench.out\n"\
+    "Error = MPSoCBench.err\nshould_transfer_files = No\n"\
+    "Executable = platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc + \
+    "\nQueue " + str(queue) + "\n"
+    f = open(path + "/condor_task", "w")
+    f.write(task)
+    f.close()
+
+# rundir creation
+def build(tracker, power, condor):
+    # cleans up the processors
+    distclean()
+    path = ""
+    try:
+        # walks the platform tracker make tree
+        # processors
+        for i in tracker[0]:
+            # number of cores
+            for j in tracker[1]:
+                # softwares
+                for k in tracker[2]:
+                    # interconnections
+                    for l in tracker[3]:
+                        if valid_platform[k][j]:
+                            os.system("rm Makefile")
+                            # creates general Makefile
+                            if power:
+                                plat_rundir = i + "." + l + ".pw." + j + "." + k
+                            else:
+                                plat_rundir = i + "." + l + "." + j + "." + k
+                            f = open("Makefile", "w")
+                            if i == 'arm' or i == 'powerpc' and power:
+                                #print "WARNING! The selected processor does not support PowerSC!"
+                                plat_rundir = i + "." + l + "." + j + "." + k
+                                f.write(makefile(i, j, k, False, l, plat_rundir))
+                            else:
+                                f.write(makefile(i, j, k, power, l, plat_rundir))
+                            f.close()
+                            # makes the platform
+                            os.system("make clean distclean all")
+                            path = "rundir/" + plat_rundir
+                            print "Creating rundir for " + path[7:] + "..."
+                            # creates rundir for each platform
+                            os.system("mkdir -p " + path)
+                            # copies it to its rundir                    
+                            os.system("make copy")
+			    os.system("make clean")
+                            # creates rundir makefile
+                            run_make(path, i, j, k, l)
+                            # creates condor task file in the rundir
+                            if condor > 0:
+                                condor_task(path, i, j, k, condor, l)
+    except Exception as e:
+        print "Error! Exiting..."
+        sys.exit(1)
+
+# platform run
+def run(tracker, nobuild, power, condor):
+    try:
+        # walks the platform tracker make tree
+        # processors
+        for i in tracker[0]:
+            # number of cores
+            for j in tracker[1]:
+                # softwares
+                for k in tracker[2]:
+                    # interconnections
+                    for l in tracker[3]:
+                        if power:
+                            rundir_path = "rundir/" + i + "." + l + ".pw." + j + "." + k
+                        else:
+                            rundir_path = "rundir/" + i + "." + l + "." + j + "." + k
+                        if i == 'arm' or i == 'powerpc' and power:
+                            #print "WARNING! The selected processor does not support PowerSC!"
+                            rundir_path = "rundir/" + i + "." + l + "." + j + "." + k
+                        # tests if rundir exists
+                        if not os.path.isdir(rundir_path):
+                            if not nobuild:
+                                # creates rundir
+                                build([[i],[j],[k],[l]], power, condor)
+                                os.chdir(rundir_path)
+                                os.system("make run")
+				os.system("make -f Makefile.check check")
+                                os.chdir("../../")
+                        else:
+                            os.chdir(rundir_path)
+                            os.system("make run")
+			    os.system("make -f Makefile.check check")
+                            os.chdir("../../")
+    except:
+        #print "Error! Exiting..."
+        sys.exit(1)
+
+
+#def hetero_run_make(path, nproc, intercon):
+#    make = "include Makefile.conf\nrun:\n\t./platform.het." + intercon + ".x " + nproc + " multi-parallel-het.sparc.x multi-parallel-het.powerpc.x multi-parallel-het.mips.x multi-parallel-het.arm.x \n"
+#    f = open(path + "/Makefile", "w")
+#    f.write(make)
+#    f.close()
+
+
+#def hetero_makefile(nproc, intercon, plat_rundir):
+#    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := powerpc mips sparc arm" \
+#           "\nexport NUMPROCESSORS := " + nproc + \
+#           "\nexport SOFTWARE := multi-parallel-het\nexport CROSS := " + \
+#           "\nexport PLATFORM := platform.het." + intercon + "\n"
+#    if intercon == 'noc.at':
+#        make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
+#    else:
+#        make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
+#    make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
+#    make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
+#    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
+#    return make
+    
+#def hetero_build(nproc, intercon):
+#    os.system("rm Makefile")
+#    plat_rundir =  "platform.het." + nproc + "." + intercon
+#    # creates general Makefile
+#    f = open("Makefile", "w")
+#    f.write(hetero_makefile(nproc, intercon, plat_rundir))
+#    f.close()
+#    # makes the platform
+#    os.system("make clean all")
+#    path = "rundir/" + plat_rundir
+#    print "Creating rundir for " + path[7:] + "..."
+#    # creates rundir for each platform
+#    os.system("mkdir -p " + path)
+#    # copies it to its rundir                    
+#    os.system("make copy")
+#    os.system("make clean")
+#    # creates rundir makefile
+#    hetero_run_make(path, nproc, intercon)
+    
+#def hetero_run(nproc, intercon, nobuild):
+#    try:
+#        rundir_path = "rundir/platform.het." + nproc + "." + intercon
+#        if not os.path.isdir(rundir_path):
+#            print "WARNING! " + rundir_path + " doesn't exists!"
+#            if not nobuild:
+#                hetero_build(nproc, intercon)
+#                os.chdir(rundir_path)
+#                os.system("make run")
+#                os.chdir("../../")
+#        else:
+#            os.chdir(rundir_path)
+#            os.system("make run")
+#            os.chdir("../../")
+#    except:    
+#        print "Error! Exiting..."
+#        sys.exit(1)
+#        
+#def heterogen(prep, nobuild, nproc, intercon):
+#    if nproc == "1" or nproc == "2":
+#        print "Error: invalid argument. Exiting..."
+#        sys.exit(1)
+#    try:
+#        if prep:
+#            hetero_build(nproc, intercon)            
+#        else:
+#            hetero_run(nproc, intercon, nobuild)
+#    except:
+#        print "Error! Exiting..."
+#        sys.exit(1)
+#        
+        
+# === DEFINES ===
+# “Smart data structures and dumb code works a lot better than the other
+# way around.”
+# —Eric Raymond, The Cathedral and the Bazaar, chapter 5
+
+procs = ['arm', 'mips', 'powerpc', 'sparc']
+nprocs = ['1', '2', '4', '8', '16', '32', '64']
+sws = ['basicmath', 'dijkstra', 'fft', 'lu', 'ocean', 'sha', 
+       'stringsearch', 'susancorners', 'susanedges', 'susansmoothing',
+       'water', 'water-spatial', 'multi-parallel', 'multi-8', 'multi-16', 'multi-network-automotive','multi-office-telecomm', 'multi-security']
+intercons = ['noc.at', 'noc.lt', 'router.lt']
+
+
+valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'lu':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
+                   'sha':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'water':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
+                   'dijkstra':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'fft':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
+                   'stringsearch':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'susancorners':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':False},
+                   'susanedges':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':False},
+                   'susansmoothing':{'1':True, '2':True, '4':True, '8':True, '16':False, '32':False, '64':False},
+                   'water-spatial':{'1':True, '2':True, '4':True, '8':True, '16':False, '32':False, '64':False},
+                   'multi-parallel':{'1':False, '2':False, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'multi-8':{'1':False, '2':False, '4':False, '8':True, '16':False, '32':False, '64':False},
+                   'multi-16':{'1':False, '2':False, '4':False, '8':False, '16':True, '32':False, '64':False},
+                   'multi-network-automotive':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False},
+                   'multi-office-telecomm':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False},
+                   'multi-security':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False}}
+
+
+
+# gets the command line args
+cmdline = sys.argv[1:]
+a = []
+# controlled by --run/--build, False if --run, True if --build
+prep = False
+# controlled by --nobuild, True if --nobuild
+nobuild = False
+# controlled by -pw/--power
+power = False
+# controlled by -c/--condor
+condor = 0
+# controlled by --heterogen, True if --heterogen/ht
+hetero = False
+
+opts, args = arg_parse(cmdline)
+
+if '-nb' in opts:
+    nobuild = True
+if '-pw' in opts:
+    power = True
+if '-r' in opts:
+    prep = False
+if '-b' in opts:
+    prep = True
+#if '-ht' in opts:
+#    hetero = True
+if '-l' in opts:
+    clean()
+    sys.exit(0)
+if '-d' in opts:
+    distclean()
+    sys.exit(0)
+if '-h' in opts:
+    help()
+    sys.exit(0)
+
+proc = ""
+nproc = ""
+sw = ""
+intercon = ""
+
+if '-p' in args.keys():
+    proc = args['-p']
+nproc = args['-n']
+if '-s' in args.keys():
+    sw = args['-s']
+intercon = args['-i']
+if '-c' in args.keys():
+    condor = args['-c']
+
+
+if sw != "" and proc != "":
+    if (proc not in procs) and (proc != 'all'):
+        print "Error: invalid argument. Exiting..."
+        sys.exit(1)
+    if (nproc not in nprocs) and (nproc != 'all'):
+        print "Error: invalid argument. Exiting..."
+        sys.exit(1)
+    if (sw not in sws) and (sw != 'all'):
+        print "Error: invalid argument. Exiting..."
+        sys.exit(1)
+    if (intercon not in intercons) and (intercon != 'all'):
+        print "Error: invalid argument. Exiting..."
+        sys.exit(1)
+
+
+try:
+    condor = int(condor)
+    if condor < 1:
+        condor = 0
+except:
+    print "Error: invalid argument. Exiting..."
+    sys.exit(1)
+
+# platform make tracker tree creation
+tracker = []
+if hetero:
+    heterogen(prep, nobuild, nproc, intercon)
+    sys.exit(0)
+else:
+    if proc == "all":
+        tracker.append(procs)
+    else:
+        tracker.append([proc])
+    if nproc == "all":
+        tracker.append(nprocs)
+    else:
+        tracker.append([nproc])
+    if sw == "all":
+       tracker.append(sws)
+    else:
+       tracker.append([sw])
+    if intercon == "all":
+        tracker.append(intercons)
+    else:
+        tracker.append([intercon])
+
+print tracker
+
+if prep:
+    build(tracker, power, condor)
+else:
+    run(tracker, nobuild, power, condor)
+    
+

@@ -1,0 +1,150 @@
+/********************************************************
+ * This is the part of the MPSoCBench benchmark suite   *
+ * If you want more information on MPSoCBench or ArchC, *
+ * please visit:                                        *
+ * http://archc.org/benchs/mpsocbench/ , or             *
+ * http://www.archc.org                                 *
+ * Computer Systems Laboratory (LSC)                    *
+ * IC-UNICAMP                                           *
+ * http://www.lsc.ic.unicamp.br                         *
+ *******************************************************/
+
+
+
+#ifndef TLM_NODE_H_
+#define TLM_NODE_H_
+
+//////////////////////////////////////////////////////////////////////////////
+
+#include <systemc>
+#include "ac_tlm_protocol.H"
+#include "ac_tlm2_port.H"
+#include "routing_table.h"
+#include "tlm_payload_extension.h"
+
+#include "../../defines.h"
+
+//////////////////////////////////////////////////////////////////////////////
+
+using tlm::tlm_blocking_transport_if;
+using user::tlm_payload_extension;
+using user::routing_table;
+
+//////////////////////////////////////////////////////////////////////////////
+
+namespace user
+{
+
+class tlm_node:
+  public sc_module,
+  public ac_tlm2_blocking_transport_if 
+{
+public:
+
+  ac_tlm2_port N_port; 
+  ac_tlm2_port S_port;
+  ac_tlm2_port W_port;
+  ac_tlm2_port E_port; 
+  
+  ac_tlm2_port LOCAL_port;
+  sc_export <ac_tlm2_blocking_transport_if> LOCAL_export;
+
+  const char *module_name;
+
+  static unsigned int numberOfNodes;
+
+  routing_table tableOfRouts;
+
+  //pthread_mutex_t mymutex;
+  
+  tlm_node(); 
+  tlm_node(sc_module_name module_name);
+  ~tlm_node();
+  
+
+  inline void setStatus(int st){
+	this->status = st;
+  }
+  inline int  getId (){ 
+	return this->id;
+  }
+  inline int getStatus() {
+	return this->status;
+  }
+  
+  inline int getX() {
+  	return this->posX;
+  }
+  inline int getY() {
+  	return this->posY;
+  }
+
+  inline void setId(int a) {
+	this->id = a;
+  }
+  inline void setX(int a) {
+  	this->posX = a;
+  }
+  inline void setY(int b) {
+  	this->posY = b;
+  }
+
+  void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
+
+ 
+private:
+
+  unsigned int id;
+  unsigned int posX;
+  unsigned int posY;
+
+  unsigned int status;
+  
+
+
+};
+
+
+class tlm_empty_slave_node:
+  public sc_module,
+  public ac_tlm2_blocking_transport_if 
+{
+public:
+ 
+  sc_export <ac_tlm2_blocking_transport_if> LOCAL_export;
+
+  const char *module_name;
+
+  tlm_empty_slave_node(); 
+  ~tlm_empty_slave_node(){}
+  void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
+  
+};
+
+
+
+class tlm_empty_master_node:
+  public sc_module,
+  public ac_tlm2_blocking_transport_if 
+{
+public:
+ 
+  ac_tlm2_port LOCAL_port; 
+
+  const char *module_name;
+
+  tlm_empty_master_node(); 
+  ~tlm_empty_master_node() {}
+  void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
+  
+};
+
+
+
+
+
+
+
+};
+
+#endif 
