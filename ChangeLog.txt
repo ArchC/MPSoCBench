@@ -1,0 +1,15 @@
+*******************
+   Change LOG
+*******************
+
+2013-Nov
+
+The MPSoCBench 1.1 contains few changes in the toolset.
+    -> The base-output files for the SHA application were exchanged to match with the provided inputs.     
+       This applications has different behavior, depending of the endianess;
+       
+    -> There's no need to sort the Stringsearch output before comparing it with the base-output. 
+       We have omited the sorting step in the check rule of the application Makefile;
+         
+    -> To avoid mistakes, we have omited the path examples in the Makefile.conf. 
+       The user need to configure the paths according to the system;

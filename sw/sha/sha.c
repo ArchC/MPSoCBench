@@ -12,7 +12,9 @@
 #include <string.h>
 #include "sha.h"
 
-#define LITTLE_ENDIAN
+
+
+//#define LITTLE_ENDIAN
 
 /* SHA f()-functions */
 
@@ -104,6 +106,7 @@
 
 void byte_reverse(LONG *buffer, int count)
 {
+
     int i;
     BYTE ct[4], *cp;
 

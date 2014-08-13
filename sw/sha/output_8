@@ -1,4 +1,3 @@
-
 0   1   Worker 1
 1   2   Worker 2
 2   3   Worker 3
@@ -7,11 +6,12 @@
 5   6   Worker 6
 6   7   Worker 7
 7   8   Worker 8
-Worker number 1: finished.68ddc16b 2e780cbf bd01b11f fb02623b a27aeb79
-Worker number 2: finished.5dc4974a 9bede907 c61a5c63 e7adf6c5 703e1bdf
+
 Worker number 3: finished.75077d04 c2eb4b39 cbfa75a7 2ca6c406 f1bcf250
+Worker number 1: finished.68ddc16b 2e780cbf bd01b11f fb02623b a27aeb79
 Worker number 4: finished.bf63adff 126117ea cfc8eaca b484ff11 673e1e60
-Worker number 5: finished.e15a9b51 23577209 4981327b 7e38422a e75921f0
+Worker number 8: finished.5ec5b2cb 7a0c44c0 587481be 01ab0149 a017de9b
 Worker number 6: finished.9371ce25 3ac16d9e d73319b3 12015deb c53dedfc
 Worker number 7: finished.cc61f860 8ca56aca 26c37935 e6a8600c 931d7f0c
-Worker number 8: finished.5ec5b2cb 7a0c44c0 587481be 01ab0149 a017de9b
+Worker number 5: finished.e15a9b51 23577209 4981327b 7e38422a e75921f0
+Worker number 2: finished.5dc4974a 9bede907 c61a5c63 e7adf6c5 703e1bdf

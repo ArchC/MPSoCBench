@@ -43,6 +43,6 @@ copy:
 
 check:
 	echo "\n\nTESTING RESULTS"
-	sort output > output.sorted 
-	if diff output.sorted output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
+	#sort output > output.sorted 
+	if diff output output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
 	
