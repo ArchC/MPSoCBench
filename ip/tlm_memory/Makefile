@@ -25,7 +25,7 @@ clean:
 distclean: clean
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<

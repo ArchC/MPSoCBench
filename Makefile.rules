@@ -88,13 +88,11 @@ distclean:
 	cd platforms/$(PLATFORM); $(MAKE) distclean
 	
 #------------------------------------------------------
-copy:    
+copy:
 	cd $(ARP)
 	cd platforms/$(PLATFORM); $(MAKE) copy;
 	for sw in $(SW) ; do cd sw/$$sw ; \
-            $(MAKE) copy; done
-	
-	
+        $(MAKE) copy; done
 #------------------------------------------------------
 
 run: all

@@ -27,7 +27,7 @@ void bhmi_cleanup(void);
 #include "../../acPthread.h"
 #define realloc acPthread_realloc
 
-//extern void *ESLBench_realloc(void *, size_t);
+
 
 #define LARGE 32767             /* flag for last character match    */
 

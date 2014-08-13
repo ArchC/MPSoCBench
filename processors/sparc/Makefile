@@ -8,7 +8,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) 
 SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)
+CFLAGS := $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) -g
 
 #------------------------------------------------------
 .SILENT:
@@ -34,7 +34,7 @@ distclean: clean
 #------------------------------------------------------
 sparc.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT).ac -abi
+	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi
 	patch sparc.cpp sparc.cpp.patch
 	patch sparc.cpp sparc.cpp.acsynth.patch
 	patch sparc.H sparc.H.patch

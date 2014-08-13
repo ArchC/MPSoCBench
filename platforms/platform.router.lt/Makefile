@@ -15,6 +15,10 @@ ifeq ($(PROCESSOR),sparc)
 CFLAGS_AUX = -DPROCSPARC
 endif
 
+ifeq ($(PROCESSOR),sparc_cache)
+CFLAGS_AUX = -DPROCSPARC
+endif
+
 ifeq ($(PROCESSOR),powerpc)
 CFLAGS_AUX = -DPROCPOWERPC
 endif
@@ -55,8 +59,8 @@ distclean: clean
 #------------------------------------------------------
 .cc.o:
 	$(CC) $(CFLAGS) $(INC_DIR) -c $<
-#------------------------------------------------------
+
 copy:
-	echo ---copy $(EXE) to the appropriate rundir
+	echo ---copy $(EXE) to the appropriate rundir 
 	cp $(EXE) ../../rundir/$(RUNDIRNAME)/
 	cp ../../Makefile.conf ../../rundir/$(RUNDIRNAME)/

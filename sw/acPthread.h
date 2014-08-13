@@ -1,8 +1,28 @@
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
+
 #ifndef acPthread_H_
 #define acPthread_H_
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #define MAX_ESL_PTHREADS 64
 #define LOCK_ADDRESS 0x20000000
@@ -74,7 +94,7 @@ typedef struct ThreadQueue_t
 ***********************************************************************************/
 
 /*  QUEUE */
-ThreadNode initNode( ThreadNode*, void (*fp)(void *), void*); //, int);
+void initNode( ThreadNode*, void (*fp)(void *), void*); //, int);
 void initQueue (ThreadQueue*);
 void printQueue (ThreadQueue*);
 int isEmpty(ThreadQueue*);
@@ -87,7 +107,7 @@ int size(ThreadQueue*);
 int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate);
 int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate);
 int pthread_attr_init(pthread_attr_t *attr);
-void pthread_exit(void *);   // verificar qual é o argumetno correto na biblioteca original
+void pthread_exit(void *);  
 
 
 /*  acPthread */

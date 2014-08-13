@@ -12,7 +12,7 @@
 	
 	This source code is part of the MPSoCBench Benchmark Suite, which is a free
 	source-code benchmark for evaluation of Electronic Systemc Level designs.
-	This benchmakr is distributed int he hope that it will be useful, but 
+	This benchmark is distributed with hope that it will be useful, but
 	without any warranty.
  
 *********************************************************************************/

@@ -1,18 +1,18 @@
 /********************************************************************************
-	ESLBench Benchmark Suite
+	MPSoCBench Benchmark Suite
 	Authors: Liana Duenha
 	Supervisor: Rodolfo Azevedo
 	Date: July-2012
-	
+	www.archc.org/benchs/mpsocbench
 
 	Computer Systems Laboratory (LSC)
 	IC-UNICAMP
 	http://www.lsc.ic.unicamp.br/
 	
 	
-	This source code is part of the ESLBench Benchmark Suite, which is a free
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
 	source-code benchmark for evaluation of Electronic Systemc Level designs.
-	This benchmakr is distributed int he hope that it will be useful, but 
+	This benchmark is distributed with hope that it will be useful, but
 	without any warranty.
  
 *********************************************************************************/

@@ -1,0 +1,427 @@
+
+Name: mem  Kind: sc_module Interface: 0
+has 0 relations.
+Name: mem_iface Kind: sc_interface Interface: 140737012583488
+	has 0 relations.
+Name: mem.b2nb_thread_0 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: mem.m_peq_0 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: mem.LOCAL_target_socket_port_0 Kind: sc_port Interface: 13540656
+	has 1 relations.
+	Related to noc.simple_initiator_socket_20_export_0
+Name: mem.LOCAL_target_socket Kind: tlm_target_socket Interface: 140737012583928
+	has 0 relations.
+Name: lock  Kind: sc_module Interface: 0
+has 0 relations.
+Name: lock_iface Kind: sc_interface Interface: 140737012584736
+	has 0 relations.
+Name: lock.b2nb_thread_0 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: lock.m_peq_0 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: lock.LOCAL_target_socket_port_0 Kind: sc_port Interface: 13545264
+	has 1 relations.
+	Related to noc.simple_initiator_socket_22_export_0
+Name: lock.LOCAL_target_socket Kind: tlm_target_socket Interface: 140737012585176
+	has 0 relations.
+Name: ppc0  Kind: sc_module Interface: 0
+has 0 relations.
+Name: ppc0.behavior Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: ppc0.simple_initiator_socket_0_export_0 Kind: sc_export Interface: 13379728
+	has 0 relations.
+Name: ppc0.simple_initiator_socket_0 Kind: tlm_initiator_socket Interface: 13550168
+	has 0 relations.
+Name: noc  Kind: sc_module Interface: 0
+has 0 relations.
+Name: noc.simple_initiator_socket_29_export_0 Kind: sc_export Interface: 13625768
+	has 0 relations.
+Name: noc.simple_initiator_socket_29 Kind: tlm_initiator_socket Interface: 13545560
+	has 0 relations.
+Name: noc.object_10 Kind: sc_module Interface: 13625328
+	has 0 relations.
+Name: noc.simple_initiator_socket_28_export_0 Kind: sc_export Interface: 13625248
+	has 0 relations.
+Name: noc.simple_initiator_socket_28 Kind: tlm_initiator_socket Interface: 13540952
+	has 0 relations.
+Name: noc.object_9 Kind: sc_module Interface: 13624808
+	has 0 relations.
+Name: noc.b2nb_thread_28 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_28 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_28_port_0 Kind: sc_port Interface: 13549872
+	has 0 relations.
+Name: noc.simple_target_socket_28 Kind: tlm_target_socket Interface: 13613728
+	has 0 relations.
+Name: noc.object_8 Kind: sc_module Interface: 13613288
+	has 0 relations.
+Name: noc.b2nb_thread_27 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_27 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_27_port_0 Kind: sc_port Interface: 13489336
+	has 0 relations.
+Name: noc.simple_target_socket_27 Kind: tlm_target_socket Interface: 13556088
+	has 0 relations.
+Name: noc.simple_initiator_socket_27_export_0 Kind: sc_export Interface: 13555792
+	has 0 relations.
+Name: noc.simple_initiator_socket_27 Kind: tlm_initiator_socket Interface: 13490816
+	has 0 relations.
+Name: noc.b2nb_thread_26 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_26 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_26_port_0 Kind: sc_port Interface: 13554480
+	has 0 relations.
+Name: noc.simple_target_socket_26 Kind: tlm_target_socket Interface: 13554776
+	has 0 relations.
+Name: noc.simple_initiator_socket_26_export_0 Kind: sc_export Interface: 13554480
+	has 0 relations.
+Name: noc.simple_initiator_socket_26 Kind: tlm_initiator_socket Interface: 13554776
+	has 0 relations.
+Name: noc.object_7 Kind: sc_module Interface: 13554040
+	has 0 relations.
+Name: noc.b2nb_thread_25 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_25 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_25_port_0 Kind: sc_port Interface: 13482384
+	has 0 relations.
+Name: noc.simple_target_socket_25 Kind: tlm_target_socket Interface: 13551480
+	has 0 relations.
+Name: noc.simple_initiator_socket_25_export_0 Kind: sc_export Interface: 13551184
+	has 0 relations.
+Name: noc.simple_initiator_socket_25 Kind: tlm_initiator_socket Interface: 13483864
+	has 0 relations.
+Name: noc.b2nb_thread_24 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_24 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_24_port_0 Kind: sc_port Interface: 13379728
+	has 1 relations.
+	Related to ppc0.simple_initiator_socket_0_export_0
+Name: noc.simple_target_socket_24 Kind: tlm_target_socket Interface: 13550168
+	has 0 relations.
+Name: noc.simple_initiator_socket_24_export_0 Kind: sc_export Interface: 13549872
+	has 0 relations.
+Name: noc.simple_initiator_socket_24 Kind: tlm_initiator_socket Interface: 13613728
+	has 0 relations.
+Name: noc.object_6 Kind: sc_module Interface: 13549432
+	has 0 relations.
+Name: noc.b2nb_thread_23 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_23 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_23_port_0 Kind: sc_port Interface: 13430584
+	has 0 relations.
+Name: noc.simple_target_socket_23 Kind: tlm_target_socket Interface: 13546872
+	has 0 relations.
+Name: noc.simple_initiator_socket_23_export_0 Kind: sc_export Interface: 13546576
+	has 0 relations.
+Name: noc.simple_initiator_socket_23 Kind: tlm_initiator_socket Interface: 13432064
+	has 0 relations.
+Name: noc.b2nb_thread_22 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_22 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_22 Kind: tlm_target_socket Interface: 13545560
+	has 0 relations.
+Name: noc.simple_initiator_socket_22_export_0 Kind: sc_export Interface: 13545264
+	has 0 relations.
+Name: noc.simple_initiator_socket_22 Kind: tlm_initiator_socket Interface: 140737012585176
+	has 0 relations.
+Name: noc.object_5 Kind: sc_module Interface: 13544824
+	has 0 relations.
+Name: noc.b2nb_thread_21 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_21 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_21_port_0 Kind: sc_port Interface: 13423632
+	has 0 relations.
+Name: noc.simple_target_socket_21 Kind: tlm_target_socket Interface: 13542264
+	has 0 relations.
+Name: noc.simple_initiator_socket_21_export_0 Kind: sc_export Interface: 13541968
+	has 0 relations.
+Name: noc.simple_initiator_socket_21 Kind: tlm_initiator_socket Interface: 13425112
+	has 0 relations.
+Name: noc.b2nb_thread_20 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_20 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_20_port_0 Kind: sc_port Interface: 13625248
+	has 1 relations.
+	Related to noc.simple_initiator_socket_28_export_0
+Name: noc.simple_target_socket_20 Kind: tlm_target_socket Interface: 13540952
+	has 0 relations.
+Name: noc.simple_initiator_socket_20_export_0 Kind: sc_export Interface: 13540656
+	has 0 relations.
+Name: noc.simple_initiator_socket_20 Kind: tlm_initiator_socket Interface: 140737012583928
+	has 0 relations.
+Name: noc.object_4 Kind: sc_module Interface: 13540216
+	has 0 relations.
+Name: noc.thread_node_2 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.b2nb_thread_19 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_19 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_19_port_0 Kind: sc_port Interface: 13490520
+	has 0 relations.
+Name: noc.simple_target_socket_19 Kind: tlm_target_socket Interface: 13494880
+	has 0 relations.
+Name: noc.b2nb_thread_18 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_18 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_18_port_0 Kind: sc_port Interface: 13483568
+	has 0 relations.
+Name: noc.simple_target_socket_18 Kind: tlm_target_socket Interface: 13493864
+	has 0 relations.
+Name: noc.b2nb_thread_17 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_17 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_17_port_0 Kind: sc_port Interface: 13489928
+	has 0 relations.
+Name: noc.simple_target_socket_17 Kind: tlm_target_socket Interface: 13492848
+	has 0 relations.
+Name: noc.b2nb_thread_16 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_16 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_16_port_0 Kind: sc_port Interface: 13431176
+	has 0 relations.
+Name: noc.simple_target_socket_16 Kind: tlm_target_socket Interface: 13491832
+	has 0 relations.
+Name: noc.b2nb_thread_15 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_15 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_15_port_0 Kind: sc_port Interface: 13555792
+	has 1 relations.
+	Related to noc.simple_initiator_socket_27_export_0
+Name: noc.simple_target_socket_15 Kind: tlm_target_socket Interface: 13490816
+	has 0 relations.
+Name: noc.simple_initiator_socket_19_export_0 Kind: sc_export Interface: 13490520
+	has 0 relations.
+Name: noc.simple_initiator_socket_19 Kind: tlm_initiator_socket Interface: 13494880
+	has 0 relations.
+Name: noc.simple_initiator_socket_18_export_0 Kind: sc_export Interface: 13490224
+	has 0 relations.
+Name: noc.simple_initiator_socket_18 Kind: tlm_initiator_socket Interface: 13487928
+	has 0 relations.
+Name: noc.simple_initiator_socket_17_export_0 Kind: sc_export Interface: 13489928
+	has 0 relations.
+Name: noc.simple_initiator_socket_17 Kind: tlm_initiator_socket Interface: 13492848
+	has 0 relations.
+Name: noc.simple_initiator_socket_16_export_0 Kind: sc_export Interface: 13489632
+	has 0 relations.
+Name: noc.simple_initiator_socket_16 Kind: tlm_initiator_socket Interface: 13434096
+	has 0 relations.
+Name: noc.simple_initiator_socket_15_export_0 Kind: sc_export Interface: 13489336
+	has 0 relations.
+Name: noc.simple_initiator_socket_15 Kind: tlm_initiator_socket Interface: 13556088
+	has 0 relations.
+Name: noc.object_3 Kind: sc_module Interface: 13488896
+	has 0 relations.
+Name: noc.thread_node_1 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.b2nb_thread_14 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_14 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_14_port_0 Kind: sc_port Interface: 13490224
+	has 1 relations.
+	Related to noc.simple_initiator_socket_18_export_0
+Name: noc.simple_target_socket_14 Kind: tlm_target_socket Interface: 13487928
+	has 0 relations.
+Name: noc.b2nb_thread_13 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_13 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_13_port_0 Kind: sc_port Interface: 13483272
+	has 0 relations.
+Name: noc.simple_target_socket_13 Kind: tlm_target_socket Interface: 13486912
+	has 0 relations.
+Name: noc.b2nb_thread_12 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_12 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_12_port_0 Kind: sc_port Interface: 13482976
+	has 0 relations.
+Name: noc.simple_target_socket_12 Kind: tlm_target_socket Interface: 13485896
+	has 0 relations.
+Name: noc.b2nb_thread_11 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_11 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_11_port_0 Kind: sc_port Interface: 13424224
+	has 0 relations.
+Name: noc.simple_target_socket_11 Kind: tlm_target_socket Interface: 13484880
+	has 0 relations.
+Name: noc.b2nb_thread_10 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_10 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_10_port_0 Kind: sc_port Interface: 13551184
+	has 1 relations.
+	Related to noc.simple_initiator_socket_25_export_0
+Name: noc.simple_target_socket_10 Kind: tlm_target_socket Interface: 13483864
+	has 0 relations.
+Name: noc.simple_initiator_socket_14_export_0 Kind: sc_export Interface: 13483568
+	has 0 relations.
+Name: noc.simple_initiator_socket_14 Kind: tlm_initiator_socket Interface: 13493864
+	has 0 relations.
+Name: noc.simple_initiator_socket_13_export_0 Kind: sc_export Interface: 13483272
+	has 0 relations.
+Name: noc.simple_initiator_socket_13 Kind: tlm_initiator_socket Interface: 13486912
+	has 0 relations.
+Name: noc.simple_initiator_socket_12_export_0 Kind: sc_export Interface: 13482976
+	has 0 relations.
+Name: noc.simple_initiator_socket_12 Kind: tlm_initiator_socket Interface: 13485896
+	has 0 relations.
+Name: noc.simple_initiator_socket_11_export_0 Kind: sc_export Interface: 13482680
+	has 0 relations.
+Name: noc.simple_initiator_socket_11 Kind: tlm_initiator_socket Interface: 13427144
+	has 0 relations.
+Name: noc.simple_initiator_socket_10_export_0 Kind: sc_export Interface: 13482384
+	has 0 relations.
+Name: noc.simple_initiator_socket_10 Kind: tlm_initiator_socket Interface: 13551480
+	has 0 relations.
+Name: noc.object_2 Kind: sc_module Interface: 13481944
+	has 0 relations.
+Name: noc.thread_node_0 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.b2nb_thread_9 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_9 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_9_port_0 Kind: sc_port Interface: 13431768
+	has 0 relations.
+Name: noc.simple_target_socket_9 Kind: tlm_target_socket Interface: 13436128
+	has 0 relations.
+Name: noc.b2nb_thread_8 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_8 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_8_port_0 Kind: sc_port Interface: 13424816
+	has 0 relations.
+Name: noc.simple_target_socket_8 Kind: tlm_target_socket Interface: 13435112
+	has 0 relations.
+Name: noc.b2nb_thread_7 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_7 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_7_port_0 Kind: sc_port Interface: 13489632
+	has 1 relations.
+	Related to noc.simple_initiator_socket_16_export_0
+Name: noc.simple_target_socket_7 Kind: tlm_target_socket Interface: 13434096
+	has 0 relations.
+Name: noc.b2nb_thread_6 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_6 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_6_port_0 Kind: sc_port Interface: 13430880
+	has 0 relations.
+Name: noc.simple_target_socket_6 Kind: tlm_target_socket Interface: 13433080
+	has 0 relations.
+Name: noc.b2nb_thread_5 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_5 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_5_port_0 Kind: sc_port Interface: 13546576
+	has 1 relations.
+	Related to noc.simple_initiator_socket_23_export_0
+Name: noc.simple_target_socket_5 Kind: tlm_target_socket Interface: 13432064
+	has 0 relations.
+Name: noc.simple_initiator_socket_9_export_0 Kind: sc_export Interface: 13431768
+	has 0 relations.
+Name: noc.simple_initiator_socket_9 Kind: tlm_initiator_socket Interface: 13436128
+	has 0 relations.
+Name: noc.simple_initiator_socket_8_export_0 Kind: sc_export Interface: 13431472
+	has 0 relations.
+Name: noc.simple_initiator_socket_8 Kind: tlm_initiator_socket Interface: 13429176
+	has 0 relations.
+Name: noc.simple_initiator_socket_7_export_0 Kind: sc_export Interface: 13431176
+	has 0 relations.
+Name: noc.simple_initiator_socket_7 Kind: tlm_initiator_socket Interface: 13491832
+	has 0 relations.
+Name: noc.simple_initiator_socket_6_export_0 Kind: sc_export Interface: 13430880
+	has 0 relations.
+Name: noc.simple_initiator_socket_6 Kind: tlm_initiator_socket Interface: 13433080
+	has 0 relations.
+Name: noc.simple_initiator_socket_5_export_0 Kind: sc_export Interface: 13430584
+	has 0 relations.
+Name: noc.simple_initiator_socket_5 Kind: tlm_initiator_socket Interface: 13546872
+	has 0 relations.
+Name: noc.object_1 Kind: sc_module Interface: 13430144
+	has 0 relations.
+Name: noc.thread_node Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.b2nb_thread_4 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_4 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_4_port_0 Kind: sc_port Interface: 13431472
+	has 1 relations.
+	Related to noc.simple_initiator_socket_8_export_0
+Name: noc.simple_target_socket_4 Kind: tlm_target_socket Interface: 13429176
+	has 0 relations.
+Name: noc.b2nb_thread_3 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_3 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_3_port_0 Kind: sc_port Interface: 13424520
+	has 0 relations.
+Name: noc.simple_target_socket_3 Kind: tlm_target_socket Interface: 13428160
+	has 0 relations.
+Name: noc.b2nb_thread_2 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_2 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_2_port_0 Kind: sc_port Interface: 13482680
+	has 1 relations.
+	Related to noc.simple_initiator_socket_11_export_0
+Name: noc.simple_target_socket_2 Kind: tlm_target_socket Interface: 13427144
+	has 0 relations.
+Name: noc.b2nb_thread_1 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_1 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_1_port_0 Kind: sc_port Interface: 13423928
+	has 0 relations.
+Name: noc.simple_target_socket_1 Kind: tlm_target_socket Interface: 13426128
+	has 0 relations.
+Name: noc.b2nb_thread_0 Kind: sc_thread_process Interface: 0
+	has 0 relations.
+Name: noc.m_peq_0 Kind: sc_object Interface: 0
+	has 0 relations.
+Name: noc.simple_target_socket_0_port_0 Kind: sc_port Interface: 13541968
+	has 1 relations.
+	Related to noc.simple_initiator_socket_21_export_0
+Name: noc.simple_target_socket_0 Kind: tlm_target_socket Interface: 13425112
+	has 0 relations.
+Name: noc.simple_initiator_socket_4_export_0 Kind: sc_export Interface: 13424816
+	has 0 relations.
+Name: noc.simple_initiator_socket_4 Kind: tlm_initiator_socket Interface: 13435112
+	has 0 relations.
+Name: noc.simple_initiator_socket_3_export_0 Kind: sc_export Interface: 13424520
+	has 0 relations.
+Name: noc.simple_initiator_socket_3 Kind: tlm_initiator_socket Interface: 13428160
+	has 0 relations.
+Name: noc.simple_initiator_socket_2_export_0 Kind: sc_export Interface: 13424224
+	has 0 relations.
+Name: noc.simple_initiator_socket_2 Kind: tlm_initiator_socket Interface: 13484880
+	has 0 relations.
+Name: noc.simple_initiator_socket_1_export_0 Kind: sc_export Interface: 13423928
+	has 0 relations.
+Name: noc.simple_initiator_socket_1 Kind: tlm_initiator_socket Interface: 13426128
+	has 0 relations.
+Name: noc.simple_initiator_socket_0_export_0 Kind: sc_export Interface: 13423632
+	has 0 relations.
+Name: noc.simple_initiator_socket_0 Kind: tlm_initiator_socket Interface: 13542264
+	has 0 relations.
+Name: noc.object_0 Kind: sc_module Interface: 13423192
+	has 0 relations.

@@ -9,9 +9,15 @@
 // This group should be parameters, not defines
 #define START_PROFILE 0
 #define NUM_INSTR 59
-#define POWER_TABLE_FILE "../../processors/mips/acpower_table.csv"
+
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_25Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc3s1200e_100Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc6slx75_100Mhz.csv"
+#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_100Mhz.csv"
+
 #define WINDOW_REPORT
-#define WINDOW_REPORT_FILE "window_power_report.csv"
+#define WINDOW_REPORT_FILE "window_power_report"
 #define START_WINDOW_SIZE 1000000
 
 #define MAX_LINESIZE_CSV_FILE 10240 // Inefficient and non-scalable
@@ -87,11 +93,20 @@ class power_stats {
 			dyn.window_count = 0;
 			dyn.execution_time = 0;
 
-			out_window_power_report = fopen(WINDOW_REPORT_FILE, "w");
+			/****/
+			char filename[512];
+			strcpy(filename, WINDOW_REPORT_FILE);
+			strcat(filename, "_");
+			strcat(filename, proc_name);
+			strcat(filename, ".csv");
+			out_window_power_report = fopen(filename, "w");
 			if (out_window_power_report == NULL) {
 				perror("Couldn't open specified out_window_power_report file");
 				exit(1);
 			}
+			/****/
+
+				
 #endif
 			//print_psc_data();
 		}

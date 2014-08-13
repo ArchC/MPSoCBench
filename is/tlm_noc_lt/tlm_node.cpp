@@ -1,14 +1,21 @@
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
 
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 #include "tlm_node.h"
 
@@ -60,7 +67,10 @@ tlm_node::~tlm_node()
 void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
 {
 
+
 	time_info = time_info + sc_core::sc_time(2,SC_NS);
+	
+	//wait(1,SC_NS);
 
 	tlm_payload_extension *ex;
 	payload.get_extension(ex);
@@ -109,6 +119,8 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
     	{	
 	    printf("\ntlm_node::b_transport returning");
    	}
+
+	//wait(1,SC_NS);
 
 }
 

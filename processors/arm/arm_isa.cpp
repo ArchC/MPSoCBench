@@ -100,7 +100,9 @@ void ac_behavior( begin ) {
   OP1.entire = 0;
   OP2.entire = 0;
 
-  RB.write(13, AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE);
+   RB.write(13, AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE);
+   //RB.write(13, AC_RAM_END - 1024);
+
 }
 
 //!Generic instruction behavior method.
@@ -216,7 +218,7 @@ void ac_behavior( Type_DPI2 ) {
 
   // Special case: r* = 15
   if ((rd == 15)||(rm == 15)||(rn == 15)||(rs == 15)) {
-    printf("Register 15 cannot be used in this instruction.\n");
+    dprintf("Register 15 cannot be used in this instruction.\n");
     ac_annul(); 
   }
 
@@ -351,13 +353,13 @@ void ac_behavior( Type_LSI ) {
   else if((p == 1)&&(w == 1)) { // immediate pre-indexed with writeback
     // Special case: Rn = PC
     if (rn == PC) {
-      printf("Unpredictable LSI instruction result (Can't writeback to PC, Rn = PC)\n");
+      dprintf("Unpredictable LSI instruction result (Can't writeback to PC, Rn = PC)\n");
       ac_annul();
       return;
     }
     // Special case: Rn = Rd
     if (rn == rd) {
-      printf("Unpredictable LSI instruction result  (Can't writeback to loaded register, Rn = Rd)\n");
+      dprintf("Unpredictable LSI instruction result  (Can't writeback to loaded register, Rn = Rd)\n");
       ac_annul();
       return;
     }
@@ -373,13 +375,13 @@ void ac_behavior( Type_LSI ) {
   else if((p == 0)&&(w == 0)) { // immediate post-indexed (writeback)
     // Special case: Rn = PC
     if (rn == PC) {
-      printf("Unpredictable LSI instruction result (Can't writeback to PC, Rn = PC)\n");
+      dprintf("Unpredictable LSI instruction result (Can't writeback to PC, Rn = PC)\n");
       ac_annul();
       return;
     }
     // Special case Rn = Rd
     if (rn == rd) {
-      printf("Unpredictable LSI instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+      dprintf("Unpredictable LSI instruction result (Can't writeback to loaded register, Rn = Rd)\n");
       ac_annul();
       return;
     }
@@ -411,7 +413,7 @@ void ac_behavior( Type_LSR ) {
       ls_address.entire = 4;
 
     if(rm == PC) {
-      printf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
+      dprintf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
       return;
     }
 
@@ -453,25 +455,25 @@ void ac_behavior( Type_LSR ) {
   else if((p == 1)&&(w == 1)) { // pre-indexed
     // Special case: Rn = PC
     if (rn == PC) {
-      printf("Unpredictable LSR instruction result (Can't writeback to PC, Rn = PC)\n");
+      dprintf("Unpredictable LSR instruction result (Can't writeback to PC, Rn = PC)\n");
       ac_annul();
       return;
     }
     // Special case Rn = Rd
     if (rn == rd) {
-      printf("Unpredictable LSR instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+      dprintf("Unpredictable LSR instruction result (Can't writeback to loaded register, Rn = Rd)\n");
       ac_annul();
       return;
     }
     // Special case Rm = PC
     if (rm == PC) {
-      printf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
+      dprintf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
       ac_annul();
       return;
     }
     // Special case Rn = Rm
     if (rn == rm) {
-      printf("Unpredictable LSR instruction result (Can't use the same register for Rn and Rm\n");
+      dprintf("Unpredictable LSR instruction result (Can't use the same register for Rn and Rm\n");
       ac_annul();
       return;
     }
@@ -518,25 +520,25 @@ void ac_behavior( Type_LSR ) {
   else if((p == 0)&&(w == 0)) { // post-indexed
     // Special case: Rn = PC
     if (rn == PC) {
-      printf("Unpredictable LSR instruction result (Can't writeback to PC, Rn = PC)\n");
+      dprintf("Unpredictable LSR instruction result (Can't writeback to PC, Rn = PC)\n");
       ac_annul();
       return;
     }
     // Special case Rn = Rd
     if (rn == rd) {
-      printf("Unpredictable LSR instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+      dprintf("Unpredictable LSR instruction result (Can't writeback to loaded register, Rn = Rd)\n");
       ac_annul();
       return;
     }
     // Special case Rm = PC
     if (rm == PC) {
-      printf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
+      dprintf("Unpredictable LSR instruction result (Illegal usage of PC, Rm = PC)\n");
       ac_annul();
       return;
     }
     // Special case Rn = Rm
     if (rn == rm) {
-      printf("Unpredictable LSR instruction result (Can't use the same register for Rn and Rm\n");
+      dprintf("Unpredictable LSR instruction result (Can't use the same register for Rn and Rm\n");
       ac_annul();
       return;
     }
@@ -589,12 +591,12 @@ void ac_behavior( Type_LSE ){
 
   // Special cases handling
   if((p == 0)&&(w == 1)) {
-    printf("Unpredictable LSE instruction result");
+    dprintf("Unpredictable LSE instruction result");
     ac_annul();
     return;
   }
   if((ss == 0)&&(hh == 0)) {
-    printf("Decoding error: this is not a LSE instruction");
+    dprintf("Decoding error: this is not a LSE instruction");
     ac_annul();
     return;
   }
@@ -623,7 +625,7 @@ void ac_behavior( Type_LSE ){
     else if((i == 0)&&(w == 0)) { // register offset
       // Special case Rm = PC
       if (addr2 == PC) {
-	printf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
 	ac_annul();
 	return;
       }
@@ -641,13 +643,13 @@ void ac_behavior( Type_LSE ){
     else if ((i == 1)&&(w == 1)) { // immediate pre-indexed
       // Special case: Rn = PC
       if (rn == PC) {
-	printf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
 	ac_annul();
 	return;
       }
       // Special case Rn = Rd
       if (rn == rd) {
-	printf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
 	ac_annul();
 	return;
       }
@@ -664,25 +666,25 @@ void ac_behavior( Type_LSE ){
     else { // i == 0 && w == 1: register pre-indexed
       // Special case: Rn = PC
       if (rn == PC) {
-	printf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
 	ac_annul();
 	return;
       }
       // Special case Rn = Rd
       if (rn == rd) {
-	printf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
 	ac_annul();
 	return;
       }
       // Special case Rm = PC
       if (addr2 == PC) {
-	printf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
 	ac_annul();
 	return;
       }
       // Special case Rn = Rm
       if (rn == addr2) {
-	printf("Unpredictable LSE instruction result (Can't use the same register for Rn and Rm\n");
+	dprintf("Unpredictable LSE instruction result (Can't use the same register for Rn and Rm\n");
 	ac_annul();
 	return;
       }
@@ -699,7 +701,7 @@ void ac_behavior( Type_LSE ){
   } else { // p == 0: post-indexed
     if((i == 1)&&(w == 0)) { // immediate post-indexed
       if(rn == PC) {
-	printf("Unpredictable LSE instruction result");
+	dprintf("Unpredictable LSE instruction result");
 	ac_annul();
 	return;
       }
@@ -714,25 +716,25 @@ void ac_behavior( Type_LSE ){
     else if((i == 0)&&(w == 0)) { // register post-indexed
       // Special case: Rn = PC
       if (rn == PC) {
-	printf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to PC, Rn = PC)\n");
 	ac_annul();
 	return;
       }
       // Special case Rn = Rd
       if (rn == rd) {
-	printf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
+	dprintf("Unpredictable LSE instruction result (Can't writeback to loaded register, Rn = Rd)\n");
 	ac_annul();
 	return;
       }
       // Special case Rm = PC
       if (addr2 == PC) {
-	printf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
+	dprintf("Unpredictable LSE instruction result (Illegal usage of PC, Rm = PC)\n");
 	ac_annul();
 	return;
       }
       // Special case Rn = Rm
       if (rn == addr2) {
-	printf("Unpredictable LSE instruction result (Can't use the same register for Rn and Rm\n");
+	dprintf("Unpredictable LSE instruction result (Can't use the same register for Rn and Rm\n");
 	ac_annul();
 	return;
       }
@@ -759,7 +761,7 @@ void ac_behavior( Type_LSM ){
 
   // Special case - empty list
   if (registerList.entire == 0) {
-    printf("Unpredictable LSM instruction result (No register specified)\n");
+    dprintf("Unpredictable LSM instruction result (No register specified)\n");
     ac_annul();
     return;
   }
@@ -790,7 +792,7 @@ void ac_behavior( Type_LSM ){
 
   // Special case Rn in Rlist
   if((w == 1)&&(isBitSet(rlist,rn))) {
-    printf("Unpredictable LSM instruction result (Can't writeback to loaded register, Rn in Rlist)\n");
+    dprintf("Unpredictable LSM instruction result (Can't writeback to loaded register, Rn in Rlist)\n");
     ac_annul();
     return;
   }
@@ -832,7 +834,7 @@ void ac_behavior( Type_DSPSM ){
   
   // Special cases
   if((drd == PC)||(drn == PC)||(rm == PC)||(rs == PC)) {
-    printf("Unpredictable SMLA<y><x> instruction result\n");
+    dprintf("Unpredictable SMLA<y><x> instruction result\n");
     return;  
   }
   
@@ -868,7 +870,7 @@ inline void ADC(arm_isa* ref, int rd, int rn, bool s,
   RB_write(rd, RD2.entire);
   if ((s == 1)&&(rd == PC)) {
 #ifndef FORGIVE_UNPREDICTABLE
-    printf("Unpredictable ADC instruction result\n");
+    dprintf("Unpredictable ADC instruction result\n");
     return;
 #endif
   } else {
@@ -904,7 +906,7 @@ inline void ADD(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable ADD instruction result\n");
+      dprintf("Unpredictable ADD instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -940,7 +942,7 @@ inline void AND(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable AND instruction result\n");
+      dprintf("Unpredictable AND instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1021,7 +1023,7 @@ inline void BIC(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable BIC instruction result\n");
+      dprintf("Unpredictable BIC instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1060,7 +1062,7 @@ inline void CLZ(arm_isa* ref, int rd, int rm,
   if((rd == PC)||(rm == PC)) {
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable CLZ instruction result\n");
+      dprintf("Unpredictable CLZ instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1148,7 +1150,7 @@ inline void EOR(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable EOR instruction result\n");
+      dprintf("Unpredictable EOR instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1335,12 +1337,12 @@ inline void LDRD(arm_isa* ref, int rd, int rn,
   // Special cases
   // Registrador destino deve ser par
   if(isBitSet(rd,0)){
-    printf("Undefined LDRD instruction result (Rd must be even)\n");
+    dprintf("Undefined LDRD instruction result (Rd must be even)\n");
     return;
   }
   // Verificar alinhamento do doubleword
   if((rd == LR)||(ref->ls_address.entire & 0x00000007)){
-    printf("Unpredictable LDRD instruction result (Address is not doubleword aligned) @ 0x%08X\n", RB_read(PC)-4);
+    dprintf("Unpredictable LDRD instruction result (Address is not doubleword aligned) @ 0x%08X\n", RB_read(PC)-4);
     return;
   }
 
@@ -1364,7 +1366,7 @@ inline void LDRH(arm_isa* ref, int rd, int rn,
   // verify coprocessor alignment
   // verify halfword alignment
   if(isBitSet(ref->ls_address.entire,0)){
-    printf("Unpredictable LDRH instruction result (Address is not Halfword Aligned)\n");
+    dprintf("Unpredictable LDRH instruction result (Address is not Halfword Aligned)\n");
     return;
   }
   value = MEM.read(ref->ls_address.entire);
@@ -1411,7 +1413,7 @@ inline void LDRSH(arm_isa* ref, int rd, int rn,
   // Special cases
   // verificar alinhamento do halfword
   if(isBitSet(ref->ls_address.entire, 0)) {
-    printf("Unpredictable LDRSH instruction result (Address is not halfword aligned)\n");
+    dprintf("Unpredictable LDRSH instruction result (Address is not halfword aligned)\n");
     return;
   }
   // Verify coprocessor alignment
@@ -1521,7 +1523,7 @@ inline void MOV(arm_isa* ref, int rd, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable MOV instruction result\n");
+      dprintf("Unpredictable MOV instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1556,14 +1558,14 @@ inline void MRS(arm_isa* ref, int rd, bool r, int zero3, int subop2, int func2, 
 
   // Special cases
   if((rd == PC)||((zero3 != 0)&&(subop2 != 0)&&(func2 != 0)&&(subop1 != 0)&&(rm != 0))||(field != 15)) {
-    printf("Unpredictable MRS instruction result\n");
+    dprintf("Unpredictable MRS instruction result\n");
     dprintf("**! Unpredictable MRS instruction result\n");
     return;
   }
 
   if (r == 1) {
     if (!ref->in_a_privileged_mode()) {
-      printf("Unpredictable MRS instruction result\n");
+      dprintf("Unpredictable MRS instruction result\n");
       dprintf("**! Unpredictable MRS instruction result\n");
       return;
     }
@@ -1624,7 +1626,7 @@ inline void MVN(arm_isa* ref, int rd, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable MVN instruction result\n");
+      dprintf("Unpredictable MVN instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1660,7 +1662,7 @@ inline void ORR(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable ORR instruction result\n");
+      dprintf("Unpredictable ORR instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1698,7 +1700,7 @@ inline void RSB(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable RSB instruction result\n");
+      dprintf("Unpredictable RSB instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1739,7 +1741,7 @@ inline void RSC(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable RSC instruction result\n");
+      dprintf("Unpredictable RSC instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1779,7 +1781,7 @@ inline void SBC(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable SBC instruction result\n");
+      dprintf("Unpredictable SBC instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -1816,7 +1818,7 @@ inline void SMLAL(arm_isa* ref, int rdhi, int rdlo, int rm, int rs, bool s,
 
   // Special cases
   if((rdhi == PC)||(rdlo == PC)||(rm == PC)||(rs == PC)||(rdhi == rdlo)||(rdhi == rm)||(rdlo == rm)) {
-    printf("Unpredictable SMLAL instruction result\n");
+    dprintf("Unpredictable SMLAL instruction result\n");
     return;  
   }
 
@@ -1849,7 +1851,7 @@ inline void SMULL(arm_isa* ref, int rdhi, int rdlo, int rm, int rs, bool s,
 
   // Special cases
   if((rdhi == PC)||(rdlo == PC)||(rm == PC)||(rs == PC)||(rdhi == rdlo)||(rdhi == rm)||(rdlo == rm)) {
-    printf("Unpredictable SMULL instruction result\n");
+    dprintf("Unpredictable SMULL instruction result\n");
     return;  
   }
 
@@ -1977,12 +1979,12 @@ inline void STRD(arm_isa* ref, int rd, int rn,
   // Special cases
   // Destination register must be even
   if(isBitSet(rd,0)){
-    printf("Undefined STRD instruction result (Rd must be even)\n");
+    dprintf("Undefined STRD instruction result (Rd must be even)\n");
     return;
   }
   // Check doubleword alignment
   if((rd == LR)||(ref->ls_address.entire & 0x00000007)){
-    printf("Unpredictable STRD instruction result (Address is not doubleword aligned)\n");
+    dprintf("Unpredictable STRD instruction result (Address is not doubleword aligned)\n");
     return;
   }
 
@@ -2008,7 +2010,7 @@ inline void STRH(arm_isa* ref, int rd, int rn,
   // verify coprocessor alignment
   // verify halfword alignment
   if(isBitSet(ref->ls_address.entire,0)){
-    printf("Unpredictable STRH instruction result (Address is not halfword aligned)\n");
+    dprintf("Unpredictable STRH instruction result (Address is not halfword aligned)\n");
     return;
   }
 
@@ -2057,7 +2059,7 @@ inline void SUB(arm_isa* ref, int rd, int rn, bool s,
 #ifndef FORGIVE_UNPREDICTABLE
     if (ref->arm_proc_mode.mode == arm_isa::processor_mode::USER_MODE ||
         ref->arm_proc_mode.mode == arm_isa::processor_mode::SYSTEM_MODE) {
-      printf("Unpredictable SUB instruction result\n");
+      dprintf("Unpredictable SUB instruction result\n");
       return;
     }
     ref->SPSRtoCPSR();
@@ -2091,7 +2093,7 @@ inline void SWP(arm_isa* ref, int rd, int rn, int rm,
   // Special cases
   // verify coprocessor alignment
   if((rd == PC)||(rm == PC)||(rn == PC)||(rm == rn)||(rn == rd)){
-    printf("Unpredictable SWP instruction result\n");
+    dprintf("Unpredictable SWP instruction result\n");
     return;
   }
 
@@ -2137,7 +2139,7 @@ inline void SWPB(arm_isa* ref, int rd, int rn, int rm,
 
   // Special cases
   if((rd == PC)||(rm == PC)||(rn == PC)||(rm == rn)||(rn == rd)){
-    printf("Unpredictable SWPB instruction result\n");
+    dprintf("Unpredictable SWPB instruction result\n");
     return;
   }
 
@@ -2214,7 +2216,7 @@ inline void UMLAL(arm_isa* ref, int rdhi, int rdlo, int rm, int rs, bool s,
 
   // Special cases
   if((rdhi == PC)||(rdlo == PC)||(rm == PC)||(rs == PC)||(rdhi == rdlo)||(rdhi == rm)||(rdlo == rm)) {
-    printf("Unpredictable UMLAL instruction result\n");
+    dprintf("Unpredictable UMLAL instruction result\n");
     return;  
   }
 
@@ -2250,7 +2252,7 @@ inline void UMULL(arm_isa* ref, int rdhi, int rdlo, int rm, int rs, bool s,
 
   // Special cases
   if((rdhi == PC)||(rdlo == PC)||(rm == PC)||(rs == PC)||(rdhi == rdlo)||(rdhi == rm)||(rdlo == rm)) {
-    printf("Unpredictable UMULL instruction result\n");
+    dprintf("Unpredictable UMULL instruction result\n");
     return;  
   }
   

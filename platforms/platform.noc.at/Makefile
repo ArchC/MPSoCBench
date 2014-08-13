@@ -55,8 +55,13 @@ distclean: clean
 #------------------------------------------------------
 .cc.o:
 	$(CC) $(CFLAGS) $(INC_DIR) -c $<
-#------------------------------------------------------
-copy:
+
+copy: 
 	echo ---copy $(EXE) to the appropriate rundir
 	cp $(EXE) ../../rundir/$(RUNDIRNAME)/
 	cp ../../Makefile.conf ../../rundir/$(RUNDIRNAME)/
+
+
+
+
+	

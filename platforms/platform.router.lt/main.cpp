@@ -1,13 +1,21 @@
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 const char *project_name="platform.router.lt";
 const char *project_file="";
@@ -19,7 +27,7 @@ const char *archc_options="";
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+//#include "ESLDiagram.h"
 #include "../../defines.h"
 
 
@@ -79,7 +87,6 @@ int sc_main(int ac, char *av[])
 {
 
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
-
 	// Checking the arguments
 	if (ac!=0) {
 		N_WORKERS = atoi(av[2]);
@@ -116,10 +123,13 @@ int sc_main(int ac, char *av[])
 	// Binding ports
 	
 	router.MEM_port(mem.target_export);  
-        router.LOCK_port(locker.target_export);
+    router.LOCK_port(locker.target_export);
        
 	for (int i=0; i<N_WORKERS; i++)
+	{
 		processors[i]->MEM_port(router.target_export);
+
+	}
   
 	// Preparing the arguments
 	char **arguments[N_WORKERS];
@@ -150,6 +160,11 @@ int sc_main(int ac, char *av[])
 	}
 
 	
+        //sc_simcontext*  my_sim = sc_get_curr_simcontext();
+        //ESLDiagram dotDiagram (my_sim);
+        //dotDiagram.startCapture();
+
+
  
 	// Beggining of time measurement
 	

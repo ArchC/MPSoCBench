@@ -1,15 +1,21 @@
-/*******************************************************
- * This is the part of the MPSoCBench benchmark suite  *
- * If you want more information on MPSoCBench or ArchC,*
- * please visit:                                       *
- * http://www.archc.org/benchs/mpsocbench , or         *
- * http://www.archc.org                                *
- * Computer Systems Laboratory (LSC)                   *
- * IC-UNICAMP                                          *
- * http://www.lsc.ic.unicamp.br                        *
- ******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
 
 
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 /**
  * @file      tlm_memory.h

@@ -30,6 +30,8 @@
 #include  "sparc_bhv_macros.H"
 
 //If you want debug information for this model, uncomment next line
+
+
 //#define DEBUG_MODEL
 #include "ac_debug_model.H"
 #include "ansi-colors.h" 
@@ -38,7 +40,7 @@
 using namespace sparc_parms;
 
 static int processors_started = 0;
-#define DEFAULT_STACK_SIZE (256*1024)
+#define DEFAULT_STACK_SIZE (512*1024)
 
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
@@ -59,6 +61,13 @@ void ac_behavior( Type_FT ){}
 #define writeReg(addr, val) REGS[addr] = (addr)? ac_word(val) : 0
 #define readReg(addr) (int)(REGS[addr])
 
+void abort_if_write_on_instruction_memory(uint32_t address)
+{
+  if (address < (1<<20)) {
+    dbg_printf("Attempted to access address %u. Aborting...\n", (unsigned)address);
+    abort();
+  }
+}
 
 inline void update_pc(bool branch, bool taken, bool b_always, bool annul, ac_word addr, ac_reg<unsigned>& ac_pc, ac_reg<ac_word>& npc)
 {
@@ -66,9 +75,6 @@ inline void update_pc(bool branch, bool taken, bool b_always, bool annul, ac_wor
   //  Author: Richard P. Paul. Prentice Hall, Second Edition. Page 87
 
   // If (not to execute next instruction)
-#ifdef AC_MEM_HIERARCHY
-  if(!ac_wait_sig){
-#endif
 		if (branch && (!taken ||b_always) && annul) {
 			if (taken) {
 				npc = addr;
@@ -92,9 +98,6 @@ inline void update_pc(bool branch, bool taken, bool b_always, bool annul, ac_wor
 				npc+=4;
 			}
 		}
-#ifdef AC_MEM_HIERARCHY
-	}
-#endif
 }
 
 
@@ -134,9 +137,8 @@ void ac_behavior(begin)
   npc = ac_pc + 4;
 
   CWP = 0xF0;
- /* sp for multi-core platforms */ 
-  writeReg(14,AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE);
 
+  writeReg(14,AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE);
 }
 
 //!Function called after simulation end
@@ -1590,7 +1592,7 @@ void ac_behavior( trap_imm )
 void ac_behavior( unimplemented )
 {
   dbg_printf("unimplemented\n");
-  printf("sparc-isa.cpp: program flow reach instruction 'unimplemented' at ac_pc=%#x\n", (int)ac_pc);
+  dbg_printf("sparc-isa.cpp: program flow reach instruction 'unimplemented' at ac_pc=%#x\n", (int)ac_pc);
   stop(EXIT_FAILURE);
   update_pc(0,0,0,0,0, ac_pc, npc);
 }

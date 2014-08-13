@@ -8,7 +8,11 @@
 // This group should be parameters, not defines
 #define START_PROFILE 0
 #define NUM_INSTR 119
-#define POWER_TABLE_FILE "../../processors/sparc/acpower_table.csv"
+//#define POWER_TABLE_FILE "../../processors/sparc/acpower_table.csv"
+#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc3s1000_40Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc6slx75_40Mhz.csv"
+
+
 
 #define WINDOW_REPORT
 
@@ -79,7 +83,7 @@ class power_stats {
 
 	{
 
-	char filename[512];
+	
       PSC_NUM_FIRST_SAMPLES(0x7FFFFFFF);
 			init(POWER_TABLE_FILE);
 			dyn.actual_profile = START_PROFILE;
@@ -97,6 +101,7 @@ class power_stats {
 			dyn.execution_time = 0;
 
 			/****/
+			char filename[512];
 			strcpy(filename, WINDOW_REPORT_FILE);
 			strcat(filename, "_");
 			strcat(filename, proc_name);

@@ -1,15 +1,21 @@
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
 
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
 
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 
 const char *project_name="platform.noc.lt";
@@ -163,7 +169,7 @@ int sc_main(int ac, char *av[])
         // Connecting memory device with the noc-mesh [0][0]
 
 	noc.wrapper[wr].LOCAL_port(mem.target_export);
-        noc.tableOfRouts.newEntry(0,0,MEM_SIZE); 
+    noc.tableOfRouts.newEntry(0,0,MEM_SIZE); 
 	wr++;
 
 	
@@ -172,8 +178,7 @@ int sc_main(int ac, char *av[])
 	noc.tableOfRouts.newEntry(0,1);	
 	wr++;
 
-	       
-
+	
 
 	// Connecting processors and noc-mesh 
 	int proc = 0;

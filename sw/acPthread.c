@@ -1,3 +1,23 @@
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
+
+
 #ifndef acPthread_H_
 #include "acPthread.h"
 #endif
@@ -10,8 +30,8 @@ unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
 
 
 ThreadQueue tQueue;  // threads queue
-int pthread_n_workers; // number os processors or threads, given as a main argument (argv[1])
-int pthread_n_softwares; // number os softwares in the multisoftware platform
+int pthread_n_workers; // number of processors or threads, given as a main argument (argv[1])
+int pthread_n_softwares; // number of softwares in the multisoftware platform
 int pthread_threads_per_software; // number of threads per software 
 
 
@@ -45,7 +65,7 @@ int join_out = 0;
 QUEUE FUNCTIONS
 ***********************************************************************************/
 
-ThreadNode initNode( ThreadNode *node, void (*fp)(void *), void *arg) //, int attr)
+void initNode( ThreadNode *node, void (*fp)(void *), void *arg) //, int attr)
 {
 	node->arg = arg;
 	node->functionPointer = fp;
@@ -70,15 +90,13 @@ void printQueue (ThreadQueue *q)
 {
 	pthread_mutex_lock(&mutex_print);
 
-        if (DEBUG)
+    if (DEBUG)
 	{
 		printf("\nPrintQueue(): \n");
-		printf("\nFila com %d threads: \n", q->numberOfElements);
-		printf("\nbegin: %d\n", q->begin);
-		printf("\nend: %d\n", q->end);
+		printf("\nThreads queue with %d threads: \n", q->numberOfElements);
+
 	}
-        int i; 	
-	
+
 	pthread_mutex_unlock(&mutex_print);
 	return;
 }
@@ -176,7 +194,7 @@ void pthread_my_exit()
 	{
 		pthread_mutex_lock(&mutex_print);
 		printf("\nAt the end of pthread_my_exit...\n");
-                pthread_mutex_unlock(&mutex_print);
+        pthread_mutex_unlock(&mutex_print);
 	}
 
 
@@ -224,7 +242,7 @@ void pthread_join_control (pthread_join_t *m_join)
 	{
 		pthread_mutex_lock(&mutex_print);
 		printf("\nAt the end of join_control...\n");
-                pthread_mutex_unlock(&mutex_print);
+        pthread_mutex_unlock(&mutex_print);
 	}
 
 }
@@ -323,7 +341,7 @@ void pthread_executeThread ()
 	
 	if (pthread_numberOfActiveThreads == pthread_n_workers)
 	{
-		printf("\nAll %d threads started...\n",pthread_numberOfActiveThreads);
+		//printf("\nAll %d threads started...\n",pthread_numberOfActiveThreads);
 
 		/**/pthread_numberOfActiveThreads = 0;/**/
 
@@ -374,7 +392,7 @@ void pthread_executeThread ()
 		AcquireGlobalLock();
 		join.num_proc = pthread_n_workers;
 		pthread_free_for_start = 0;
-	        join_out = 0;
+	    join_out = 0;
 		//pthread_numberOfActiveThreads = 0;
 		pthread_ended = pthread_n_workers;
 		//flag2 = 1;
@@ -421,10 +439,10 @@ int pthread_cond_init (pthread_cond_t *cond, const pthread_condattr_t *attr)
 
 int pthread_cond_wait (pthread_cond_t *cond, pthread_mutex_t *mut)
 {
-	//printf("\nem cond wait ");
+	
 	pthread_mutex_unlock(mut);
 	while (cond->wake == 0);
-	//printf("\nsaindo de cond wait ");
+	
 }
 
 int pthread_cond_broadcast(pthread_cond_t *cond)
@@ -477,7 +495,7 @@ int pthread_barrier_wait (pthread_barrier_t *barrier)
 	
 } // status == 1 -> success
 
-//================================ ESLBench malloc ========================================
+//================================ MPSoCBench malloc ========================================
 void *acPthread_malloc(size_t size) { 
 
 	
@@ -488,7 +506,7 @@ void *acPthread_malloc(size_t size) {
 	return ret;
 }
 
-//================================ ESLBench realloc ========================================
+//================================ MPSoCBench realloc ========================================
 void *acPthread_realloc(void * ptr, size_t size) { 
 	pthread_mutex_lock(&mutex_malloc);
 	void *ret = (void *) realloc(ptr,size); 
@@ -496,7 +514,7 @@ void *acPthread_realloc(void * ptr, size_t size) {
 	return ret;
 }
 
-//================================ ESLBench calloc ========================================
+//================================ MPSoCBench calloc ========================================
 
 void *acPthread_calloc(size_t size1 , size_t size2) { 
 	

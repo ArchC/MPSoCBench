@@ -24,6 +24,7 @@ AC_ARCH(sparc){
 
   
   ac_tlm2_nb_port  MEM:512M;
+  ac_icache   IC("2w", 128, 16, "wb", "lru");
   ac_regbank RB:256;
   ac_regbank REGS:32;
 
@@ -47,5 +48,7 @@ AC_ARCH(sparc){
 
     ac_isa("sparc_isa.ac");
     set_endian("big");
+    IC.bindTo(MEM);
+    //DC.bindTo(MEM);
   };
 };

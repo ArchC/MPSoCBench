@@ -23,9 +23,9 @@ import os, sys
 # command line arg parsing
 def arg_parse(cmdline):
     # valid options
-    o = {'--nobuild':'-nb', '--run':'-r', '--build':'-b', '--power':'-pw', '--clean':'-l', '--distclean':'-d', '--help':'-h'}
+    o = {'--nobuild':'-nb', '--run':'-r', '--build':'-b', '--power':'-pw', '--clean':'-l', '--distclean':'-d', '--help':'-h', '--heterogen':'-ht'}
     # valid args
-    a = {'--processor':'-p', '--numcores':'-n', '--software':'-s', '--interconnection':'-i', '--condor':'-c'}
+    a = {'--processor':'-p', '--numcores':'-n', '--software':'-s', '--interconnection':'-i', '--condor':'-c', '--noc_x':'-x', '--noc_y':'-y', '--gen_noc':'-gn'}
     arg_values = []
     # gets the args which have values and put them in a list
     for i in cmdline:
@@ -44,7 +44,7 @@ def arg_parse(cmdline):
                 opts.append(o[i[0]])
             elif i[0] in o.values():
                 opts.append(i[0])
-            else:
+            else:               
                 help()
                 sys.exit(1)
         else:
@@ -54,11 +54,12 @@ def arg_parse(cmdline):
             elif i[0] in a.values():
                 args.update({i[0]:i[1]})
             else:
-                help()
+            	help()
                 sys.exit(1)
     if (len(opts) > 1) and (args != {}):
         # options that must be alone
         if '-l' in opts:
+           
             help()
             sys.exit(1)
         if '-d' in opts:
@@ -74,7 +75,7 @@ def arg_parse(cmdline):
         if ('-r' in opts) and ('-b' in opts):
             help()
             sys.exit(1)
-          
+       
         # nonsense
         if ('-nb' in opts) and ('-r' not in opts):
             help()
@@ -112,11 +113,11 @@ def arg_parse(cmdline):
                     help()
                     sys.exit(1)
                 if '-d' in opts:
-                    help()
-                    sys.exit(1)
+                	help()
+                	sys.exit(1)
                 if '-h' in opts:
-                    help()
-                    sys.exit(1)
+               		help()
+               		sys.exit(1)
                 # mandatory args
                 if '-p' not in args.keys():
                     help()
@@ -135,6 +136,9 @@ def arg_parse(cmdline):
                     help()
                     sys.exit(1)
                 if '-pw' in opts:
+                    help()
+                    sys.exit(1)
+		if '-ht' in opts:
                     help()
                     sys.exit(1)
                
@@ -199,6 +203,8 @@ def help():
     print "---------------------"
     print "Platform Parameters (mandatory):"
     print "---------------------"
+    print "-x|--noc_x: to choose noc x"
+    print "-y|--noc_y: to choose noc y"
     print "-p|--processor: to choose processor models (powerpc, mips, sparc, or arm)"
     print "-n|--numcores: to choose the number of cores (1,2,4,8,16,32, or 64)"
     print "-s|--software: to choose the application"
@@ -208,6 +214,7 @@ def help():
     print "---------------------"
     print "-pw|--power: to enable power consumption for SPARC and MIPS platforms"
     print "-c|--condor: to enable execution on HTCondor"
+    print "-ht|--heterogen: to enable a heterogeneous platform"
     print "---------------------"
     print "Usage:"
     print "       ./MPSoCBench -b -p=<processor> -n=<n_cores> -s=<software> -i=<device>"
@@ -238,7 +245,6 @@ def help():
 # rundir Makefile creator
 
 def run_make(path, proc, nproc, sw, intercon):
-    #make = "export LD_LIBRARY_PATH:=/home/liana/repository/tools/systemc/lib-linux64\nrun:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n" + "compare:\n\techo \"\\n\\nTESTING RESULTS\"\n\tsort output > output.sorted \n\tif diff output.sorted base_output." + sw + "." + nproc + " > diff.txt ; then echo \"\\nTest Passed.\"; else echo \"\\nTest Failed.\"; fi"
     make = "include Makefile.conf\nrun:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n"
     f = open(path + "/Makefile", "w")
     f.write(make)
@@ -259,7 +265,7 @@ def condor_task(path, proc, nproc, sw, queue, intercon):
 # rundir creation
 def build(tracker, power, condor):
     # cleans up the processors
-    distclean()
+    distclean() 
     path = ""
     try:
         # walks the platform tracker make tree
@@ -294,19 +300,19 @@ def build(tracker, power, condor):
                             os.system("mkdir -p " + path)
                             # copies it to its rundir                    
                             os.system("make copy")
-			    os.system("make clean")
+                            os.system("make clean")
                             # creates rundir makefile
                             run_make(path, i, j, k, l)
                             # creates condor task file in the rundir
                             if condor > 0:
                                 condor_task(path, i, j, k, condor, l)
     except Exception as e:
-        print "Error! Exiting..."
+        print "Error! Exiting...1"
         sys.exit(1)
 
 # platform run
 def run(tracker, nobuild, power, condor):
-    try:
+    try:    
         # walks the platform tracker make tree
         # processors
         for i in tracker[0]:
@@ -335,84 +341,84 @@ def run(tracker, nobuild, power, condor):
                         else:
                             os.chdir(rundir_path)
                             os.system("make run")
-			    os.system("make -f Makefile.check check")
+                            os.system("make -f Makefile.check check")
                             os.chdir("../../")
     except:
-        #print "Error! Exiting..."
+        #print "Error! Exiting...2"
         sys.exit(1)
 
 
-#def hetero_run_make(path, nproc, intercon):
-#    make = "include Makefile.conf\nrun:\n\t./platform.het." + intercon + ".x " + nproc + " multi-parallel-het.sparc.x multi-parallel-het.powerpc.x multi-parallel-het.mips.x multi-parallel-het.arm.x \n"
-#    f = open(path + "/Makefile", "w")
-#    f.write(make)
-#    f.close()
+def hetero_run_make(path, nproc, intercon):
+    make = "include Makefile.conf\nrun:\n\t./platform.het." + intercon + ".x " + nproc + " multi-parallel-het.sparc.x multi-parallel-het.powerpc.x multi-parallel-het.mips.x multi-parallel-het.arm.x \n"
+    f = open(path + "/Makefile", "w")
+    f.write(make)
+    f.close()
 
 
-#def hetero_makefile(nproc, intercon, plat_rundir):
-#    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := powerpc mips sparc arm" \
-#           "\nexport NUMPROCESSORS := " + nproc + \
-#           "\nexport SOFTWARE := multi-parallel-het\nexport CROSS := " + \
-#           "\nexport PLATFORM := platform.het." + intercon + "\n"
-#    if intercon == 'noc.at':
-#        make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
-#    else:
-#        make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
-#    make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
-#    make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
-#    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
-#    return make
+def hetero_makefile(nproc, intercon, plat_rundir):
+    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := powerpc mips sparc arm" \
+           "\nexport NUMPROCESSORS := " + nproc + \
+           "\nexport SOFTWARE := multi-parallel-het\nexport CROSS := " + \
+           "\nexport PLATFORM := platform.het." + intercon + "\n"
+    if intercon == 'noc.at':
+        make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
+    else:
+        make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
+    make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
+    make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
+    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
+    return make
     
-#def hetero_build(nproc, intercon):
-#    os.system("rm Makefile")
-#    plat_rundir =  "platform.het." + nproc + "." + intercon
-#    # creates general Makefile
-#    f = open("Makefile", "w")
-#    f.write(hetero_makefile(nproc, intercon, plat_rundir))
-#    f.close()
-#    # makes the platform
-#    os.system("make clean all")
-#    path = "rundir/" + plat_rundir
-#    print "Creating rundir for " + path[7:] + "..."
-#    # creates rundir for each platform
-#    os.system("mkdir -p " + path)
-#    # copies it to its rundir                    
-#    os.system("make copy")
-#    os.system("make clean")
-#    # creates rundir makefile
-#    hetero_run_make(path, nproc, intercon)
+def hetero_build(nproc, intercon):
+    os.system("rm Makefile")
+    plat_rundir =  "platform.het." + nproc + "." + intercon
+    # creates general Makefile
+    f = open("Makefile", "w")
+    f.write(hetero_makefile(nproc, intercon, plat_rundir))
+    f.close()
+    # makes the platform
+    os.system("make clean all")
+    path = "rundir/" + plat_rundir
+    print "Creating rundir for " + path[7:] + "..."
+    # creates rundir for each platform
+    os.system("mkdir -p " + path)
+    # copies it to its rundir                    
+    os.system("make copy")
+    os.system("make clean")
+    # creates rundir makefile
+    hetero_run_make(path, nproc, intercon)
     
-#def hetero_run(nproc, intercon, nobuild):
-#    try:
-#        rundir_path = "rundir/platform.het." + nproc + "." + intercon
-#        if not os.path.isdir(rundir_path):
-#            print "WARNING! " + rundir_path + " doesn't exists!"
-#            if not nobuild:
-#                hetero_build(nproc, intercon)
-#                os.chdir(rundir_path)
-#                os.system("make run")
-#                os.chdir("../../")
-#        else:
-#            os.chdir(rundir_path)
-#            os.system("make run")
-#            os.chdir("../../")
-#    except:    
-#        print "Error! Exiting..."
-#        sys.exit(1)
-#        
-#def heterogen(prep, nobuild, nproc, intercon):
-#    if nproc == "1" or nproc == "2":
-#        print "Error: invalid argument. Exiting..."
-#        sys.exit(1)
-#    try:
-#        if prep:
-#            hetero_build(nproc, intercon)            
-#        else:
-#            hetero_run(nproc, intercon, nobuild)
-#    except:
-#        print "Error! Exiting..."
-#        sys.exit(1)
-#        
+def hetero_run(nproc, intercon, nobuild):
+    try:
+        rundir_path = "rundir/platform.het." + nproc + "." + intercon
+        if not os.path.isdir(rundir_path):
+            print "WARNING! " + rundir_path + " doesn't exists!"
+            if not nobuild:
+                hetero_build(nproc, intercon)
+                os.chdir(rundir_path)
+                os.system("make run")
+                os.chdir("../../")
+        else:
+            os.chdir(rundir_path)
+            os.system("make run")
+            os.chdir("../../")
+    except:    
+        print "Error! Exiting...3"
+        sys.exit(1)
+        
+def heterogen(prep, nobuild, nproc, intercon):
+    if nproc == "1" or nproc == "2" or nproc == "4" or nproc == "8":
+        print "Error: invalid argument. Exiting...4"
+        sys.exit(1)
+    try:
+        if prep:
+            hetero_build(nproc, intercon)            
+        else:
+            hetero_run(nproc, intercon, nobuild)
+    except:
+        print "Error! Exiting...5"
+        sys.exit(1)
+        
         
 # === DEFINES ===
 # “Smart data structures and dumb code works a lot better than the other
@@ -421,10 +427,10 @@ def run(tracker, nobuild, power, condor):
 
 procs = ['arm', 'mips', 'powerpc', 'sparc']
 nprocs = ['1', '2', '4', '8', '16', '32', '64']
-sws = ['basicmath', 'dijkstra', 'fft', 'lu', 'ocean', 'sha', 
+sws = ['basicmath', 'dijkstra', 'hello', 'hello_world_mutex', 'fft', 'lu', 'ocean', 'sha', 
        'stringsearch', 'susancorners', 'susanedges', 'susansmoothing',
        'water', 'water-spatial', 'multi-parallel', 'multi-8', 'multi-16', 'multi-network-automotive','multi-office-telecomm', 'multi-security']
-intercons = ['noc.at', 'noc.lt', 'router.lt']
+intercons = ['noc.at', 'noc.lt', 'router.lt', 'noc.hermes']
 
 
 valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
@@ -432,6 +438,8 @@ valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True
                    'sha':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'water':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
                    'dijkstra':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'hello_world_mutex':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
+                   'hello':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'fft':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
                    'stringsearch':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'susancorners':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':False},
@@ -471,8 +479,8 @@ if '-r' in opts:
     prep = False
 if '-b' in opts:
     prep = True
-#if '-ht' in opts:
-#    hetero = True
+if '-ht' in opts:
+    hetero = True
 if '-l' in opts:
     clean()
     sys.exit(0)
@@ -487,6 +495,9 @@ proc = ""
 nproc = ""
 sw = ""
 intercon = ""
+noc_x = ""
+noc_y = ""
+gen_noc = ""
 
 if '-p' in args.keys():
     proc = args['-p']
@@ -496,29 +507,61 @@ if '-s' in args.keys():
 intercon = args['-i']
 if '-c' in args.keys():
     condor = args['-c']
+if '-x' in args.keys():
+    noc_x = args['-x']
+if '-y' in args.keys():
+    noc_y = args['-y']
+if '-gn' in args.keys():
+    gen_noc = args['-gn']    
 
 
 if sw != "" and proc != "":
     if (proc not in procs) and (proc != 'all'):
-        print "Error: invalid argument. Exiting..."
+        print "Error: invalid argument. Exiting...6"
         sys.exit(1)
     if (nproc not in nprocs) and (nproc != 'all'):
-        print "Error: invalid argument. Exiting..."
+        print "Error: invalid argument. Exiting...7"
         sys.exit(1)
     if (sw not in sws) and (sw != 'all'):
-        print "Error: invalid argument. Exiting..."
+        print "Error: invalid argument. Exiting...8"
         sys.exit(1)
     if (intercon not in intercons) and (intercon != 'all'):
-        print "Error: invalid argument. Exiting..."
+        print "Error: invalid argument. Exiting...9"
         sys.exit(1)
-
+    if (intercon == "noc.hermes" and (noc_x != "" and noc_y != "")): 
+        if (not gen_noc == '0'):
+            print "Making NoC Hermes "+noc_x+"x"+noc_y+"..." 
+            os.system("is/nocHermes/nocGenerator.py "+noc_x+" "+noc_y)
+    elif intercon == "noc.hermes":
+        if nproc == 1 or nproc == 2:
+            print "Error: invalid argument to NoC Hermes. Exiting..."
+            sys.exit(1)
+        if nproc == "4":
+            noc_x = '3'
+            noc_y = '2'
+        elif nproc == "8":
+            noc_x = '4'
+            noc_y = '3'
+        elif nproc == "16":
+            noc_x = '5'
+            noc_y = '4'
+        elif nproc == "32":
+            noc_x = '6'
+            noc_y = '6'
+        elif nproc == "64":
+            noc_x = '9'
+            noc_y = '8'
+        if noc_x != "" and noc_y != "":
+            if (not gen_noc == "0"):
+                print "Making NoC Hermes "+noc_x+"x"+noc_y+"..." 
+                os.system("is/nocHermes/nocGenerator.py "+noc_x+" "+noc_y)
 
 try:
     condor = int(condor)
     if condor < 1:
         condor = 0
 except:
-    print "Error: invalid argument. Exiting..."
+    print "Error: invalid argument. Exiting...10"
     sys.exit(1)
 
 # platform make tracker tree creation

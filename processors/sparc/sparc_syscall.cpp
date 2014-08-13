@@ -114,6 +114,8 @@ void sparc_syscall::set_prog_args(int argc, char **argv)
 
   //Set %o1 to the string pointers
   writeReg(9, AC_RAM_END-512-120);
+
+
 }
 
 

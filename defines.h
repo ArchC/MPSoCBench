@@ -41,18 +41,19 @@
 #define OFF 0
 
 #define NOC_DEBUG 0
-#define debugTLM2 0
+#define LOCK_DEBUG 0
+#define MEMORY_DEBUG 0
+#define ROUTER_DEBUG 0
 
+#define LOCAL_MEM_SIZE  67108864
 
 #define SIZE_OF_BUFFER_PACKAGES 2000
 
 
 // ROUTER DEFINES
-#define LOCK_ADDRESS     0x20000000
-#define STARTUP_ADDRESS    0x21000000
-#define SBS_BASE_ADDRESS   0x21100000
-#define IMDCT_BASE_ADDRESS 0x21200000
-
+#define LOCK_ADDRESS       0x20000000
+#define DELTA_IP_ADDRESS   0X00000100
+#define TEXTAREA	0x00d16f
 
 // payload defines
 #define FORWARD 0

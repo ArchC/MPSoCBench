@@ -38,11 +38,14 @@ copy:
 	echo ---copy $(TARGET).x to the appropriate rundir
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp *.txt ../../rundir/$(RUNDIRNAME)/
-	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base
+	cp output.base ../../rundir/$(RUNDIRNAME)/output.base
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
-
+ifeq ($(PROCESSOR),sparc)
+	echo "\n\nATTENTION: We're sorry. There are problems running stringsearch just in sparc processors. \nMaybe the output file will contain the wrong answer at the end of simulation.\n\n"
+endif
+	
 check:
 	echo "\n\nTESTING RESULTS"
-	#sort output > output.sorted 
+	#sort output > output.sorted
 	if diff output output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
 	

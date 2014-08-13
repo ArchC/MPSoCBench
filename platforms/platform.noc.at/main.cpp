@@ -1,13 +1,23 @@
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
+
+
 
 
 const char *project_name="platform.noc.at";
@@ -20,7 +30,7 @@ const char *archc_options="";
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+//#include "ESLDiagram.h"
 #include "../../defines.h"
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 
@@ -248,6 +258,10 @@ int sc_main(int ac, char *av[])
 	}
 
 
+
+        //sc_simcontext*  my_sim = sc_get_curr_simcontext();
+       // ESLDiagram dotDiagram (my_sim);
+        //dotDiagram.startCapture();
 	 
 
 	// *******************************************************************************************
@@ -284,6 +298,7 @@ int sc_main(int ac, char *av[])
   	}
 	#endif 
 
+
 	#ifdef POWER_SIM
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
@@ -292,7 +307,6 @@ int sc_main(int ac, char *av[])
 		 processors[i]->ps.report();
 	}
 	#endif
-
 
 	// Checking the status 
 	bool status = 0;

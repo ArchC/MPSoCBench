@@ -22,7 +22,7 @@
 
 AC_ARCH(mips){
 
-  ac_mem   DM:16M;
+  ac_mem   MEM:16M;
   ac_regbank RB:32;
   ac_reg npc;
   ac_reg hi, lo;

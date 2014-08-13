@@ -1,0 +1,2 @@
+GCCXML_COMPILER=g++
+GCCXML_CXXFLAGS= -I /tools/systemc/include  -I /tools/tlm/tlm -I /tools/archc/include/archc -I /home/chastel/arp_noc/is/nocHermes -L /tools/systemc/lib_linux64

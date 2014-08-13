@@ -1,14 +1,21 @@
-/*******************************************************
- * This is the part of the MPSoCBench benchmark suite  *
- * If you want more information on MPSoCBench or ArchC,*
- * please visit:                                       *
- * http://www.archc.org/benchs/mpsocbench , or         *
- * http://www.archc.org                                *
- * Computer Systems Laboratory (LSC)                   *
- * IC-UNICAMP                                          *
- * http://www.lsc.ic.unicamp.br                        *
- ******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
 
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 /**
  * @file      tlm_memory.cpp
@@ -140,7 +147,7 @@ ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d
   memory[a+3] = d[3];
   
  
-  if(debugTLM2)
+  if(MEMORY_DEBUG)
   printf("\nMEMORY WRITE: writing data--> %d %d %d %d  address--> %d %d %d %d ",memory[a], memory[a+1], memory[a+2], memory[a+3],a,a+1,a+2,a+3);
   
 
@@ -166,7 +173,7 @@ ac_tlm_rsp_status tlm_memory::readm( const uint32_t &a , unsigned char *d)
   (((uint8_t*)d)[3]) = memory[a+3];
 
  
-  if(debugTLM2)
+  if(MEMORY_DEBUG)
  	 printf("\nMEMORY READ: reading data--> %d %d %d %d  address--> %d %d %d %d ",memory[a], memory[a+1], memory[a+2], memory[a+3],a,a+1,a+2,a+3);
 
  
@@ -184,7 +191,7 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
     
     tlm_command command = payload.get_command();
 
-    if(debugTLM2)
+    if(MEMORY_DEBUG)
     printf("\nMEMORY TRANSPORT: command--> %d  address--> %d" , command, addr);
 
     
@@ -208,10 +215,6 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
     }
 
 }
-
-
-
-
 
 // LOADER FUNCTIONS
 

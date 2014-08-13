@@ -35,7 +35,7 @@
 AC_ARCH(powerpc) {
 
 	ac_wordsize 32;
-
+    ac_icache   IC("2w", 128, 16, "wb", "lru");
 	ac_tlm2_nb_port MEM:512M;
 	
 	ac_regbank GPR:32;
@@ -62,6 +62,7 @@ AC_ARCH(powerpc) {
 	ARCH_CTOR(powerpc) {	
 		ac_isa("powerpc_isa.ac");
 		set_endian("big");
+		IC.bindTo(MEM);
 	};
 
 };

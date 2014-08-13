@@ -37,7 +37,10 @@ AC_ARCH(powerpc) {
 	ac_wordsize 32;
 
 	ac_tlm2_port MEM:512M;
-	
+	ac_icache   IC("2w", 128, 16, "wb", "lru");
+    //ac_dcache   DC("2w", 512, 16, "wt", "fifo");
+  
+  
 	ac_regbank GPR:32;
 
 	ac_reg SPRG4;
@@ -62,6 +65,8 @@ AC_ARCH(powerpc) {
 	ARCH_CTOR(powerpc) {	
 		ac_isa("powerpc_isa.ac");
 		set_endian("big");
+		IC.bindTo(MEM);
+        //DC.bindTo(MEM);
 	};
 
 };

@@ -1,22 +1,21 @@
 /********************************************************************************
-	ESLBench Benchmark Suite
+	MPSoCBench Benchmark Suite
 	Authors: Liana Duenha
 	Supervisor: Rodolfo Azevedo
 	Date: July-2012
-	
+	www.archc.org/benchs/mpsocbench
 
 	Computer Systems Laboratory (LSC)
 	IC-UNICAMP
 	http://www.lsc.ic.unicamp.br/
 	
 	
-	This source code is part of the ESLBench Benchmark Suite, which is a free
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
 	source-code benchmark for evaluation of Electronic Systemc Level designs.
-	This benchmakr is distributed int he hope that it will be useful, but 
+	This benchmark is distributed with hope that it will be useful, but
 	without any warranty.
  
 *********************************************************************************/
-
 
 
 
@@ -85,12 +84,12 @@ int main(int argc, char *argv[])
 	{
 	
  		pthread_n_workers = NPROC;
-                printf("\npthread_n_workers:%d",pthread_n_workers);
+        printf("\npthread_n_workers:%d",pthread_n_workers);
 
 		PROCESSORS = pthread_n_workers;	
 
 		m_argc = 2;
-		m_argv[1] = "input_small.dat";
+		m_argv[1] = "../../sw/dijkstra/input_small.dat";
 
 		/* OUTPUT FILE */
 		fileout = fopen("output","w");
@@ -104,13 +103,13 @@ int main(int argc, char *argv[])
 		pthread_mutex_init(&mutex_print, NULL);
 		pthread_mutex_lock(&mutex_print);  
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+		printf("\n");
+		printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("---------------------- Running: dijkstra ---------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("--------------------- the output.dat file --------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+		printf("---------------------- Running: dijkstra ---------------------------\n");
+		printf("--------------- The results will be available in -------------------\n");
+		printf("--------------------- the output.dat file --------------------------\n");
+		printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print);  
 
@@ -120,10 +119,7 @@ int main(int argc, char *argv[])
 		
 		main0(m_argc,m_argv);
 
-  
 		pthread_my_exit();
-
-
 		fclose(fileout);
 	
   	}

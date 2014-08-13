@@ -1,14 +1,21 @@
-/*******************************************************
- * This is the part of the MPSoCBench benchmark suite  *
- * If you want more information on MPSoCBench or ArchC,*
- * please visit:                                       *
- * http://www.archc.org/benchs/mpsocbench , or         *
- * http://www.archc.org                                *
- * Computer Systems Laboratory (LSC)                   *
- * IC-UNICAMP                                          *
- * http://www.lsc.ic.unicamp.br                        *
- ******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
 
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////////
 // Standard includes
@@ -17,6 +24,8 @@
 
 #include "tlm_lock.h"
 #include "../../defines.h"
+
+
 //////////////////////////////////////////////////////////////////////////////
 // If you want to measure lock access, turn measures_lock to 1
 #define measures 1
@@ -25,7 +34,7 @@ FILE *local_lock_file;
 FILE *global_lock_file;
 //////////////////////////////////////////////////////////////////////////////
 
-//#define debugTLM2 1
+
 
 /// Namespace to isolate memory from ArchC
 using user::tlm_lock;
@@ -106,8 +115,8 @@ void tlm_lock::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_inf
 			exit(0); 
 		}
 		
-		if(debugTLM2)	
-		printf("\nTLM LOCK B_TRANSPORT: read response--> %d value-->%d --> %d",resp,value,1);
+		if(LOCK_DEBUG)
+			printf("\nTLM LOCK B_TRANSPORT: read response--> %d value-->%d --> %d",resp,value,1);
 		
 		
 		value = 0x1;
@@ -124,8 +133,8 @@ void tlm_lock::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_inf
 		else 
 			value = 1;
 
-		if(debugTLM2)	
-		printf("\nTLM LOCK B_TRANSPORT: write %d em value    *data_pointer-->%d",value,*((uint32_t*)data_pointer));
+        if(LOCK_DEBUG)
+        	printf("\nTLM LOCK B_TRANSPORT: write %d em value    *data_pointer-->%d",value,*((uint32_t*)data_pointer));
 		
 
 	

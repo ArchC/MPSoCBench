@@ -1,17 +1,24 @@
 
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+
+ /********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
 
 
-/**
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
+/*
  * @file      tlm_router.cpp
  * @author    Rodolfo Azevedo
  * @author    The ArchC Team
@@ -91,20 +98,28 @@ void tlm_router::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_in
         
     if (measures) count_traffic ++;
     
-    switch (addr) {       
-	case LOCK_ADDRESS: 
-                    if (debugTLM2) { printf("\ntlm_router is transporting using LOCK_port"); }
-		    LOCK_port->b_transport(payload, time_info);
-                    break;
-	
-        default:
-			
-                    if (debugTLM2) { printf("\ntlm_router is transporting using MEM_port"); }
-		    MEM_port->b_transport(payload,time_info);
-	            break;
+
+
+    if ((addr >= 0) && (addr <BASE_MEMORY_ADDRESS))
+    {
+        if (ROUTER_DEBUG) { printf("\ntlm_router is transporting using MEM_port"); }
+        MEM_port->b_transport(payload,time_info);
+
     }
 
-    if (debugTLM2) printf("\ntlm_router b_transport returning");
+    else if ((addr >= LOCK_ADDRESS)&&(addr <= LOCK_ADDRESS+DELTA_IP_ADDRESS))
+	{
+    	if (ROUTER_DEBUG) { printf("\ntlm_router is transporting using LOCK_port"); }
+
+    	LOCK_port->b_transport(payload, time_info);
+	}
+    else
+    {
+    	 printf("\ntlm_router b_transport : invalid address");
+
+    }
+
+    if (ROUTER_DEBUG) printf("\ntlm_router b_transport returning");
       
 }
 

@@ -37,7 +37,7 @@
 using namespace mips_parms;
 
 static int processors_started = 0;
-#define DEFAULT_STACK_SIZE (256*1024)
+#define DEFAULT_STACK_SIZE (512*1024)
 
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
@@ -68,8 +68,9 @@ void ac_behavior(begin)
   hi = 0;
   lo = 0;
 
-  RB[29] =  AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE;
-
+   //******
+   // RB[29] =  AC_RAM_END - 1024;
+   RB[29] =  AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE;
 
 }
 

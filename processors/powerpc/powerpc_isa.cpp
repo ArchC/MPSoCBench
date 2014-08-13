@@ -193,8 +193,13 @@ inline void do_Branch(ac_reg<ac_word> &ac_pc, ac_reg<ac_word> &LR, signed int il
     nia=ac_pc+displacement;
   }
 
+
   if(ilk==1)
-    LR.write(ac_pc+4);
+  {
+     LR.write(ac_pc+4);
+	  dbg_printf("\nvalor de LR durante o branch and link %d", LR.read());
+  }
+
 
   ac_pc=nia;
   
@@ -292,7 +297,7 @@ inline void do_Branch_Cond_Link_Reg(ac_reg<ac_word> &ac_pc, ac_reg<ac_word> &LR,
 
   masc=0x80000000;
   masc=masc>>ibi;
-
+  
   ac_pc-=4; /* Because pre-increment */
   
   if((ibo & 0x04) == 0x00)
@@ -305,8 +310,12 @@ inline void do_Branch_Cond_Link_Reg(ac_reg<ac_word> &ac_pc, ac_reg<ac_word> &LR,
      ((ibo & 0x10) ||
       (((CR.read() & masc) && (ibo & 0x08)) ||
        (!(CR.read() & masc) && !(ibo & 0x08))))) {
-    
+   
+    dbg_printf("LR.read()=%d",LR.read());     
+
     nia=LR.read() & 0xFFFFFFFC;
+
+    dbg_printf("atualizando nia com %d depois do &",nia);     
 
   }
   else { /* No Branch */
@@ -315,7 +324,9 @@ inline void do_Branch_Cond_Link_Reg(ac_reg<ac_word> &ac_pc, ac_reg<ac_word> &LR,
 
   if(ilk==1)
     LR.write(ac_pc+4);
-  
+
+  dbg_printf("atualizando ac_pc com %d",nia);
+
   ac_pc=nia;
 
 }
@@ -445,6 +456,9 @@ void ac_behavior( instruction )
   /*if(measures) count_instruction++;*/
   //dumpGPR();
   //dumpREG();
+
+  dbg_printf("LR = %#x\n",LR.read());
+
 }
 
 //!Generic begin behavior method.
@@ -460,7 +474,7 @@ void ac_behavior( begin )
   /* Here the stack is started in a */
 
   GPR.write(1, AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE);
-
+  // GPR.write(1, AC_RAM_END - 1024);
 
   /* Make a jump out of memory if it doesn't have an abi */
   LR.write(0xFFFFFFFF);
@@ -1968,6 +1982,7 @@ void ac_behavior( mfspr )
   /* This instruction is a fix, other implementations can be better */
   dbg_printf(" mfspr r%d,%d\n\n",rt,sprf);
   unsigned int spvalue=sprf;
+
   spvalue=((spvalue>>5) & 0x0000001f ) |
     ((spvalue<<5) & 0x000003e0 );
 
@@ -2053,6 +2068,7 @@ void ac_behavior( mtspr )
   /* This instruction is a fix, other implementations can be better */
   dbg_printf(" mtspr %d,r%d\n\n",sprf,rs);
   unsigned int spvalue=sprf;
+
   spvalue=((spvalue>>5) & 0x0000001f ) |
     ((spvalue<<5) & 0x000003e0 );
 

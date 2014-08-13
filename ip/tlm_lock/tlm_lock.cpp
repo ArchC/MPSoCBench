@@ -1,14 +1,21 @@
-/*******************************************************
- * This is the part of the MPSoCBench benchmark suite  *
- * If you want more information on MPSoCBench or ArchC,*
- * please visit:                                       *
- * http://www.archc.org/benchs/mpsocbench , or         *
- * http://www.archc.org                                *
- * Computer Systems Laboratory (LSC)                   *
- * IC-UNICAMP                                          *
- * http://www.lsc.ic.unicamp.br                        *
- ******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
 
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
+
+
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 
 #include "tlm_lock.h"
 
@@ -50,8 +57,6 @@ tlm_lock::~tlm_lock() {
 
 uint32_t tlm_lock::readm(uint32_t &d )
 {
-
-
         if(d != 0x0)
 		return 0x1;
 
@@ -82,39 +87,48 @@ void tlm_lock::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_inf
 
 	case TLM_READ_COMMAND :     // Packet is a READ one
 	
+		// CORRETO !
 		if (readm(value)!=0) resp = 1;
 		else resp = 0;
 
-		if (len == 1) *((uint8_t*)data_pointer) = (uint8_t) resp;  
-		else if (len == 2) *((uint16_t*)data_pointer) = (uint16_t) resp;  			
-		else if (len == 4) *((uint32_t*)data_pointer) = (uint32_t)resp;
-		else if (len == 8) *((uint64_t*)data_pointer) = (uint64_t) resp;
-		else {
-			printf("\nLOCK READ ERROR --> wordsize not implemented"); 
-			exit(0); 
-		}
-		
-		if(debugTLM2)	printf("\nTLM LOCK B_TRANSPORT: read response--> %d value-->%d --> %d",resp,value,1);
+		*((uint32_t*)data_pointer) = resp;
 
+		//*((uint32_t*)data_pointer) = 0;
+
+		//*((uint32_t*)data_pointer) = value;
 		
+
 		value = 0x1;
-		
+		if (LOCK_DEBUG)
+		printf("\nTLM LOCK B_TRANSPORT: read response--> %d value-->%d",resp,value);
+
                 break; 
 
 	case TLM_WRITE_COMMAND:     // Packet is a WRITE
 	        
+		/*if (len == 1) value = *((uint8_t*)data_pointer);
+		else if (len == 2) value = *((uint16_t*)data_pointer); 			
+		else if (len == 4) value = *((uint32_t*)data_pointer);
+		else if (len == 8) value = *((uint64_t*)data_pointer);
+		*/
 
-               	if (*((uint32_t*)data_pointer)==0 ) 
+
+		if (*((uint32_t*)data_pointer)==0 ) 
 			value = 0;
 		else 
 			value = 1;
 
-		if(debugTLM2) printf("\nTLM LOCK B_TRANSPORT: write %d em value    *data_pointer-->%d",value,*((uint32_t*)data_pointer));
+		
+		if (LOCK_DEBUG)
+		printf("\nTLM LOCK B_TRANSPORT: write %d in value, *data_pointer-->%d",value,*((uint32_t*)data_pointer));
+
 	
     		break;
     default:
-		printf("LOCK TRANSPORT --> COMMAND %d IS NOT IMPLEMENTED", command);
-      		break; 
+
+    	printf("LOCK TRANSPORT --> COMMAND %d IS NOT IMPLEMENTED", command);
+
+    	break;
     }
 
     

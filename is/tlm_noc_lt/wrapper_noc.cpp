@@ -1,15 +1,21 @@
-/********************************************************
- * This is the part of the MPSoCBench benchmark suite   *
- * If you want more information on MPSoCBench or ArchC, *
- * please visit:                                        *
- * http://archc.org/benchs/mpsocbench/ , or             *
- * http://www.archc.org                                 *
- * Computer Systems Laboratory (LSC)                    *
- * IC-UNICAMP                                           *
- * http://www.lsc.ic.unicamp.br                         *
- *******************************************************/
+/********************************************************************************
+	MPSoCBench Benchmark Suite
+	Authors: Liana Duenha
+	Supervisor: Rodolfo Azevedo
+	Date: July-2012
+	www.archc.org/benchs/mpsocbench
+
+	Computer Systems Laboratory (LSC)
+	IC-UNICAMP
+	http://www.lsc.ic.unicamp.br/
 
 
+	This source code is part of the MPSoCBench Benchmark Suite, which is a free
+	source-code benchmark for evaluation of Electronic Systemc Level designs.
+	This benchmark is distributed with hope that it will be useful, but
+	without any warranty.
+
+*********************************************************************************/
 #include "wrapper_noc.h"
 
 using user::wrapper_noc;
@@ -57,7 +63,7 @@ void wrapper_noc::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_i
 	    ex->setDirection(FORWARD);   // blocking transport has just FORWARD path
   	    payload.set_extension(ex);
 
-	    if (NOC_DEBUG) printf("\nB_TRANSPORT--> Wrapper %d,%d is trasporting package INTO the NOC trought NODE_port", getX(), getY());
+	    if (NOC_DEBUG) printf("\nB_TRANSPORT--> Wrapper %d,%d is transporting package INTO the NOC trought NODE_port", getX(), getY());
 	    NODE_port->b_transport(payload,time_info);
  	    
             payload.release_extension(ex);

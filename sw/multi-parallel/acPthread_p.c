@@ -10,8 +10,8 @@ unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
 
 
 ThreadQueue tQueue;  // threads queue
-int pthread_n_workers; // number os processors or threads, given as a main argument (argv[1])
-int pthread_n_softwares; // number os softwares in the multisoftware platform
+int pthread_n_workers; // number of processors or threads, given as a main argument (argv[1])
+int pthread_n_softwares; // number of softwares in the multisoftware platform
 
 
 int pthread_threads_per_software; // number of threads per software 
@@ -144,7 +144,7 @@ ESL_PTHREAD FUNCTIONS IMPLEMENTED JUST FOR COMPATIBILITY
 
 int pthread_attr_setdetachstate(pthread_attr_t *attr, int detachstate)
 {
-	return 0; // VERIFICAR SE ESSE RETORNO É VALIDO PARA A BIBLIOTECA ORIGINAL
+	return 0; 
 }
 int pthread_attr_getdetachstate(const pthread_attr_t *attr, int *detachstate)
 {
@@ -158,7 +158,7 @@ void pthread_exit(void *ret_val)
 {
 
 }
-void pthread_my_exit()  // verificar qual é o argumetno correto na biblioteca original
+void pthread_my_exit()  
 {
 	AcquireGlobalLock();	
 	pthread_finished = 1;
@@ -430,20 +430,16 @@ int pthread_barrier_wait (pthread_barrier_t *barrier)
 /*----------------------------  ENDING BARRIER FUNCTIONS--------------------------------------- */
 
 
-//================================ ESLBench malloc ========================================
+//================================ MPSoCBench malloc ========================================
 void *acPthread_malloc(size_t size) { 
 	
 	pthread_mutex_lock(&mutex_malloc);
-	//printf("\npeguei lock e vou fazer malloc\n");
 	void *ret = (void *) malloc(size); 
-	// printf("\nmalloc retornou %x\n",ret);
-        // if (!ret) printf("\nmalloc retornou null%x\n",ret);
-	//printf("\nliberei lock\n");
         pthread_mutex_unlock(&mutex_malloc);
 	return ret;
 }
 
-//================================ ESLBench realloc ========================================
+//================================ MPSoCBench realloc ========================================
 void *acPthread_realloc(void * ptr, size_t size) { 
 	pthread_mutex_lock(&mutex_malloc);
 	void *ret = (void *) realloc(ptr,size); 
@@ -451,12 +447,12 @@ void *acPthread_realloc(void * ptr, size_t size) {
 	return ret;
 }
 
-//================================ ESLBench calloc ========================================
+//================================ MPSoCBench calloc ========================================
 
 void *acPthread_calloc(size_t size1 , size_t size2) { 
 	
 	pthread_mutex_lock(&mutex_malloc);
-	// printf("\npeguei lock e vou fazer calloc\n");
+	
 	void *ret = (void *) calloc(size1,size2); 
         pthread_mutex_unlock(&mutex_malloc);
 	return ret;
@@ -467,9 +463,9 @@ void *acPthread_calloc(size_t size1 , size_t size2) {
 void acPthread_free(void *ptr)
 {
 	pthread_mutex_lock(&mutex_malloc);
-	//printf("\npeguei lock  e vou fazer free\n");
+	
 	free(ptr); 
-	//printf("\nliberei lock\n");
+	
 	pthread_mutex_unlock(&mutex_malloc);
 }
 

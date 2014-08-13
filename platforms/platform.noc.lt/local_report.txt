@@ -1,0 +1,14 @@
+
+
+************************************************************************
+Platform ./platform.noc.lt.x with 8 cores running dijkstra.mips.x
+
+
+************************************************************************
+Platform ./platform.noc.lt.x with 8 cores running dijkstra.mips.x
+
+Total Time Taken (seconds):	8.020849
+Simulation advance (seconds):	0.006122
+Lock Access:	6226
+Memory Reads:	2527754 
+Memory Writes:	541323
