@@ -8,7 +8,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := powerpc.cpp  powerpc_arch.cpp  powerpc_arch_ref.cpp  powerpc_isa.cpp powerpc_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := -g $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)
+CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)  
 
 #------------------------------------------------------
 .SILENT:
@@ -25,6 +25,7 @@ clean:
 #------------------------------------------------------
 distclean: clean
 	if test -f Makefile.archc; then $(MAKE) -f Makefile.archc distclean; fi;
+	rm -f $(OBJS) *~ $(EXE) core *.o 
 #------------------------------------------------------
 .cpp.o:
 	$(CC) $(CFLAGS) $(INC_DIR) -c $<
@@ -35,6 +36,6 @@ distclean: clean
 powerpc.cpp:
 	echo --- No simulator found, using acsim to generate one.
 	$(ARCHC_PATH)/bin/acsim powerpc_$(TRANSPORT).ac -abi
-	patch powerpc.cpp powerpc.cpp.patch
-	patch powerpc.H powerpc.H.patch
+	#patch powerpc.cpp powerpc.cpp.patch
+	#patch powerpc.H powerpc.H.patch
 	$(MAKE) all

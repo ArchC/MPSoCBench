@@ -4,6 +4,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_lock.cpp
 OBJS := $(SRCS:.cpp=.o)
 
+CFLAGS := $(ENDIANESS) $(WAIT_TRANSPORT_FLAG)
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------

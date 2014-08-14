@@ -186,6 +186,10 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
         make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
     make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
     make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
+    if proc != 'arm':
+        make = make + "export ENDIANESS := -DAC_GUEST_BIG_ENDIAN\n"
+    else: 
+        make = make + "export ENDIANESS := \n"
     make = make + "include Makefile.conf\ninclude Makefile.rules\n"
     return make
 

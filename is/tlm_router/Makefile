@@ -4,7 +4,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_router.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS:= $(WAIT_TRANSPORT_FLAG)
+CFLAGS:= $(ENDIANESS) $(WAIT_TRANSPORT_FLAG)
 
 #------------------------------------------------------
 .SILENT:

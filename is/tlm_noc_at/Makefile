@@ -5,7 +5,7 @@ SRCS := tlm_noc.cpp tlm_node.cpp routing_table.cpp wrappers_noc.cpp
 
 OBJS := $(SRCS:.cpp=.o)
 
-$(CFLAGS) :=  $(MEM_SIZE_DEFAULT)
+$(CFLAGS) :=  $(ENDIANESS) $(MEM_SIZE_DEFAULT)
 
 #------------------------------------------------------
 .SILENT:
