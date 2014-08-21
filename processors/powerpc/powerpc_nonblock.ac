@@ -35,6 +35,7 @@
 AC_ARCH(powerpc) {
 
 	ac_wordsize 32;
+	ac_fetchsize 32;
     ac_icache   IC("2w", 128, 16, "wb", "lru");
 	ac_tlm2_nb_port MEM:512M;
 	

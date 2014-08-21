@@ -42,6 +42,7 @@ AC_ARCH(sparc){
   ac_reg<8> CWP;
 
   ac_wordsize 32;
+  ac_fetchsize 32;
   
 
   ARCH_CTOR(sparc){

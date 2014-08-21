@@ -115,8 +115,11 @@ public:
   //pthread_mutex_t listPackageMutex;
   
   SC_HAS_PROCESS( tlm_node );
+
   tlm_node(); 
+  
   tlm_node(sc_module_name module_name);
+  
   ~tlm_node();
   
 
@@ -148,6 +151,8 @@ public:
   tlm::tlm_sync_enum  nb_transport_bw(ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
 
   void thread_node ();
+
+  
   void addToBuffer (ac_tlm2_payload &,tlm::tlm_phase &, sc_core::sc_time &);
   void removeFromBuffer (ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
   int getNumberOfPackagesInBuffer() {return numberOfPackagesInBuffer; }

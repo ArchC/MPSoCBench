@@ -61,7 +61,7 @@ tlm_noc::tlm_noc( sc_module_name module_name, int n, int m, int lines, int colum
 	setNumberOfPeripherals(n+m);
 	setNumberOfLines(lines);
 	setNumberOfColumns(columns);
-        setNumberOfNodes(getNumberOfLines()*getNumberOfColumns()); 
+    setNumberOfNodes(getNumberOfLines()*getNumberOfColumns()); 
 	setNumberOfInactiveNodes( getNumberOfNodes()-getNumberOfPeripherals() ); 
 	setNumberOfSlaveEmptyNodes(getNumberOfMasters());
 	setNumberOfMasterEmptyNodes(getNumberOfSlaves());
@@ -376,7 +376,7 @@ void tlm_noc::print ()
 	}
 
 
-        printf("\nPrinting Table of routs!");
+     printf("\nPrinting Table of routs!");
 	tableOfRouts.print();       
 	
 }

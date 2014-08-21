@@ -43,6 +43,7 @@ AC_ARCH(mips){
   ac_reg hi, lo;
 
   ac_wordsize 32;
+  ac_fetchsize 32;
 
   ARCH_CTOR(mips) {
 

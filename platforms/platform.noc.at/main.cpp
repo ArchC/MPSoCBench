@@ -136,7 +136,7 @@ int sc_main(int ac, char *av[])
    	processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
 
 	for (int i=0; i<N_WORKERS; i++){
-		char name[10] = "ppc"; 
+		char name[10] = "proc"; 
 	        char number_str[3];
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
@@ -219,7 +219,7 @@ int sc_main(int ac, char *av[])
 	}
 
 	noc.preparingRoutingTable();
-	noc.print();
+	//noc.print();
 
 
 	// *****************************************************************************************
@@ -254,7 +254,7 @@ int sc_main(int ac, char *av[])
 	// Setting the arguments and batch size for each processor 
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
-		processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
+		//processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
 	}
 
 

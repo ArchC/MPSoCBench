@@ -34,6 +34,7 @@ AC_ARCH(arm){
   // FIQ private regs
   ac_reg R12_fiq, R11_fiq, R10_fiq, R9_fiq, R8_fiq;
   ac_wordsize 32;
+  ac_fetchsize 32;
   
   ARCH_CTOR(arm) {
     ac_isa("arm_isa.ac");
