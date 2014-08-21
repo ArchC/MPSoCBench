@@ -250,7 +250,7 @@ int sc_main(int ac, char *av[])
 	// Setting the arguments and batch size for each processor 
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
-		processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
+		//processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
 	}
 
 	
