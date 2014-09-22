@@ -35,9 +35,5 @@ distclean: clean
 #------------------------------------------------------
 mips.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim mips_$(TRANSPORT).ac -abi
-	#patch mips.cpp mips.cpp.patch
-	#patch mips.cpp mips.cpp.acsynth.patch
-	#patch mips.H mips.H.patch
-	#patch mips.H mips.H.acsynth.patch
+	$(ARCHC_PATH)/bin/acsim mips_$(TRANSPORT).ac -abi -ndc -pw
 	$(MAKE) all

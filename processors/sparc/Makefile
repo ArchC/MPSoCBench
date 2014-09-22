@@ -35,9 +35,5 @@ distclean: clean
 #------------------------------------------------------
 sparc.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi
-	#patch sparc.cpp sparc.cpp.patch
-	#patch sparc.cpp sparc.cpp.acsynth.patch
-	#patch sparc.H sparc.H.patch
-	#patch sparc.H sparc.H.acsynth.patch
+	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi -pw
 	$(MAKE) all
