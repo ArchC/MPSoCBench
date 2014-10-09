@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=mips
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src 
+INC_DIR := -I. -I$(ARCHC_PATH)/include/ -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src 
 
 SRCS := mips.cpp  mips_arch.cpp  mips_arch_ref.cpp  mips_isa.cpp mips_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)

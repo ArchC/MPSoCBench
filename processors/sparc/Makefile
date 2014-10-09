@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=sparc
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
+INC_DIR := -I. -I$(ARCHC_PATH)/include/ -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
 
 SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
@@ -35,5 +35,5 @@ distclean: clean
 #------------------------------------------------------
 sparc.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi -pw
+	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi -ndc -pw
 	$(MAKE) all

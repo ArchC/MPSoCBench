@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=arm
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH)
+INC_DIR := -I. -I$(ARCHC_PATH)/include/ -I$(SYSTEMC)/include -I$(TLM_PATH)
 
 SRCS := arm.cpp  arm_arch.cpp  arm_arch_ref.cpp  arm_isa.cpp arm_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
@@ -35,7 +35,5 @@ distclean: clean
 #------------------------------------------------------
 arm.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim arm_$(TRANSPORT).ac -abi 
-	#patch arm.cpp arm.cpp.patch
-	#patch arm.H arm.H.patch
+	$(ARCHC_PATH)/bin/acsim arm_$(TRANSPORT).ac -abi -ndc 
 	$(MAKE) all
