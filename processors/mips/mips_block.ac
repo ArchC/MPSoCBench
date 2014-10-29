@@ -37,14 +37,16 @@
 AC_ARCH(mips){
 
   ac_tlm2_port   MEM:512M;
+  ac_tlm2_port   DVFS:32K;
   
   ac_icache   IC("32w", 32, 8, "wt", "fifo");
-  //ac_dcache   DC("2w", 512, 16, "wt", "fifo");
+  //ac_dcache   DC("dm", 512, 16, "wt", "none");
   
-  
+  ac_reg id;
   ac_regbank RB:32;
   ac_reg npc;
   ac_reg hi, lo;
+
 
   ac_wordsize 32;
   ac_fetchsize 32;
@@ -55,6 +57,5 @@ AC_ARCH(mips){
     set_endian("big");
     IC.bindTo(MEM);
     //DC.bindTo(MEM);
-
   };
 };

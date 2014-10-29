@@ -32,6 +32,8 @@ AC_ARCH(arm){
   ac_wordsize 32;
   ac_fetchsize 32;
   
+  ac_reg id;
+  
   ARCH_CTOR(arm) {
     ac_isa("arm_isa.ac");
     set_endian("little");

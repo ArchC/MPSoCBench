@@ -41,7 +41,7 @@ AC_ARCH(powerpc) {
 	ac_icache   IC("2w", 128, 16, "wb", "lru");
     //ac_dcache   DC("2w", 512, 16, "wt", "fifo");
   
-  
+    ac_reg id;
 	ac_regbank GPR:32;
 
 	ac_reg SPRG4;
