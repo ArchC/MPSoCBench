@@ -37,7 +37,7 @@
 AC_ARCH(mips){
 
   ac_tlm2_port   MEM:512M;
-  ac_tlm2_port   DVFS:32K;
+  //ac_tlm2_port   DVFS:32K;
   
   ac_icache   IC("32w", 32, 8, "wt", "fifo");
   //ac_dcache   DC("dm", 512, 16, "wt", "none");

@@ -1,5 +1,5 @@
 TARGET=tlm_noc_at
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) 
+INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_noc.cpp tlm_node.cpp routing_table.cpp wrappers_noc.cpp
 

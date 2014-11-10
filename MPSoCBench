@@ -172,10 +172,14 @@ def distclean():
 
 # general Makefile creator
 def makefile(proc, nproc, sw, power, intercon, plat_rundir):
+    #make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := " \
+    #       + proc + "\nexport NUMPROCESSORS := " + nproc + \
+    #       "\nexport SOFTWARE := " + sw + "\nexport CROSS := " + proc + \
+    #       "-elf-gcc\nexport PLATFORM := platform." + intercon + "\n"
     make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := " \
            + proc + "\nexport NUMPROCESSORS := " + nproc + \
            "\nexport SOFTWARE := " + sw + "\nexport CROSS := " + proc + \
-           "-elf-gcc\nexport PLATFORM := platform." + intercon + "\n"
+           "-newlib-elf-gcc\nexport PLATFORM := platform." + intercon + "\n"
     if power:
         make = make + "export POWER_SIM_FLAG := -DPOWER_SIM\n"
     else:

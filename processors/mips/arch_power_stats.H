@@ -10,11 +10,15 @@
 #define START_PROFILE 0
 #define NUM_INSTR 59
 
-//#define POWER_TABLE_FILE "../../processors/mips/acpower_table.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_25Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_50Mhz.csv"
+//define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_100Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc3s1200e_100Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc6slx75_100Mhz.csv"
-#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_100Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_ep3sl50_100mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc4vlx15_100Mhz.csv"
+#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc5vlx50t_100Mhz.csv"
+
 
 #define WINDOW_REPORT
 #define WINDOW_REPORT_FILE "window_power_report"

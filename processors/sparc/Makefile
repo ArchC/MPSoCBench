@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=sparc
-INC_DIR := -I. -I$(ARCHC_PATH)/include/ -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
+INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
 
 SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)

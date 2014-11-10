@@ -1,5 +1,5 @@
 TARGET=tlm_lock_at
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) 
+INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_lock.cpp
 OBJS := $(SRCS:.cpp=.o)

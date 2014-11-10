@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=arm
-INC_DIR := -I. -I$(ARCHC_PATH)/include/ -I$(SYSTEMC)/include -I$(TLM_PATH)
+INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 
 SRCS := arm.cpp  arm_arch.cpp  arm_arch_ref.cpp  arm_isa.cpp arm_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
