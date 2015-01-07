@@ -82,6 +82,7 @@ tlm_router::~tlm_router()
 
      global_router_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      fprintf(global_router_file, "\nRouter Access:\t%ld", count_traffic);
+     printf("\nRouter Access:\t%ld", count_traffic);
      fclose (global_router_file);
 
   }

@@ -133,6 +133,11 @@ tlm_noc::~tlm_noc()
  		fprintf(global_noc_file, "\nTotal Number of Hops:\t%ld", totalNumberOfHops);
 		fprintf(global_noc_file, "\nAverage Number of Hops per package:\t%d", (int) (totalNumberOfHops / totalNumberOfPackages));
 
+		printf("\nTotal Number of Packages:\t%ld", totalNumberOfPackages);
+ 		printf("\nTotal Number of Hops:\t%ld", totalNumberOfHops);
+		printf("\nAverage Number of Hops per package:\t%d", (int) (totalNumberOfHops / totalNumberOfPackages));
+
+
 	     	fclose (local_noc_file);
 	     	fclose (global_noc_file);
 	}

@@ -400,6 +400,7 @@ AC_ISA(arm) {
     blx2.set_asm("blx%[cond] %reg", cond, rm, one1=0xF, one2=0xF, one3=0xF);
     blx2.set_decoder(op=0x00, subop1=0x01, subop2=0x00, func1=0x09, s=0x00, func2=0x01);    
     blx2.set_cycles(3);
+    
     /**************************************/
     /* Swap/Multiplication instructions   */
     /**************************************/

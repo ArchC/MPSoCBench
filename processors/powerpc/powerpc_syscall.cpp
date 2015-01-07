@@ -77,10 +77,10 @@ void powerpc_syscall::return_from_syscall()
 {
   unsigned int oldr1;
   unsigned int oldr31;
-  oldr1=MEM.read(GPR.read(1));
-  oldr31=MEM.read(GPR.read(1)+28);
-  GPR.write(1,oldr1);
-  GPR.write(31,oldr31);
+//  oldr1=MEM.read(GPR.read(1));
+//  oldr31=MEM.read(GPR.read(1)+28);
+//  GPR.write(1,oldr1);
+//  GPR.write(31,oldr31);
   ac_pc=LR.read();
 }
 
@@ -92,7 +92,6 @@ void powerpc_syscall::set_prog_args(int argc, char **argv)
   char ac_argstr[512];
 
   base = AC_RAM_END - 512;
-  
   for (i=0, j=0; i<argc; i++) {
     int len = strlen(argv[i]) + 1;
     ac_argv[i] = base + j;
@@ -113,8 +112,6 @@ void powerpc_syscall::set_prog_args(int argc, char **argv)
 
   //Set r4 to the string pointers
   GPR.write(4, AC_RAM_END-512-120);
-
-  
 }
 
 

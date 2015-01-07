@@ -23,9 +23,8 @@ AC_ARCH(arm){
 
   ac_tlm2_port     MEM:512M;
   
-  //ac_icache   IC("2w", 128, 16, "wb", "lru");
-  ac_icache   IC("4w", 128, 8, "wb", "fifo");
-  
+  ac_icache   IC("2w", 128, 16, "wb", "lru");
+    
   
   ac_regbank RB:31;
   // ac_tlm_intr_port inta;  // system level interrupt port

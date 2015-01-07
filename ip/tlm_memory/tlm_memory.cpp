@@ -111,6 +111,7 @@ tlm_memory::~tlm_memory() {
 
      global_memory_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      fprintf(global_memory_file, "\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
+     printf("\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
      fclose (global_memory_file);
 
   }
