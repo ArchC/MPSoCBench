@@ -127,7 +127,6 @@ int main(int argc, char *argv[])
   	{
 		while(barrier_in == 0);
 		
-
 		while(pthread_finished == 0)
 		{
 			if(pthread_created == 1)pthread_executeThread();
@@ -136,7 +135,7 @@ int main(int argc, char *argv[])
 
   	
 	}
-	exit(0);
+	_exit(0);
 	//_exit(0);  // To avoid cross-compiler exit routine
 	return 0; // Never executed, just for compatibility
 }
