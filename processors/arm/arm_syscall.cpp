@@ -168,9 +168,6 @@ void arm_syscall::set_prog_args(int argc, char **argv) {
 
 
 int *arm_syscall::get_syscall_table() {
-
-printf("\ncaiu em get_syscall_table que retorna a tabela");
-
   static int syscall_table[] = {
     ARM__NR_restart_syscall,
     ARM__NR_exit,

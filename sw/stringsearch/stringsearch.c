@@ -451,15 +451,10 @@ int main0(int argc,char *argv[])
        if (argc<5 ||argc>5){
    	   printf("|-----------------------------------------------------------------------|\n");
        printf("	Error: Insufficient Parameters.                             \n");
-       printf("	Maximum Workers are 8!\n");
        printf("	1 :  Pratt-Boyer-Moore         \n");
        printf("	2 :  Case-sensitive Boyer-Moore-Horspool \n");
        printf("	3 :  Case-Insensitive Boyer-Moore-Horspool \n");
        printf("	4 :  Boyer-Moore-Horspool (Case-insensitive with accented character translation)\n");
-      	  
-       printf("	Commands to run!                             \n");
-       printf("	Command Format: OjbectFileName <StringSearchMethod> Workers <InputFileName> <PatternFileName>!\n");
-       printf("	Example: parallel string search : ' ./parallel_stringsearch 1 2 InputFile.txt PatternFile.txt '!\n");
        printf("|---------------------------------------------------------------------- |\n");
        exit(0);
     }       
