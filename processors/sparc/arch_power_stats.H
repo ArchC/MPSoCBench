@@ -16,7 +16,7 @@
 //#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc3s1000_40Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc3s1200e_40Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc5vlx50t_40Mhz.csv"
-#define POWER_TABLE_FILE "../../processors/sparc/acpower_table_sparc_xc6slx75_40Mhz.csv"
+#define POWER_TABLE_FILE "../../processors/sparc/powersc/acpower_table_sparc_xc6slx75_40Mhz.csv"
 
 
 

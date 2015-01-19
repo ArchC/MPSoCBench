@@ -17,7 +17,7 @@
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc6slx75_100Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_ep3sl50_100mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc4vlx15_100Mhz.csv"
-#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc5vlx50t_100Mhz.csv"
+#define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_xc5vlx50t_100Mhz.csv"
 
 
 #define WINDOW_REPORT
