@@ -38,6 +38,7 @@
 // 'using namespace' statement to allow access to all
 // mips-specific datatypes
 using namespace mips_parms;
+unsigned procNumber = 0;
 
 void mips_syscall::get_buffer(int argn, unsigned char* buf, unsigned int size)
 {
@@ -89,7 +90,7 @@ void mips_syscall::set_prog_args(int argc, char **argv)
   unsigned int ac_argv[30];
   char ac_argstr[512];
 
-  base = AC_RAM_END - 512;
+  base = AC_RAM_END - 512 - procNumber * 64 * 1024;
   for (i=0, j=0; i<argc; i++) {
     int len = strlen(argv[i]) + 1;
     ac_argv[i] = base + j;
@@ -97,11 +98,11 @@ void mips_syscall::set_prog_args(int argc, char **argv)
     j += len;
   }
 
-  RB[4] = AC_RAM_END-512;
+  RB[4] = base;
   set_buffer(0, (unsigned char*) ac_argstr, 512);   //$25 = $29(sp) - 4 (set_buffer adds 4)
 
 
-  RB[4] = AC_RAM_END-512-120;
+  RB[4] = base - 120;
   set_buffer_noinvert(0, (unsigned char*) ac_argv, 120);
 
   //RB[4] = AC_RAM_END-512-128;
@@ -110,7 +111,9 @@ void mips_syscall::set_prog_args(int argc, char **argv)
   RB[4] = argc;
 
   //Set %o1 to the string pointers
-  RB[5] = AC_RAM_END-512-120;
+  RB[5] = base - 120;
+
+  procNumber ++;
 }
 
 

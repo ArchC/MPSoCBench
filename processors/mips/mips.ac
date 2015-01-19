@@ -22,14 +22,14 @@
 
 AC_ARCH(mips){
 
-  ac_mem   MEM:16M;
+  ac_mem   DM:512M;
   ac_regbank RB:32;
   ac_reg npc;
   ac_reg hi, lo;
-
+  ac_reg id;
   ac_wordsize 32;
 
-  ARCH_CTOR(mips1) {
+  ARCH_CTOR(mips) {
 
     ac_isa("mips_isa.ac");
     set_endian("big");
