@@ -95,6 +95,10 @@ bool first_load;
 void report_start(char*, char*, char*);
 void report_end();
 void load_elf(PROCESSOR_NAME &, tlm_memory& , char*, unsigned int, unsigned int);
+void set_prog_args(PROCESSOR_NAME &proc, tlm_memory &mem, int argc, char **argv);
+
+unsigned int pNumber = 0;
+
 
 int sc_main(int ac, char *av[])
 {
@@ -236,7 +240,7 @@ int sc_main(int ac, char *av[])
  
 	for (int i=0; i<N_WORKERS; i++) {
 		for (int j=0; j<ac; j++) { 
-                        arguments[i][j] = new char[strlen(av[j])+1];
+            arguments[i][j] = new char[strlen(av[j])+1];
 			arguments[i][j] = av[j];
 			//printf ("%s\n",arguments[i][j]);
 		}
@@ -251,10 +255,12 @@ int sc_main(int ac, char *av[])
 		first_load = false;
 	}
 
-	// Setting the arguments and batch size for each processor 
+	// Setting the arguments for each processor 
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
-		//processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
+		//set_prog_args(*processors[i], mem, 0, arguments[i]);
+		processors[i]->set_prog_args();
+		
 	}
 
 
@@ -274,7 +280,7 @@ int sc_main(int ac, char *av[])
 	report_start(av[0],av[1],av[2]);
 
 	// Beggining of simulation
-        sc_start();
+    sc_start();
 
 	// Endding the time measurement
 	report_end();
@@ -368,6 +374,7 @@ void report_end()
 	fclose(global_time_measures);
 }
 
+
 void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem, 
               char* filename, unsigned int offset, unsigned int memsize){
 
@@ -379,9 +386,7 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem,
   //unsigned int data_mem_size=(0x4FFFFF);
   unsigned int data_mem_size=memsize;
   
-
-  
-  
+ 
   if (!filename || ((fd = open(filename, 0)) == -1)) 
   {
        AC_ERROR("Openning application file '" << filename << 
@@ -468,6 +473,59 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem,
 }
 
 
+/* TENTATIVA DE TIRAR A PARTE DO SET_PROG_ARGS DO PROCESSADOR E DEIXAR 
+PARA A PLATAFORMA.....
+
+AINDA NÃO ESTÁ FUNCIONANDO.....
 
 
+void set_prog_args(PROCESSOR_NAME &proc, tlm_memory &mem, int argc, char **argv)
+{
+
+  printf("\n\ninvestigando set_prog_args da plataforma");
+  printf("Argc: %d", argc);
+  //printf("Argv: %s", **argv);
+
+
+  int i, j, base;
+
+  int ac_argv[30];
+  char ac_argstr[512];
+
+  base = MEM_SIZE - 512 - pNumber * 64 * 1024;
+  for (i=0, j=0; i<argc; i++) {
+    int len = strlen(argv[i]) + 1;
+    ac_argv[i] = base + j;
+    memcpy(&ac_argstr[j], argv[i], len);
+    j += len;
+  }
+
+  
+  unsigned int addr = base; 
+  int d=0;
+  for (i=0; i<512; i++,addr++)
+  	mem.direct_write(&d,addr);
+
+  // set_buffer(0, (unsigned char*) ac_argstr, 512);   //$25 = $29(sp) - 4 (set_buffer adds 4)
+
+  addr = base - 120;
+  //set_buffer_noinvert(0, (unsigned char*) ac_argv, 120);
+
+  
+  
+  for (i = 0; i<120; i+=4, addr+=4)
+    mem.direct_write( &ac_argv[i], addr);
+    
+  
+  //Set %o0 to the argument count
+  proc.RB[4] = argc;
+
+  //Set %o1 to the string pointers
+  proc.RB[5] = base - 120;
+
+  pNumber ++;
+}
+
+
+*/
 

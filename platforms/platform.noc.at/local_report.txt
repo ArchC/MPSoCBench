@@ -1,4 +1,0 @@
-
-
-************************************************************************
-Platform ./platform.noc.at.x with 1 cores running dijkstra.mips.x
