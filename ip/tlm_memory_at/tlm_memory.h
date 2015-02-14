@@ -90,35 +90,28 @@ class tlm_memory:
 {
 
 public:
-
-   
-
   tlm_utils::simple_target_socket<tlm_memory> LOCAL_target_socket;
-  ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * );
-  ac_tlm_rsp_status readm( const uint32_t & , unsigned char*);
-  
+
   tlm_memory( sc_module_name module_name , unsigned int i, unsigned int k); // = 536870912);
 
   ~tlm_memory();
 
-
   void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
-	
 
-  /* memory direct access functions  - useful to load the application in memory */
-	bool direct_read(int *data, unsigned int address);
-	bool direct_write(int *data, unsigned int address);
-	ac_tlm_rsp_status read(int *data, unsigned int address);
-	ac_tlm_rsp_status write(int *data,unsigned int address);
 	unsigned int start_address() const;
 	unsigned int end_address() const;
 
+  /* memory direct access functions  - useful to load the application in memory */
+	ac_tlm_rsp_status read(unsigned int address, unsigned int size, unsigned char *data);
+	ac_tlm_rsp_status write(unsigned int address, unsigned int size, const unsigned char *data);
 
 private:
   uint8_t *memory;
   unsigned int m_start_address;
   unsigned int m_end_address;
 
+  ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * , unsigned int);
+  ac_tlm_rsp_status readm( const uint32_t & , unsigned char*, unsigned int);
 
 };
 

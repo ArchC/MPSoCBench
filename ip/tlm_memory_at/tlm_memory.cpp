@@ -132,25 +132,23 @@ tlm_memory::~tlm_memory() {
   * Note: Always write 32 bits
   * @param a is the address to write
   * @param d id the data being write
-  
+
 */
 
-//ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , uint32_t d)
-ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d)
+ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d, unsigned int len)
 {
+	char dbg[512];
+	char *dbgt = dbg;
+	unsigned int addr = a;
 
-  if(measures) count_write_memory ++;
+	for (unsigned int i = 0; i<len;) {
+		sprintf(dbgt, "%02x", d[i]);
+		dbgt += 2;
+		memory[addr++] = d[i++];
+	}
 
-  memory[a]   = d[0];
-  memory[a+1] = d[1];
-  memory[a+2] = d[2];
-  memory[a+3] = d[3];
-  
- 
   if(MEMORY_DEBUG)
-  printf("\nMEMORY WRITE: writing data--> %d %d %d %d  address--> %d %d %d %d ",memory[a], memory[a+1], memory[a+2], memory[a+3],a,a+1,a+2,a+3);
-  
-
+  printf("\nMEMORY WRITE: writing data--> 0x%s address--> [%#x](%u)", dbg, a, len);
 
   return SUCCESS;
 }
@@ -162,21 +160,21 @@ ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d
   
 */
 
-ac_tlm_rsp_status tlm_memory::readm( const uint32_t &a , unsigned char *d)
+ac_tlm_rsp_status tlm_memory::readm( const uint32_t &a , unsigned char *d, unsigned int len)
 {
- 
-  if(measures) count_read_memory ++;
-  
-  (((uint8_t*)d)[0]) = memory[a];
-  (((uint8_t*)d)[1]) = memory[a+1];
-  (((uint8_t*)d)[2]) = memory[a+2];
-  (((uint8_t*)d)[3]) = memory[a+3];
+	char dbg[512];
+	char *dbgt = dbg;
+	unsigned int addr = a;
 
- 
+	for (unsigned int i = 0; i<len;) {
+		sprintf(dbgt, "%02x", memory[addr]);
+		dbgt += 2;
+		(((uint8_t*)d)[i++]) = memory[addr++];
+	}
+
   if(MEMORY_DEBUG)
- 	 printf("\nMEMORY READ: reading data--> %d %d %d %d  address--> %d %d %d %d ",memory[a], memory[a+1], memory[a+2], memory[a+3],a,a+1,a+2,a+3);
+  printf("\nMEMORY READ: reading data--> 0x%s  address--> [%#x](%u)", dbg, a, len);
 
- 
   return SUCCESS;
 }
 
@@ -188,27 +186,27 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
 
     uint32_t addr = (uint32_t) payload.get_address();
     unsigned char* data_pointer = payload.get_data_ptr();
-    
+    unsigned int len = payload.get_data_length();
+
     tlm_command command = payload.get_command();
 
-    if(MEMORY_DEBUG)
-    printf("\nMEMORY TRANSPORT: command--> %d  address--> %d" , command, addr);
+    if(MEMORY_DEBUG) printf("\nMEMORY TRANSPORT: command--> %d address--> %d lenght-->%u ****" , command, addr, len);
 
-    
+
     switch( command )
     {
-    	case TLM_READ_COMMAND :    
- 	     
-	     readm( addr,data_pointer);
-	     payload.set_response_status(tlm::TLM_OK_RESPONSE);
-	     
+    	case TLM_READ_COMMAND :
 
- 	     break; 
-    	case TLM_WRITE_COMMAND:    
- 	     
-	     writem (addr,data_pointer);
+	     readm(addr, data_pointer, len);
+	     payload.set_response_status(tlm::TLM_OK_RESPONSE);
+
+
+ 	     break;
+    	case TLM_WRITE_COMMAND:
+
+	     writem(addr, data_pointer, len);
  	     payload.set_response_status(tlm::TLM_OK_RESPONSE);
-	    
+
 	     break;
     	default :
 	     break; 
@@ -219,31 +217,40 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
 // LOADER FUNCTIONS
 
 /* memory direct access functions  - useful to load the application in memory */
-bool tlm_memory::direct_read(int *data, unsigned int address)
+ac_tlm_rsp_status tlm_memory::read(unsigned int address, unsigned int size, unsigned char *data)
 {
-	return (read(data, address) == SUCCESS);
-}
+  unsigned int m_size = (m_end_address-m_start_address+1);
+	unsigned int addr = address - m_start_address;
 
-bool tlm_memory::direct_write(int *data, unsigned int address)
-{
-	return (write(data, address) == SUCCESS);
+	if (addr < 0) {
+    printf("Out of bounds memory position (%d) [%d - %d].", address, m_start_address, m_end_address);
+		return ERROR;
+	}
+
+	if ((addr + size) > m_size) {
+    printf("Request more memory than have [(%d) %d / %d].", addr, size, m_size);
+		size = m_size - addr;
+	}
+
+	memcpy(data, &(memory[addr]), size);
+	return SUCCESS;
 }
-ac_tlm_rsp_status tlm_memory::read(int *data, unsigned int address)
+ac_tlm_rsp_status tlm_memory::write(unsigned int address, unsigned int size, const unsigned char *data)
 {
-	//Modified to accept non aligned access
- 	 ((char*)data)[0] = memory[(address - m_start_address)];
-	  ((char*)data)[1] = memory[(address - m_start_address+1)];
-	  ((char*)data)[2] = memory[(address - m_start_address+2)];
-	  ((char*)data)[3] = memory[(address - m_start_address+3)];
-	return SUCCESS;	  
-}
-ac_tlm_rsp_status tlm_memory::write(int *data,unsigned int address)
-{
-	//Modified to accept non aligned access
-	memory[(address - m_start_address)] = ((char*)data)[0];
-	memory[(address - m_start_address+1)] = ((char*)data)[1];
-	memory[(address - m_start_address+2)] = ((char*)data)[2];
-	memory[(address - m_start_address+3)] = ((char*)data)[3];
+  unsigned int m_size = (m_end_address-m_start_address+1);
+	unsigned int addr = address - m_start_address;
+
+	if (addr < 0) {
+		printf("Out of bounds memory position (%d) [%d - %d].", address, m_start_address, m_end_address);
+		return ERROR;
+	}
+
+	if ((addr + size) > m_size) {
+    printf("Request more memory than have [(%d) %d / %d].", addr, size, m_size);
+		size = m_size - addr;
+	}
+
+	memcpy(&(memory[addr]), data, size);
 	return SUCCESS;
 }
 unsigned int tlm_memory::start_address() const
@@ -255,5 +262,3 @@ unsigned int tlm_memory::end_address() const
 {
   return m_end_address;
 }
-
-

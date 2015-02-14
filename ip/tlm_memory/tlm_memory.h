@@ -71,9 +71,6 @@ class tlm_memory:
 public:
 
   sc_export< ac_tlm2_blocking_transport_if > target_export;
-  ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * );
-  ac_tlm_rsp_status readm( const uint32_t & , unsigned char*);
-  
  
   tlm_memory( sc_module_name module_name , unsigned int i, unsigned int k); // = 536870912);
 
@@ -99,6 +96,8 @@ private:
   unsigned int m_start_address;
   unsigned int m_end_address;
 
+  ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * , unsigned int);
+  ac_tlm_rsp_status readm( const uint32_t & , unsigned char*, unsigned int);
 };
 
 };

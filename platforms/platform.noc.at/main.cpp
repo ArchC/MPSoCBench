@@ -456,12 +456,12 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem,
 		  int tmp;
 		  ssize_t ret_value = read(fd, &tmp, sizeof(PROCESSOR_NAME_parms::ac_word));
 		  int d=convert_endian(sizeof(PROCESSOR_NAME_parms::ac_word), tmp, proc.ac_mt_endian);
-		  mem.direct_write(&tmp,p_vaddr+j+offset);
+		  mem.write(p_vaddr+j+offset, 4, (unsigned char*)&tmp);
 		}
 	  
 		int d=0;
 	        for(j=p_vaddr+p_filesz;j<=p_memsz-p_filesz;j++)
-		      mem.direct_write(&d,p_vaddr+j);
+		      mem.write(p_vaddr+j, 4, (unsigned char*)&d);
 	}//if
 	
       }//if
