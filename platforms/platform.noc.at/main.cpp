@@ -259,7 +259,7 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
 		//set_prog_args(*processors[i], mem, 0, arguments[i]);
-		processors[i]->set_prog_args();
+		//processors[i]->set_prog_args();
 		
 	}
 
