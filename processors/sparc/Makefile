@@ -8,7 +8,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(PO
 SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) 
+CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 
 #------------------------------------------------------
 .SILENT:
@@ -35,5 +35,5 @@ distclean: clean
 #------------------------------------------------------
 sparc.cpp:
 	echo --- No simulator found, using acsim to generate one.
-	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT)$(CACHE).ac -abi -ndc -pw
+	$(ARCHC_PATH)/bin/acsim sparc_$(TRANSPORT).ac -abi -ndc -pw
 	$(MAKE) all

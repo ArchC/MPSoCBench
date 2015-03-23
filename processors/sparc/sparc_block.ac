@@ -26,7 +26,7 @@ AC_ARCH(sparc){
   ac_tlm2_port  MEM:512M;
  
   ac_icache   IC("2w", 128, 16, "wb", "lru");
-  //ac_dcache   DC("2w", 128, 16, "wb", "lru");  
+  //ac_dcache   DC("dm", 512, 16, "wt", "none");
 
   ac_regbank RB:256;
   ac_regbank REGS:32;
