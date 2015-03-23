@@ -162,6 +162,11 @@ int main(int argc, char *argv[])
 
   register int procNumber;
 
+
+  #ifdef POWER_SIM
+  pthread_changePowerState(HIGH);
+  #endif
+  
   AcquireGlobalLock();
   P = NPROC; 
   procNumber = procCounter++;

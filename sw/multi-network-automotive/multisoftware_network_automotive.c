@@ -54,6 +54,8 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
+  
+
   register int procNumber;
   AcquireGlobalLock();
   procNumber = procCounter++;
@@ -61,10 +63,16 @@ int main(int argc, char *argv[])
 
   if (procNumber == 0){	
 	 
+
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+
 	printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-       	printf("-----------------Running: multi_network_automotive -----------------\n");
+    printf("-----------------Running: multi_network_automotive -----------------\n");
 	printf("------------Basicmath, Susan-corners, Dijkstra, Qsort---------------\n");
 	printf("--------------------------------------------------------------------\n");
 	printf("\n");
@@ -90,9 +98,14 @@ int main(int argc, char *argv[])
   else if (procNumber == 1)
   {
 	
+
+	
+
 	while(barrier_in == 0);
 	
-	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_dijkstra();
 
@@ -106,11 +119,14 @@ int main(int argc, char *argv[])
   }
   else if (procNumber == 2)
   {
+
+  	
+  	
+
 	while(barrier_in == 0);
 	
-	
-
-
+	if (DVFS) pthread_changePowerState(HIGH);
+   
 	main_qsort();
 	
 	pthread_mutex_lock(&mutex_print);
@@ -127,7 +143,7 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
-	
+	if (DVFS) pthread_changePowerState(HIGH);
 
        
 	main_susancorners();

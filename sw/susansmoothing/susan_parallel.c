@@ -2805,6 +2805,12 @@ acPthread
 
 int main(int argc, char *argv[])
 {
+
+
+  #ifdef POWER_SIM
+  pthread_changePowerState(HIGH);
+  #endif
+  
 	/* NUMBER OF WORKER THREADS */
 	
 	register int procNumber;

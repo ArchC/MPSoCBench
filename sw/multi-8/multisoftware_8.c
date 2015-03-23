@@ -65,11 +65,15 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
-  register int procNumber;
-  AcquireGlobalLock();
-  procNumber = procCounter++;
-  // printf("\nProcessor %d started.\n", procNumber);
-  ReleaseGlobalLock();
+ 	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
+  
+  	register int procNumber;
+  	AcquireGlobalLock();
+  	procNumber = procCounter++;
+  	// printf("\nProcessor %d started.\n", procNumber);
+  	ReleaseGlobalLock();
 
  
 

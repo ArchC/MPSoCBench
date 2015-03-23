@@ -29,6 +29,11 @@
 unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
 
 
+/******/
+unsigned volatile int *dvfs = (unsigned volatile int *)DVFS_ADDRESS;
+
+/******/
+
 ThreadQueue tQueue;  // threads queue
 int pthread_n_workers; // number of processors or threads, given as a main argument (argv[1])
 int pthread_n_softwares; // number of softwares in the multisoftware platform
@@ -365,19 +370,28 @@ void pthread_executeThread ()
                 pthread_mutex_unlock(&mutex_print);
 	}
 
-
 	void (*fp)(void *) = node->functionPointer;
 	void *arg = node->arg;
 
+	#ifdef POWER_SIM 
+	pthread_changePowerState(HIGH);  
+	#endif 
+
 	(*fp)(arg);
+	
+	#ifdef POWER_SIM
+	pthread_changePowerState(LOW);
+	#endif 
 
 	if (DEBUG)
 	{
 		pthread_mutex_lock(&mutex_print);
 		printf("\nThread whose address is %x ended...\n", node->functionPointer);
 		printf("The arguments address is %x ... \n",node->arg);
-                pthread_mutex_unlock(&mutex_print);
+        pthread_mutex_unlock(&mutex_print);
 	}
+
+	
 
 	pthread_join_control(&join);
 
@@ -398,8 +412,6 @@ void pthread_executeThread ()
 		//flag2 = 1;
 		ReleaseGlobalLock();
 	}
-
-	
 }
 
 
@@ -421,6 +433,11 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void (*start_r
 		ReleaseGlobalLock();
 
 		pthread_executeThread();
+
+		#ifdef POWER_SIM 
+		pthread_changePowerState(HIGH);
+		#endif
+
 	}
 
 	return 0;
@@ -538,4 +555,10 @@ void acPthread_free(void *ptr)
 
 
 
-
+void pthread_changePowerState(int state)
+{
+	//pthread_mutex_lock(&mutex_print);
+	//printf("\nem pthread_changePowerState , state %d",state);
+	//pthread_mutex_unlock(&mutex_print);
+	*dvfs = state;
+}

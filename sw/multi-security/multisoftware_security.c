@@ -60,10 +60,15 @@ int main(int argc, char *argv[])
   // printf("\nProcessor %d started.\n", procNumber);
   ReleaseGlobalLock();
 
- 
+  
 
   if (procNumber == 0){	
 	 
+
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+
 	printf("\n");
        	printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
@@ -93,10 +98,14 @@ int main(int argc, char *argv[])
   else if (procNumber == 1)
   {
        
+       
 	
         while(barrier_in == 0);
 
-
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+  	
 	main_rijndael_enc();
 	
 	pthread_mutex_lock(&mutex_print);
@@ -107,9 +116,12 @@ int main(int argc, char *argv[])
   else if (procNumber == 2)
   {
 	
+
 	while(barrier_in == 0);
 	
-
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
 	main_rijndael_dec();
 	
 	pthread_mutex_lock(&mutex_print);
@@ -120,9 +132,14 @@ int main(int argc, char *argv[])
   }
   else if (procNumber == 3)
   {
+
+  	
 	while(barrier_in == 0);
 
-        main_blowfish("E");
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
+    main_blowfish("E");
 	
 	pthread_mutex_lock(&mutex_print);
 	printf("\nBlowfish Encoder finished.\n");
@@ -132,6 +149,7 @@ int main(int argc, char *argv[])
   }
   else
   {
+
 	printf("\nERROR!\n");
   }
 

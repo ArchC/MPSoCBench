@@ -94,8 +94,11 @@ int main(int argc, char *argv[])
 
 	if (procNumber == 0)
  	{	
-		/* NUMBER OF WORKER THREADS */
 
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
+		/* NUMBER OF WORKER THREADS */
 		pthread_n_workers = NPROC;
                 //printf("\npthread_n_workers:%d",pthread_n_workers);
 		            
@@ -255,7 +258,7 @@ void solveCubicEquations(int workerID){
 
 	pthread_mutex_lock(&mutex_print);
 	fprintf(fileout,"Worker %d is solving cubic equations.\n",workerID);
-	//printf("\nWorker %d is solving cubic equations.\n",workerID);
+	printf("\nWorker %d is solving cubic equations.\n",workerID);
 	pthread_mutex_unlock(&mutex_print);
 
 
@@ -302,9 +305,8 @@ void calcISqrt(int workerID){
 	struct int_sqrt q;
 		
 	pthread_mutex_lock(&mutex_print);
-	printf("Worker %d is calculating integer sqr root.\n",workerID);
+	printf("\nWorker %d is calculating integer sqr root.\n",workerID);
 	fprintf(fileout,"Worker %d is calculating integer sqr root.\n",workerID);
-	//printf("\nWorker %d is calculating integer sqr root.",workerID);
 	pthread_mutex_unlock(&mutex_print);
 
   for (index = _ilimParams[workerID]._start; index < _ilimParams[workerID]._end; index+=_ilim._offset)
@@ -328,7 +330,7 @@ void calcULSqrt(int workerID){
 	
 	pthread_mutex_lock(&mutex_print);
 	fprintf(fileout,"Worker %d is calculating long sqr roots.\n",workerID);
-	//printf("\nWorker %d is calculating long sqr roots",workerID);
+	printf("\nWorker %d is calculating long sqr roots",workerID);
 	pthread_mutex_unlock(&mutex_print);
 
   for (l =_ullimParams[workerID]._start ; l <_ullimParams[workerID]._end; l+=_ullim._offset)
@@ -349,7 +351,7 @@ void degToRadianConv(int workerID){
 				
 	pthread_mutex_lock(&mutex_print);
 	fprintf(fileout,"Worker %d is performing degree to radian angle conversion.\n",workerID);
-	//printf("\nWorker %d is performing degree to radian angle conversion.",workerID);
+	printf("\nWorker %d is performing degree to radian angle conversion.",workerID);
 	pthread_mutex_unlock(&mutex_print);
 
 
@@ -372,7 +374,7 @@ void radianToDegConv(int workerID){
 
 	pthread_mutex_lock(&mutex_print);
 	fprintf(fileout,"Worker %d is performing radian to degree angle conversion.\n",workerID);
-	//printf("\nWorker %d is performing radian to degree angle conversion.",workerID);
+	printf("\nWorker %d is performing radian to degree angle conversion.",workerID);
 	pthread_mutex_unlock(&mutex_print);
 
 

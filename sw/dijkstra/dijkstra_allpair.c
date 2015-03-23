@@ -51,6 +51,11 @@ acPthread
 #include "../acPthread.h"
 
 extern unsigned volatile int *lock;
+//*****
+extern unsigned volatile int *dvfs;
+
+//*****
+
 extern pthread_mutex_t mutex_print;
 extern int pthread_threads_per_software; // number of threads per software 
 extern int pthread_n_workers;
@@ -71,6 +76,7 @@ extern int pthread_created;
 //extern int flag;
 
 
+
 int main(int argc, char *argv[])
 {
 
@@ -83,6 +89,11 @@ int main(int argc, char *argv[])
 	if (procNumber == 0)
 	{
 	
+		#ifdef POWER_SIM
+		pthread_changePowerState(HIGH);
+		#endif
+		
+
  		pthread_n_workers = NPROC;
         printf("\npthread_n_workers:%d",pthread_n_workers);
 
@@ -119,6 +130,7 @@ int main(int argc, char *argv[])
 		
 		main0(m_argc,m_argv);
 
+
 		pthread_my_exit();
 		fclose(fileout);
 	
@@ -127,13 +139,17 @@ int main(int argc, char *argv[])
   	{
 		while(barrier_in == 0);
 		
+
 		while(pthread_finished == 0)
 		{
-			if(pthread_created == 1)pthread_executeThread();
+
+			if (pthread_created == 1)
+			{
+				pthread_executeThread();
+				
+			}
 
 		}
-
-  	
 	}
 	_exit(0);
 	//_exit(0);  // To avoid cross-compiler exit routine

@@ -85,6 +85,10 @@ int main(int argc, char *argv[])
 	if (procNumber == 0)
  	{	
 	
+
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
 		/* NUMBER OF WORKER THREADS */
 		
 		pthread_n_workers = NPROC;

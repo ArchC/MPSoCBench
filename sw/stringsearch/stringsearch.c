@@ -125,7 +125,9 @@ char *m_argv[5];
 
 int main(int argc, char *argv[])
 {
-
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 	register int procNumber;
 	
 	AcquireGlobalLock();

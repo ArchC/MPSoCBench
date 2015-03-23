@@ -126,6 +126,8 @@ void open_files ()
 int main(int argc, char *argv[])
 {
 
+  
+
   register int procNumber;
   AcquireGlobalLock();
   procNumber = procCounter++;
@@ -137,9 +139,11 @@ int main(int argc, char *argv[])
 	pthread_n_softwares = NSOFTWARES;
 	pthread_threads_per_software = pthread_n_workers/pthread_n_softwares;
 	
-	 
-
-        pthread_init(); 
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+    
+    pthread_init(); 
 
 	pthread_mutex_init(&mutex_print, NULL);
 	pthread_mutex_lock(&mutex_print);	
@@ -182,6 +186,10 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
+  		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
+
 	pthread_mutex_lock(&mutex_print);  
 	printf("------------------- Start running: dijkstra ------------------------\n");
 	pthread_mutex_unlock(&mutex_print);  
@@ -192,6 +200,11 @@ int main(int argc, char *argv[])
   {
 
 	while(barrier_in == 0);
+
+
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
 
 	pthread_mutex_lock(&mutex_print);		
       	printf("------------------- Start running: basicmath -----------------------\n");
@@ -205,6 +218,9 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
 	pthread_mutex_lock(&mutex_print);  
         printf("--------------------- Start running: sha --------------------------\n");
 	pthread_mutex_unlock(&mutex_print); 

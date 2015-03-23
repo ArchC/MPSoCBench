@@ -52,6 +52,7 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
+
   register int procNumber;
 
   AcquireGlobalLock();
@@ -63,6 +64,12 @@ int main(int argc, char *argv[])
 
   if (procNumber == 0){	
 	 
+
+
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+   
 	printf("\n");
        	printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
@@ -92,8 +99,12 @@ int main(int argc, char *argv[])
   else if (procNumber == 1)
   {
      
-        while(barrier_in == 0);
+    while(barrier_in == 0);
 
+    #ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+	
 	main_pbm_stringsearch();
 	
 	pthread_mutex_lock(&mutex_print);
@@ -106,6 +117,9 @@ int main(int argc, char *argv[])
 	
 	while(barrier_in == 0);
 	
+    #ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_fft();
 	
@@ -119,7 +133,10 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 	
-
+ 		#ifdef POWER_SIM
+ 		 pthread_changePowerState(HIGH);
+  		#endif
+    
 	main_adpcmencoder();
 	pthread_mutex_lock(&mutex_print);
 	printf("\nAdpcm Encoder finished.\n");

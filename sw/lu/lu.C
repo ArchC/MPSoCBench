@@ -139,6 +139,13 @@ int main0(int argc, char *argv[]);
 
 int main(int argc, char *argv[])
 {
+
+
+  #ifdef POWER_SIM
+  pthread_changePowerState(HIGH);
+  #endif
+
+  
   register int procNumber;
   // P = atoi(argv[1]);
 

@@ -24,8 +24,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "../../defines.h"
+
 #define MAX_ESL_PTHREADS 64
-#define LOCK_ADDRESS 0x20000000
 
 #define PTHREAD_CREATE_JOINABLE 0    // for compatibility
 
@@ -33,6 +34,10 @@
 #define ReleaseGlobalLock()	((*lock)=0)
 
 #define DEBUG 0
+
+
+
+
 
 /***********************************************************************************
                        STRUCTURES 
@@ -128,6 +133,10 @@ int pthread_cond_wait (pthread_cond_t *, pthread_mutex_t *);
 int pthread_cond_broadcast(pthread_cond_t *);
 void pthread_barrier_init (pthread_barrier_t *, int);
 int pthread_barrier_wait (pthread_barrier_t *);
+
+/* DVFS function */
+
+void pthread_changePowerState(int);
 
 /* join auxiliar functions */
 
