@@ -83,11 +83,7 @@ tlm_node::tlm_node() :
 	SC_THREAD( thread_node );
 	sensitive<<wake_up;
 	
-
-        
- 
-	
-  }
+}
 
 tlm_node::tlm_node( sc_module_name module_name) :
   sc_module( module_name ),

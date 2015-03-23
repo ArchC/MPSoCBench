@@ -28,9 +28,6 @@ const char *archc_options="";
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
-
-
 #include "../../defines.h"
 
 #ifdef PROCMIPS 
@@ -63,6 +60,9 @@ const char *archc_options="";
 #include  "tlm_noc.h"
 #include  "tlm_lock.h"
 #include  "wrapper_noc.h"
+#include  "tlm_dvfs.h"
+
+
 
 //#include  "tlm_atomic_wrapper.h"
 
@@ -73,6 +73,9 @@ using user::tlm_noc;
 using user::tlm_lock;
 using user::wrapper_noc;
 
+#ifdef POWER_SIM 
+using user::tlm_dvfs;
+#endif
 
 /* This is an arbitrary limit for the number of processors 
  If necessary, this value can be modified, but
@@ -124,21 +127,29 @@ int sc_main(int ac, char *av[])
 	//	- A NoC with suficient nodes useful to communicate memory, lock and processors
         //*************************************************************************************	
 
-	// Creates memory and lock devices 
-	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
-	tlm_lock locker("lock");		// locker
 	
+
 	
         // Creates a set of processors 
 	PROCESSOR_NAME **processors;			// processors
         processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
 	for (int i=0; i<N_WORKERS; i++){
 		char name[10] = "ppc"; 
-	        char number_str[3];
+		char number_str[3];
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
+		(processors[i]->MEM).setProcId(processors[i]->getId());
 	}
+
+
+
+	// Creates memory and lock devices 
+	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
+	tlm_lock locker("lock");		// locker
+	#ifdef POWER_SIM 
+	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	#endif 
 
 
 	// Creates the NoC with N_WORKERS+2 active nodes 
@@ -151,74 +162,111 @@ int sc_main(int ac, char *av[])
 	// slaves = 2 (lock and memory)
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
+	int slaves = 2; // mem, lock
 	int masters = N_WORKERS;
-	int slaves = 2; 
+
+	#ifdef POWER_SIM 
+	slaves++; // + dvfs
+	#else
+	
+	#endif
+
 	int peripherals = masters + slaves;
 
 	int r = sqrt(peripherals); 
+	
 
-	tlm_noc noc ("noc",N_WORKERS,2,r+1,r+1);			
-  	
+	r = ((r*r)==peripherals)? r:r+1;
+	printf("\n\nmasters=%d slaves=%d peripherals=%d r=%d", masters, slaves, peripherals, r);
+
+	tlm_noc noc ("noc",N_WORKERS,slaves,r,r);			
+
+ 	
 	//***************************************************************
 	//  Binding platform components
-        //*****************************************************************
+    //*****************************************************************
 
 	int wr=0;
+	int line = 0;
+	int column = 0;
 
 
-        // Connecting memory device with the noc-mesh [0][0]
+    // Connecting memory device with the noc node [0][0]
+    // Memory address space: 0...MEM_SIZE-1 = 0...0x20000000-1 
+    // (see defines.h)
 
-	noc.wrapper[wr].LOCAL_port(mem.target_export);
-    noc.tableOfRouts.newEntry(0,0,MEM_SIZE); 
+
+    noc.wrapper[wr].LOCAL_port(mem.target_export);
+    noc.tableOfRouts.newEntry(line,column, MEM_SIZE); 
 	wr++;
+	column++;
+	
+
+    // Connecting lock device with the noc node [0][1]
+    // second pheripheral address space: 0x20000000...0x21000000-1
+    noc.wrapper[wr].LOCAL_port(locker.target_export);
+	noc.tableOfRouts.newEntry(line,column);	
+	wr++;
+	column++;
+
+
+	// third peripheral address space: 0x21000000...0x22000000-1
+    // In case of mesh 2x2, connecting next device with the noc node [1][0]
+    // in other cases, connection next device with the noc node [0][2]
+	if (r==2)
+	{
+		line = 1;
+		column = 0;
+	}
+	// if POWER_SIM is defined, the next peripheral is the DVFS IP
+	#ifdef POWER_SIM 
+		noc.wrapper[wr].LOCAL_port(dvfs.target_export);
+		wr++;	
+	
+		noc.tableOfRouts.newEntry(line,column);
+		column++;
+	#endif
 
 	
-        // Connecting lock device with the noc-mesh [0][1]
-	noc.wrapper[wr].LOCAL_port(locker.target_export);
-	noc.tableOfRouts.newEntry(0,1);	
-	wr++;
+	int proc=0;
 
-	
+	printf("N_WORKERS: %d, linhas:%d  colunas:%d", N_WORKERS, noc.getNumberOfLines(), noc.getNumberOfColumns());
 
-	// Connecting processors and noc-mesh 
-	int proc = 0;
-        int j=2; 
-	int i=0;
-
-	while (i< noc.getNumberOfLines() )
+	while (line<noc.getNumberOfLines() )
+    {
+		while(column < noc.getNumberOfColumns())
         {
-		while(j < noc.getNumberOfColumns())
-                {
 			if (proc < N_WORKERS)
 			{
-				// Connecting a processor with the node [i][j] of NoC //
+					// Connecting a processor with the node [i][j] of NoC //
+				cout << "entrou no if";
 				processors[proc]->MEM_port(noc.wrapper[wr].LOCAL_export);
+				//processors[proc]->DVFS_port(noc.wrapper[wr].LOCAL_export);
 				noc.bindingEmptySlave(wr);
-				noc.tableOfRouts.newEntry(i,j);
+				noc.tableOfRouts.newEntry(line,column);
 				wr++;
 				proc++;
-								
+							
 			}
 			else
 			{
 				noc.bindingEmptySlave(wr);  // bind mesh to the slave
 				wr++;
 			}
-			j++;
+			column++;
 		}
-		j=0;
-		i++;
+		column=0;
+		line++;
 	}
+
+
 
 	noc.preparingRoutingTable();
 	//noc.print();
 
-
 	// *****************************************************************************************
 	// Preparing for Simulation
-        // *****************************************************************************************
-
-	
+    // *****************************************************************************************
 
 	// Preparing the processors arguments 
 	char **arguments[N_WORKERS];
@@ -228,7 +276,7 @@ int sc_main(int ac, char *av[])
  
 	for (int i=0; i<N_WORKERS; i++) {
 		for (int j=0; j<ac; j++) { 
-                        arguments[i][j] = new char[strlen(av[j])+1];
+            arguments[i][j] = new char[strlen(av[j])+1];
 			arguments[i][j] = av[j];
 			//printf ("%s\n",arguments[i][j]);
 		}
@@ -267,7 +315,8 @@ int sc_main(int ac, char *av[])
 	report_start(av[0],av[1],av[2]);
 
 	// Beggining of simulation
-        sc_start();
+    
+    sc_start();
 
 	// Endding the time measurement
 	report_end();
@@ -461,6 +510,9 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem,
   
   close(fd);
 }
+
+
+
 
 
 

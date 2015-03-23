@@ -15,10 +15,6 @@ ifeq ($(PROCESSOR),sparc)
 CFLAGS_AUX = -DPROCSPARC
 endif
 
-ifeq ($(PROCESSOR),sparc_cache)
-CFLAGS_AUX = -DPROCSPARC
-endif
-
 ifeq ($(PROCESSOR),powerpc)
 CFLAGS_AUX = -DPROCPOWERPC
 endif

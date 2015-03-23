@@ -103,6 +103,7 @@ public:
   unsigned int getNumberOfLines();
   unsigned int getNumberOfColumns();
 
+
   tlm_node **mesh;
   routing_table tableOfRouts; 
   tlm_slave_node  *slaveEmptyNodes;

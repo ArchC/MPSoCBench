@@ -147,8 +147,7 @@ ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d
 		memory[addr++] = d[i++];
 	}
 
-  if(MEMORY_DEBUG)
-  printf("\nMEMORY WRITE: writing data--> 0x%s address--> [%#x](%u)", dbg, a, len);
+  if(MEMORY_DEBUG)  printf("\nMEMORY WRITE: writing data--> 0x%s address--> [%#x](%u)", dbg, a, len);
 
   return SUCCESS;
 }
@@ -223,12 +222,12 @@ ac_tlm_rsp_status tlm_memory::read(unsigned int address, unsigned int size, unsi
 	unsigned int addr = address - m_start_address;
 
 	if (addr < 0) {
-    printf("Out of bounds memory position (%d) [%d - %d].", address, m_start_address, m_end_address);
+    	printf("Out of bounds memory address (%d) [%d - %d].", address, m_start_address, m_end_address);
 		return ERROR;
 	}
 
 	if ((addr + size) > m_size) {
-    printf("Request more memory than have [(%d) %d / %d].", addr, size, m_size);
+    	printf("Requesting more memory than available [(%d) %d / %d].", addr, size, m_size);
 		size = m_size - addr;
 	}
 
@@ -241,12 +240,12 @@ ac_tlm_rsp_status tlm_memory::write(unsigned int address, unsigned int size, con
 	unsigned int addr = address - m_start_address;
 
 	if (addr < 0) {
-		printf("Out of bounds memory position (%d) [%d - %d].", address, m_start_address, m_end_address);
+		printf("Out of bounds memory address (%d) [%d - %d].", address, m_start_address, m_end_address);
 		return ERROR;
 	}
 
 	if ((addr + size) > m_size) {
-    printf("Request more memory than have [(%d) %d / %d].", addr, size, m_size);
+    printf("Requesting more memory than available [(%d) %d / %d].", addr, size, m_size);
 		size = m_size - addr;
 	}
 

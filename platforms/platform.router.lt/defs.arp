@@ -1,4 +1,4 @@
-IP := tlm_memory tlm_lock 
+IP := tlm_memory tlm_lock tlm_dvfs
 IS := tlm_router
 PROCESSOR := $(PROCESSOR)
 SW := $(SOFTWARE)

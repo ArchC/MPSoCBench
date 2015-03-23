@@ -62,14 +62,28 @@ FILE *global_router_file;
 using user::tlm_router;
 
 
+// if POWER_SIM is defined, the router has a DVFS port
+#ifdef POWER_SIM
 tlm_router::tlm_router( sc_module_name module_name) :
   sc_module( module_name ),
   target_export("target_export"),
   MEM_port("MEM_port", 536870912U), 			
-  LOCK_port("LOCK_PORT", 0U)
+  LOCK_port("LOCK_PORT", 0U),
+  DVFS_port("DVFS_port", 1073741824U)
   {
     target_export( *this );
   }
+#else  // if POWER_SIM is defined, the router do not have a DVFS port
+tlm_router::tlm_router( sc_module_name module_name) :
+  sc_module( module_name ),
+  target_export("target_export"),
+  MEM_port("MEM_port", 536870912U),       
+  LOCK_port("LOCK_PORT", 0U)  
+  {
+    target_export( *this );
+  }
+#endif
+
 
 tlm_router::~tlm_router()
 {
@@ -89,11 +103,11 @@ tlm_router::~tlm_router()
 
  }
 
-
 void tlm_router::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){
     
        
-    time_info = time_info + sc_core::sc_time(2,SC_NS);
+    // forward and backward paths   
+    time_info = time_info + sc_core::sc_time(time_router+time_router,SC_NS);
 
     uint64_t addr = payload.get_address();
         
@@ -103,25 +117,49 @@ void tlm_router::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_in
 
     if ((addr >= 0) && (addr <BASE_MEMORY_ADDRESS))
     {
-        if (ROUTER_DEBUG) { printf("\ntlm_router is transporting using MEM_port"); }
-        MEM_port->b_transport(payload,time_info);
+      if (ROUTER_DEBUG)
+      { 
+        printf("\ntlm_router is transporting using MEM_port"); 
+        
+      }
+
+      MEM_port->b_transport(payload,time_info);
 
     }
 
     else if ((addr >= LOCK_ADDRESS)&&(addr <= LOCK_ADDRESS+DELTA_IP_ADDRESS))
-	{
-    	if (ROUTER_DEBUG) { printf("\ntlm_router is transporting using LOCK_port"); }
+    {
+      if (ROUTER_DEBUG)
+      { 
+        printf("\ntlm_router is transporting using LOCK_port"); 
+        
+      }
 
-    	LOCK_port->b_transport(payload, time_info);
-	}
+      LOCK_port->b_transport(payload, time_info);
+    }
+    #ifdef POWER_SIM
+    else if (addr >= DVFS_ADDRESS)
+    {
+      if (ROUTER_DEBUG)
+      { 
+        printf("\ntlm_router is transporting using DVFS_port");
+      }  
+
+      DVFS_port->b_transport(payload, time_info);   
+    }
+    #endif
     else
     {
-    	 printf("\ntlm_router b_transport : invalid address");
+      printf("\ntlm_router b_transport : invalid address");
 
     }
 
     if (ROUTER_DEBUG) printf("\ntlm_router b_transport returning");
       
 }
+
+
+
+
 
 

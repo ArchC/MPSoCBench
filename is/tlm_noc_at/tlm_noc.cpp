@@ -73,6 +73,7 @@ tlm_noc::tlm_noc( sc_module_name module_name, int n, int m, int lines, int colum
 
 void tlm_noc::create ()
 {
+
 	mesh = new tlm_node*[numberOfLines];
 	
 	for (unsigned int i=0; i<numberOfLines; i++)

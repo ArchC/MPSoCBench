@@ -198,10 +198,6 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
         make = make + "export ENDIANESS := -DAC_GUEST_BIG_ENDIAN\n"
     else: 
         make = make + "export ENDIANESS := \n"
-    #make = make + "ifeq($(PROCESSOR),arm)\nCFLAGS_AUX = -DPROCARM\nendif\n"
-    #make = make + "ifeq($(PROCESSOR),mips)\nCFLAGS_AUX = -DPROCMIPS\nendif\n"
-    #make = make + "ifeq($(PROCESSOR),sparc)\nCFLAGS_AUX = -DPROCSPARC\nendif\n"
-    #make = make + "ifeq($(PROCESSOR),powerpc)\nCFLAGS_AUX = -DPROCPOWERPC\nendif\n"
     make = make + "ifeq ($(PROCESSOR),arm)\nexport CFLAGS_AUX := -DPROCARM\nendif\n"
     make = make + "ifeq ($(PROCESSOR),mips)\nexport CFLAGS_AUX := -DPROCMIPS\nendif\n"
     make = make + "ifeq ($(PROCESSOR),sparc)\nexport CFLAGS_AUX := -DPROCSPARC\nendif\n"
@@ -450,7 +446,7 @@ nprocs = ['1', '2', '4', '8', '16', '32', '64']
 sws = ['basicmath', 'dijkstra', 'hello', 'hello_world_mutex', 'fft', 'lu', 'ocean', 'sha', 
        'stringsearch', 'susancorners', 'susanedges', 'susansmoothing',
        'water', 'water-spatial', 'multi-parallel', 'multi-8', 'multi-16', 'multi-network-automotive','multi-office-telecomm', 'multi-security']
-intercons = ['noc.at', 'noc.lt', 'router.lt', 'router.dvfs.lt', 'noc.hermes']
+intercons = ['noc.at', 'noc.lt', 'router.lt', 'noc.hermes']
 
 
 valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},

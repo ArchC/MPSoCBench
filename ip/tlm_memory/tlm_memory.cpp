@@ -139,8 +139,7 @@ ac_tlm_rsp_status tlm_memory::writem( const uint32_t &a , const unsigned char *d
 		memory[addr++] = d[i++];
 	}
 
-  if(MEMORY_DEBUG)
-  printf("\nMEMORY WRITE: writing data--> 0x%s address--> [%#x](%u)", dbg, a, len);
+  if(MEMORY_DEBUG)   printf("\nMEMORY WRITE: writing data--> 0x%s address--> [%#x](%u)", dbg, a, len);
 
   return SUCCESS;
 }
@@ -164,9 +163,9 @@ ac_tlm_rsp_status tlm_memory::readm( const uint32_t &a , unsigned char *d, unsig
 		(((uint8_t*)d)[i++]) = memory[addr++];
 	}
 
-  if(MEMORY_DEBUG)
-  printf("\nMEMORY READ: reading data--> 0x%s  address--> [%#x](%u)", dbg, a, len);
+  if(MEMORY_DEBUG)   printf("\nMEMORY READ: reading data--> 0x%s  address--> [%#x](%u)", dbg, a, len);
 
+  
   return SUCCESS;
 }
 
@@ -190,12 +189,12 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
     switch( command )
     {
     	case TLM_READ_COMMAND :    
- 	     
+ 	     count_read_memory++;
 	     readm( addr,data_pointer, len);
 	     payload.set_response_status(tlm::TLM_OK_RESPONSE);
  	     break; 
     	case TLM_WRITE_COMMAND:    
- 	     
+ 	     count_write_memory++;
 	     writem (addr,data_pointer, len);
  	     payload.set_response_status(tlm::TLM_OK_RESPONSE);
 	     break;

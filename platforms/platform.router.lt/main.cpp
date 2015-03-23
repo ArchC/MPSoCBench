@@ -27,8 +27,12 @@ const char *archc_options="";
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include "ESLDiagram.h"
 #include "../../defines.h"
+
+#include  "tlm_memory.h"
+#include "tlm_router.h"
+#include  "tlm_lock.h"
+#include  "tlm_dvfs.h"
 
 
 #ifdef PROCMIPS 
@@ -57,17 +61,17 @@ const char *archc_options="";
 #endif 
 
 
-#include  "tlm_memory.h"
-#include  "tlm_router.h"
-#include  "tlm_lock.h"
-//#include  "tlm_atomic_wrapper.h"
 
 //#define AC_DEBUG
+
 
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
-//using user::tlm_atomic_wrapper;
+#ifdef POWER_SIM
+using user::tlm_dvfs;
+#endif
+
 
 // Global variables
 int N_WORKERS;	
@@ -103,32 +107,47 @@ int sc_main(int ac, char *av[])
 		exit(1);
 	}
 
-	// Platform components
-	tlm_memory mem("mem", 0, MEM_SIZE-1);	// memory
-  	tlm_router router("router");			// router
-	tlm_lock locker("locker");			// locker
 	
 
+
   	PROCESSOR_NAME **processors;				// processors
-        
+    
 	processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
+	
 	for (int i=0; i<N_WORKERS; i++){
 		char name[10] = "proc"; 
-	        char number_str[3];
+		char number_str[3];
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
+	
 	}
+
+// Platform components
+	tlm_memory mem("mem", 0, MEM_SIZE-1);	// memory
+  	tlm_router router("router");			// router
+	tlm_lock locker("locker");			// locker
+	#ifdef POWER_SIM
+	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	#endif
+	
+
 
 	// Binding ports
 	
 	router.MEM_port(mem.target_export);  
     router.LOCK_port(locker.target_export);
-       
+
+
+    #ifdef POWER_SIM
+    router.DVFS_port(dvfs.target_export);
+    #endif
+
+    //   
 	for (int i=0; i<N_WORKERS; i++)
 	{
 		processors[i]->MEM_port(router.target_export);
-
+		(processors[i]->MEM).setProcId(processors[i]->getId());
 	}
   
 	// Preparing the arguments
@@ -139,9 +158,9 @@ int sc_main(int ac, char *av[])
  
 	for (int i=0; i<N_WORKERS; i++) {
 		for (int j=0; j<ac; j++) { 
-                        arguments[i][j] = new char[strlen(av[j])+1];
+            arguments[i][j] = new char[strlen(av[j])+1];
 			arguments[i][j] = av[j];
-			//printf ("%s\n",arguments[i][j]);
+		
 		}
 	}
 
@@ -152,20 +171,16 @@ int sc_main(int ac, char *av[])
 		first_load = false;
 	}
 	
-
 	// Setting the arguments and batch size for each processor 
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
-		//processors[i]->set_instr_batch_size(1); // Set the batch_size on ArchC processor model
 	}
 
-	
-        //sc_simcontext*  my_sim = sc_get_curr_simcontext();
-        //ESLDiagram dotDiagram (my_sim);
-        //dotDiagram.startCapture();
+	//sc_simcontext*  my_sim = sc_get_curr_simcontext();
+    //ESLDiagram dotDiagram (my_sim);
+    //dotDiagram.startCapture();
 
 
- 
 	// Beggining of time measurement
 	
 	report_start(av[0],av[1],av[2]);
@@ -195,7 +210,7 @@ int sc_main(int ac, char *av[])
 	#ifdef POWER_SIM
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
-		 processors[i]->ps.powersc_connect();
+  		 processors[i]->ps.powersc_connect();
 		 // PowerSC Report related to ArchC Processor
 		 processors[i]->ps.report();
 	}

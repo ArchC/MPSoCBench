@@ -34,14 +34,11 @@ const char *archc_options="";
 #include "../../defines.h"
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 
-
-
 #ifdef PROCMIPS 
 	#include "mips.H"
 	#define PROCESSOR_NAME mips
 	#define PROCESSOR_NAME_parms mips_parms
 #endif 
-
 
 #ifdef PROCSPARC 
 	#include "sparc.H"
@@ -61,11 +58,11 @@ const char *archc_options="";
 	#define PROCESSOR_NAME_parms arm_parms
 #endif 
 
-
 #include  "tlm_memory.h"
 #include  "tlm_noc.h"
 #include  "tlm_lock.h"
 #include  "wrappers_noc.h"
+#include  "tlm_dvfs.h"
 
 #include "ac_utils.H"
 #include "ac_tlm_protocol.H"
@@ -77,6 +74,9 @@ using user::tlm_noc;
 using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
 
+#ifdef POWER_SIM
+using user::tlm_dvfs;
+#endif
 
 
 // Global variables
@@ -131,11 +131,7 @@ int sc_main(int ac, char *av[])
 	//	- A NoC with suficient nodes useful to communicate memory, lock and processors
         //*************************************************************************************	
 
-	// Creates memory and lock devices 
-	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
-	tlm_lock locker("lock");		// locker
-
-
+	
 	PROCESSOR_NAME **processors;
    	processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
 
@@ -145,7 +141,18 @@ int sc_main(int ac, char *av[])
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
+		(processors[i]->MEM).setProcId(processors[i]->getId());
 	}
+
+
+	// Creates memory, lock and dvfs devices 
+	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
+	tlm_lock locker("lock");		// locker
+
+
+	#ifdef POWER_SIM
+	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	#endif
 
 	// Creates the NoC with N_WORKERS+2 active nodes 
         // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
@@ -154,50 +161,78 @@ int sc_main(int ac, char *av[])
 
 	// noc constructor parameters:
         // masters = number of processors
-	// slaves = 2 (lock and memory)
+	// slaves = 3 (lock, dvfs and memory)
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 2; 
+	int slaves = 2; // mem, lock 
 	int peripherals = masters + slaves;
 
-	int r = sqrt(peripherals); 
 
-	tlm_noc noc ("noc",N_WORKERS,2,r+1,r+1);		
+	#ifdef POWER_SIM
+	slaves++; // and dvfs
+	#endif
+
+	int r = sqrt(peripherals); 
+	
+
+	r = ((r*r)==peripherals)? r:r+1;
+	
+
+	tlm_noc noc ("noc",N_WORKERS,slaves,r,r);			
+
 
 	//***************************************************************
 	//  Binding platform components
         //*****************************************************************
 
-        // Connecting memory with the node [0][0] of NoC //
-        // noc.mesh[0][0].LOCAL_init_socket.bind(mem.LOCAL_target_socket);
+    // Connecting memory with the node [0][0] of NoC //
+    // noc.mesh[0][0].LOCAL_init_socket.bind(mem.LOCAL_target_socket);
 
 	int wrMS = 0;
 	int emptyMasters = 0;
 	int emptySlaves = 0;
+	int column=0, line=0;
 
 	noc.wrapper[wrMS].LOCAL_init_socket.bind(mem.LOCAL_target_socket);
 	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 	wrMS++;
 	emptyMasters++;
-	noc.tableOfRouts.newEntry(0,0,MEM_SIZE);		// the third argument is the last address of the range address of LOCK device
-
+	noc.tableOfRouts.newEntry(line,column,MEM_SIZE);		// the third argument is the last address of the range address of LOCK device
+	column++;
        
 	noc.wrapper[wrMS].LOCAL_init_socket.bind(locker.LOCAL_target_socket);
 	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 	wrMS++;
 	emptyMasters++;
-        noc.tableOfRouts.newEntry(0,1);	
+    noc.tableOfRouts.newEntry(line,column);	
+    column++;
+
+    if (r==2)
+    {
+    	line = 1;
+    	column = 0;
+    }
+
+    #ifdef POWER_SIM
+	// DVFS is the third peripheral -> address space: 0x21000000...0x22000000-1
+	noc.wrapper[wrMS].LOCAL_init_socket.bind(dvfs.LOCAL_target_socket);
+    noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
+	wrMS++;
+	emptyMasters++;
+	noc.tableOfRouts.newEntry(line,column);	
+	column++;
+	#endif
+
 
 	// Connecting processors and noc-mesh 
 
 	int proc = 0;
-        int j=2; 
-	int i=0;
 
-	while (i< noc.getNumberOfLines() )
+
+	while (line< noc.getNumberOfLines() )
         {
-		while(j < noc.getNumberOfColumns())
+		while(column < noc.getNumberOfColumns())
                 {
 			if (proc < N_WORKERS)
 			{
@@ -206,7 +241,7 @@ int sc_main(int ac, char *av[])
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.slaveEmptyNodes[emptySlaves].LOCAL_slave_target_socket);
 				wrMS++;
 				emptySlaves++;
-				noc.tableOfRouts.newEntry(i,j);
+				noc.tableOfRouts.newEntry(line,column);
 				proc++;
 								
 			}
@@ -216,14 +251,14 @@ int sc_main(int ac, char *av[])
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 				wrMS++;
 			}
-			j++;
+			column++;
 		}
-		j=0;
-		i++;
+		column=0;
+		line++;
 	}
 
 	noc.preparingRoutingTable();
-	//noc.print();
+	noc.print();
 
 
 	// *****************************************************************************************
@@ -258,17 +293,10 @@ int sc_main(int ac, char *av[])
 	// Setting the arguments for each processor 
 	for (int i=0; i<N_WORKERS; i++){
 		processors[i]->init();   // It passes the arguments to processors 
-		//set_prog_args(*processors[i], mem, 0, arguments[i]);
-		//processors[i]->set_prog_args();
 		
 	}
 
-
-
-        //sc_simcontext*  my_sim = sc_get_curr_simcontext();
-       // ESLDiagram dotDiagram (my_sim);
-        //dotDiagram.startCapture();
-	 
+ 
 
 	// *******************************************************************************************
 	// Starting Simulation

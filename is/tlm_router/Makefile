@@ -4,8 +4,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_router.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS:= $(ENDIANESS) $(WAIT_TRANSPORT_FLAG)
-
+CFLAGS:= $(POWER_SIM_FLAG) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------

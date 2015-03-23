@@ -56,7 +56,7 @@ void routing_table::newEntry(int i, int j)
 	baseMemoryAddress = baseMemoryAddress + DELTA;
 	m[numberOfActiveLines][0]=baseMemoryAddress;
   	m[numberOfActiveLines][1]=i;
-        m[numberOfActiveLines][2]=j;
+    m[numberOfActiveLines][2]=j;
 	numberOfActiveLines++;	
 }
 
@@ -99,6 +99,8 @@ void routing_table::returnsTargetPosition(uint64_t addr,int &targetPosX, int &ta
       	
 	for (i=0; i<getNumberOfActiveLines(); i++)
 	{
+
+			//std::cout << "\naddr" << addr << "  baseAddress:" << baseAddress << "   m[i][0]=" << m[i][0] << " i=" << i;
 			if ( (addr >= baseAddress) && (addr < m[i][0]) )
 			{
 				baseAddress= m[i][0];

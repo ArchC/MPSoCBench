@@ -29,6 +29,10 @@ export CC:=g++
 #------------------------------------------------------
 all:
 	cd $(ARP)
+	for processor in $(PROCESSOR); do \
+            echo Making Processor $$processor ...;\
+            cd processors/$$processor ; $(MAKE) lib ; \
+            cd $(ARP); done
 	for ip in $(IP); do echo Making IP $$ip ...; \
 	    cd ip/$$ip; $(MAKE) lib; cd $(ARP); done
 	for is in $(IS); do echo Making IS $$is ...; \
@@ -37,10 +41,10 @@ all:
             echo Making Wrapper $$wrapper ...; \
             cd wrappers/$$wrapper; $(MAKE) lib; \
             cd $(ARP); done
-	for processor in $(PROCESSOR); do \
-            echo Making Processor $$processor ...;\
-            cd processors/$$processor ; $(MAKE) lib ; \
-             cd $(ARP); done
+	#for processor in $(PROCESSOR); do \
+  #          echo Making Processor $$processor ...;\
+  #          cd processors/$$processor ; $(MAKE) lib ; \
+  #           cd $(ARP); done
 	for sw in $(SW); do \
             echo Making Software $$sw ...; cd sw/$$sw; \
             $(MAKE); cd $(ARP); done
