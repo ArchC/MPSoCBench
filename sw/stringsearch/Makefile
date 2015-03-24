@@ -1,10 +1,10 @@
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
 
-CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) -specs=archc
+CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 
 ifeq ($(PROCESSOR),arm)
-CFLAGS = -DNPROC=$(NUMPROCESSORS) -specs=archc
+CFLAGS = -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 endif
 LDFLAGS = -lm
 
