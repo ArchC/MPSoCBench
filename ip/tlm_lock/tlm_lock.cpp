@@ -70,7 +70,7 @@ uint32_t tlm_lock::readm(uint32_t &d )
 void tlm_lock::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_info ) {
 
 
-   time_info = time_info + sc_core::sc_time(1,SC_NS);
+   time_info = time_info + sc_core::sc_time(TIME_LOCK,SC_NS);
    
    count_lock ++;
 

@@ -1,15 +1,15 @@
 #FILE GENERATED AUTOMAGICALLY - DO NOT EDIT
-export PROCESSOR := sparc
-export NUMPROCESSORS := 4
+export PROCESSOR := mips
+export NUMPROCESSORS := 8
 export SOFTWARE := dijkstra
-export PLATFORM := platform.router.lt
+export PLATFORM := platform.noc.at
 
-export CROSS := sparc-newlib-elf-gcc
+export CROSS := mips-newlib-elf-gcc
 export POWER_SIM_FLAG := -DPOWER_SIM
-export WAIT_TRANSPORT_FLAG := 
-export TRANSPORT := block
+export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT
+export TRANSPORT := nonblock
 export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912
-export RUNDIRNAME := sparc.router.lt.pw.4.dijkstra
+export RUNDIRNAME := mips.noc.at.pw.8.dijkstra
 export ENDIANESS := -DAC_GUEST_BIG_ENDIAN
 ifeq ($(PROCESSOR),arm)
 export CFLAGS_AUX := -DPROCARM

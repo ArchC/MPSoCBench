@@ -10,6 +10,7 @@
 
 #define NUM_INSTR 59
 
+/**** Power Tables using FPGAs *****/
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_25Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_50Mhz.csv"
 //define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_cycloneV_100Mhz.csv"
@@ -19,7 +20,18 @@
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc4vlx15_100Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/acpower_table_mips_xc5vlx50t_100Mhz.csv"
 
-#define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_cycloneV_25Mhz_100Mhz.csv"
+/**** Power Tables using ASICS *****/
+//#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_50Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_125Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_250Mhz.csv"
+//#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_400Mhz.csv"
+
+/**** Power Tables using FPGAs and ADICs with multiples profiles *****/
+/**** Useful for DVFS control *****/
+// #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_cycloneV_25Mhz_100Mhz.csv"
+#define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_50_125_250_400Mhz.csv"
+                                                        
+
 #define WINDOW_REPORT
 #define WINDOW_REPORT_FILE "window_power_report"
 #define START_WINDOW_SIZE 1000
@@ -35,7 +47,7 @@
 #define TYPE_LINE_STALL       2
 #define TYPE_LINE_OP          3
 
-//#define DEBUG
+#define DEBUG
 
 
 
@@ -88,7 +100,7 @@ class power_stats {
 
 		#ifdef DEBUG 
 		FILE* debug_file;
-		int contador_debug = 0;
+		int contador_debug;
 		#endif
 
 
@@ -142,9 +154,8 @@ class power_stats {
 				perror("Couldn't open specified debug file");
 				exit(1);
 			}
-			#endif
-
-			#ifdef DEBUG
+			contador_debug = 0;
+						
 			print_psc_data();
 			#endif
 		}

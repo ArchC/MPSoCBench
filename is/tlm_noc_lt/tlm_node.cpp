@@ -68,7 +68,7 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 {
 
 
-	time_info = time_info + sc_core::sc_time(2,SC_NS);
+	time_info = time_info + sc_core::sc_time(TIME_NODE+TIME_NODE,SC_NS);
 	
 	//wait(1,SC_NS);
 

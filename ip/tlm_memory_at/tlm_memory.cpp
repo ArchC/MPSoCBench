@@ -181,7 +181,7 @@ ac_tlm_rsp_status tlm_memory::readm( const uint32_t &a , unsigned char *d, unsig
 void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_info)
 {
   
-    time_info = time_info + sc_core::sc_time(1,SC_NS);
+    time_info = time_info + sc_core::sc_time(TIME_MEMORY,SC_NS);
 
     uint32_t addr = (uint32_t) payload.get_address();
     unsigned char* data_pointer = payload.get_data_ptr();

@@ -1,7 +1,7 @@
 # Number of profiles 
 2
 # ProfileID, Characterization Frequency,Frequency Scale,EPI Scale,Characterization Name,Characterization Description
-25,1e6,1e-9,"Tiwari in Cyclone V","Tiwari Method for Altera Cyclone V"
+25,1e6,1e-9,Tiwari in Cyclone V,Tiwari Method for Altera Cyclone V
 100,1e6,1e-9,Tiwari in Cyclone V,Tiwari Method for Altera Cyclone V
 # Stall consumption 
 1.64,0

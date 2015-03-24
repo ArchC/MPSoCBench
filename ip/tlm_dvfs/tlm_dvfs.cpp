@@ -113,7 +113,7 @@ void tlm_dvfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 {
     
     // forward and backward paths   
-    time_info = time_info + sc_core::sc_time(time_dvfs+time_dvfs,SC_NS);
+    time_info = time_info + sc_core::sc_time(TIME_DVFS,SC_NS);
 
     uint32_t addr = (uint32_t) payload.get_address();
     unsigned char* d = payload.get_data_ptr();

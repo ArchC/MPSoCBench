@@ -107,7 +107,7 @@ void tlm_router::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_in
     
        
     // forward and backward paths   
-    time_info = time_info + sc_core::sc_time(time_router+time_router,SC_NS);
+    time_info = time_info + sc_core::sc_time(TIME_ROUTER,SC_NS);
 
     uint64_t addr = payload.get_address();
         
