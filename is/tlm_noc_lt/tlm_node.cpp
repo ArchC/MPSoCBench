@@ -57,7 +57,6 @@ tlm_node::tlm_node( sc_module_name module_name) :
 
   }
 
-
 tlm_node::~tlm_node()
 {
  
@@ -135,9 +134,6 @@ tlm_empty_slave_node::tlm_empty_slave_node() :
 		
   }
 
-
-
-
 tlm_empty_master_node::tlm_empty_master_node() :
   module_name("empty_master_node"),
   sc_module( (sc_module_name) module_name ),
@@ -146,5 +142,19 @@ tlm_empty_master_node::tlm_empty_master_node() :
 		
   }
 
+ tlm_empty_slave_node::tlm_empty_slave_node(sc_module_name mod_name) :
+  sc_module (mod_name)
+  {
+	LOCAL_export( *this );
+		
+  }
+
+
+ tlm_empty_master_node::tlm_empty_master_node(sc_module_name mod_name) :
+  sc_module( mod_name ),
+  LOCAL_port("LOCAL_port",1U)  
+  {
+		
+  }
 
 

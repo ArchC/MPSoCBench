@@ -1,19 +1,19 @@
 /********************************************************************************
-	MPSoCBench Benchmark Suite
-	Authors: Liana Duenha
-	Supervisor: Rodolfo Azevedo
-	Date: July-2012
-	www.archc.org/benchs/mpsocbench
+  MPSoCBench Benchmark Suite
+  Authors: Liana Duenha
+  Supervisor: Rodolfo Azevedo
+  Date: July-2012
+  www.archc.org/benchs/mpsocbench
 
-	Computer Systems Laboratory (LSC)
-	IC-UNICAMP
-	http://www.lsc.ic.unicamp.br/
+  Computer Systems Laboratory (LSC)
+  IC-UNICAMP
+  http://www.lsc.ic.unicamp.br/
 
 
-	This source code is part of the MPSoCBench Benchmark Suite, which is a free
-	source-code benchmark for evaluation of Electronic Systemc Level designs.
-	This benchmark is distributed with hope that it will be useful, but
-	without any warranty.
+  This source code is part of the MPSoCBench Benchmark Suite, which is a free
+  source-code benchmark for evaluation of Electronic Systemc Level designs.
+  This benchmark is distributed with hope that it will be useful, but
+  without any warranty.
 
 *********************************************************************************/
 
@@ -69,30 +69,30 @@ public:
   
 
   inline void setStatus(int st){
-	this->status = st;
+  this->status = st;
   }
   inline int  getId (){ 
-	return this->id;
+  return this->id;
   }
   inline int getStatus() {
-	return this->status;
+  return this->status;
   }
   
   inline int getX() {
-  	return this->posX;
+    return this->posX;
   }
   inline int getY() {
-  	return this->posY;
+    return this->posY;
   }
 
   inline void setId(int a) {
-	this->id = a;
+  this->id = a;
   }
   inline void setX(int a) {
-  	this->posX = a;
+    this->posX = a;
   }
   inline void setY(int b) {
-  	this->posY = b;
+    this->posY = b;
   }
 
   void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
@@ -122,6 +122,8 @@ public:
   const char *module_name;
 
   tlm_empty_slave_node(); 
+  tlm_empty_slave_node(sc_module_name mod_name); 
+
   ~tlm_empty_slave_node(){}
   void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
   
@@ -140,6 +142,7 @@ public:
   const char *module_name;
 
   tlm_empty_master_node(); 
+  tlm_empty_master_node(sc_module_name mod_name); 
   ~tlm_empty_master_node() {}
   void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
   

@@ -16,7 +16,7 @@
 	without any warranty.
 
 *********************************************************************************/
-#include "wrapper_noc.h"
+#include "wrappers_noc.h"
 
 using user::wrapper_noc;
 
@@ -53,6 +53,7 @@ void wrapper_noc::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_i
 	    
 	    uint64_t addr = payload.get_address();
 	    int targetX, targetY;
+	    
 	    tableOfRouts.returnsTargetPosition(addr, targetX, targetY);
 
 	    ex = new tlm_payload_extension();

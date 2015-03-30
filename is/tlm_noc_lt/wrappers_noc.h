@@ -44,25 +44,25 @@ public:
   void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info);
 
    inline void setStatus(int st){
-	this->status = st;
+  this->status = st;
   }
 
   inline int getStatus() {
-	return this->status;
+  return this->status;
   }
   
   inline int getX() {
-  	return this->posX;
+    return this->posX;
   }
   inline int getY() {
-  	return this->posY;
+    return this->posY;
   }
 
   inline void setX(int a) {
-  	this->posX = a;
+    this->posX = a;
   }
   inline void setY(int b) {
-  	this->posY = b;
+    this->posY = b;
   }
   
   
@@ -74,11 +74,11 @@ public:
   routing_table tableOfRouts;
 
  private:
-	 
-	 int posX;
-	 int posY;
-	 int status;
-	  
+   
+   int posX;
+   int posY;
+   int status;
+    
  
 };
 

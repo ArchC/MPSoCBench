@@ -25,9 +25,8 @@ CFLAGS := $(ENDIANESS) $(CFLAGS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)  $(MEM
 SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-INC_DIR := $(INC_DIR) -I$(POWERSC_PATH)/include  -I$(POWERSC_PATH)/src
+INC_DIR := $(INC_DIR) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
 LIB_DIR := $(LIB_DIR) -L$(POWERSC_PATH)/lib      
-
 
 #------------------------------------------------------
 .SILENT:

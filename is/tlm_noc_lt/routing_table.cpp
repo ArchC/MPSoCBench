@@ -16,6 +16,7 @@
 	without any warranty.
 
 *********************************************************************************/
+
 /******************************************************************************
  * @file      routing_table.cpp
  * @author    Liana Duenha
@@ -39,7 +40,7 @@ using user::routing_table;
 
 uint64_t routing_table::baseMemoryAddress = BASE_MEMORY_ADDRESS;
 
-
+/// Constructor
 
 void routing_table::newEntry(int i, int j, uint64_t a)
 {
@@ -56,7 +57,7 @@ void routing_table::newEntry(int i, int j)
 	baseMemoryAddress = baseMemoryAddress + DELTA;
 	m[numberOfActiveLines][0]=baseMemoryAddress;
   	m[numberOfActiveLines][1]=i;
-    m[numberOfActiveLines][2]=j;
+        m[numberOfActiveLines][2]=j;
 	numberOfActiveLines++;	
 }
 
@@ -99,8 +100,6 @@ void routing_table::returnsTargetPosition(uint64_t addr,int &targetPosX, int &ta
       	
 	for (i=0; i<getNumberOfActiveLines(); i++)
 	{
-
-			//std::cout << "\naddr" << addr << "  baseAddress:" << baseAddress << "   m[i][0]=" << m[i][0] << " i=" << i;
 			if ( (addr >= baseAddress) && (addr < m[i][0]) )
 			{
 				baseAddress= m[i][0];

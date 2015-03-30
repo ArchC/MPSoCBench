@@ -62,12 +62,12 @@ using user::wrapper_master_slave_to_noc;
 namespace user
 {
 
-class tlm_noc:
-  public sc_module   
+class tlm_noc :  public sc_module   
 {
 public:
 
   tlm_noc( sc_module_name module_name, int, int, int, int);
+  //tlm_noc(int, int, int, int);
   ~tlm_noc();
  
   void create();

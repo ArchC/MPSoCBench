@@ -38,7 +38,7 @@
 #include "tlm_node.h"
 #include "wrappers_noc.h"
 
-#include "../../defines.h"
+
 #define measures 1
 
 FILE *local_noc_file;
@@ -53,9 +53,8 @@ using user::wrapper_master_slave_to_noc;
 
 /// Constructor
 tlm_noc::tlm_noc( sc_module_name module_name, int n, int m, int lines, int columns) :
-  sc_module( module_name )
-  {
-
+sc_module( module_name )
+{
 	setNumberOfMasters(n);
 	setNumberOfSlaves(m);
 	setNumberOfPeripherals(n+m);

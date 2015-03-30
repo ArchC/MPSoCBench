@@ -17,9 +17,6 @@
 
 *********************************************************************************/
 
-
-
-
 const char *project_name="platform.noc.at";
 const char *project_file="";
 const char *archc_version="";
@@ -30,10 +27,12 @@ const char *archc_options="";
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include "ESLDiagram.h"
+
+
 #include "../../defines.h"
 #define SC_INCLUDE_DYNAMIC_PROCESSES
 
+/*
 #ifdef PROCMIPS 
 	#include "mips.H"
 	#define PROCESSOR_NAME mips
@@ -57,6 +56,7 @@ const char *archc_options="";
 	#define PROCESSOR_NAME arm
 	#define PROCESSOR_NAME_parms arm_parms
 #endif 
+*/
 
 #include  "tlm_memory.h"
 #include  "tlm_noc.h"
@@ -95,9 +95,6 @@ bool first_load;
 void report_start(char*, char*, char*);
 void report_end();
 void load_elf(PROCESSOR_NAME &, tlm_memory& , char*, unsigned int, unsigned int);
-void set_prog_args(PROCESSOR_NAME &proc, tlm_memory &mem, int argc, char **argv);
-
-unsigned int pNumber = 0;
 
 
 int sc_main(int ac, char *av[])
@@ -137,7 +134,7 @@ int sc_main(int ac, char *av[])
 
 	for (int i=0; i<N_WORKERS; i++){
 		char name[10] = "proc"; 
-	        char number_str[3];
+	    char number_str[3];
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
@@ -161,22 +158,18 @@ int sc_main(int ac, char *av[])
 
 	// noc constructor parameters:
         // masters = number of processors
-	// slaves = 3 (lock, dvfs and memory)
+	// slaves = 2 (lock and memory) or 3 (+ dvfs)
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
 	int slaves = 2; // mem, lock 
-	int peripherals = masters + slaves;
-
-
+	
 	#ifdef POWER_SIM
 	slaves++; // and dvfs
 	#endif
 
-	int r = sqrt(peripherals); 
-	
-
-	r = ((r*r)==peripherals)? r:r+1;
+	int peripherals = masters + slaves;
+	int r = ceil(sqrt(peripherals)); 
 	
 
 	tlm_noc noc ("noc",N_WORKERS,slaves,r,r);			
@@ -263,7 +256,7 @@ int sc_main(int ac, char *av[])
 
 	// *****************************************************************************************
 	// Preparing for Simulation
-        // *****************************************************************************************
+    // *****************************************************************************************
 
 	
 
@@ -501,59 +494,4 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem,
 }
 
 
-/* TENTATIVA DE TIRAR A PARTE DO SET_PROG_ARGS DO PROCESSADOR E DEIXAR 
-PARA A PLATAFORMA.....
-
-AINDA NÃO ESTÁ FUNCIONANDO.....
-
-
-void set_prog_args(PROCESSOR_NAME &proc, tlm_memory &mem, int argc, char **argv)
-{
-
-  printf("\n\ninvestigando set_prog_args da plataforma");
-  printf("Argc: %d", argc);
-  //printf("Argv: %s", **argv);
-
-
-  int i, j, base;
-
-  int ac_argv[30];
-  char ac_argstr[512];
-
-  base = MEM_SIZE - 512 - pNumber * 64 * 1024;
-  for (i=0, j=0; i<argc; i++) {
-    int len = strlen(argv[i]) + 1;
-    ac_argv[i] = base + j;
-    memcpy(&ac_argstr[j], argv[i], len);
-    j += len;
-  }
-
-  
-  unsigned int addr = base; 
-  int d=0;
-  for (i=0; i<512; i++,addr++)
-  	mem.direct_write(&d,addr);
-
-  // set_buffer(0, (unsigned char*) ac_argstr, 512);   //$25 = $29(sp) - 4 (set_buffer adds 4)
-
-  addr = base - 120;
-  //set_buffer_noinvert(0, (unsigned char*) ac_argv, 120);
-
-  
-  
-  for (i = 0; i<120; i+=4, addr+=4)
-    mem.direct_write( &ac_argv[i], addr);
-    
-  
-  //Set %o0 to the argument count
-  proc.RB[4] = argc;
-
-  //Set %o1 to the string pointers
-  proc.RB[5] = base - 120;
-
-  pNumber ++;
-}
-
-
-*/
 
