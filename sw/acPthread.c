@@ -27,12 +27,9 @@
 ***********************************************************************************/
 
 unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
-
-
-/******/
 unsigned volatile int *dvfs = (unsigned volatile int *)DVFS_ADDRESS;
+unsigned volatile int *intr_ctrl = (unsigned volatile int *)INTR_CTRL_ADDRESS;
 
-/******/
 
 ThreadQueue tQueue;  // threads queue
 int pthread_n_workers; // number of processors or threads, given as a main argument (argv[1])
@@ -201,8 +198,6 @@ void pthread_my_exit()
 		printf("\nAt the end of pthread_my_exit...\n");
         pthread_mutex_unlock(&mutex_print);
 	}
-
-
 }
 
 /***********************************************************************************
@@ -324,6 +319,8 @@ void pthread_busywait(int value)
 
 int pthread_init ()
 {
+
+
 	initQueue(&tQueue);
 	pthread_join_init(&join);
 
@@ -333,7 +330,7 @@ int pthread_init ()
 	pthread_finished = 0;
 	ReleaseGlobalLock();
 
-		
+	pthread_turnOnProcessors();	
 }
 
 void pthread_executeThread ()
@@ -434,9 +431,9 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void (*start_r
 
 		pthread_executeThread();
 
-		#ifdef POWER_SIM 
-		pthread_changePowerState(HIGH);
-		#endif
+		//#ifdef POWER_SIM 
+		//pthread_changePowerState(HIGH);
+		//#endif
 
 	}
 
@@ -561,4 +558,15 @@ void pthread_changePowerState(int state)
 	//printf("\nem pthread_changePowerState , state %d",state);
 	//pthread_mutex_unlock(&mutex_print);
 	*dvfs = state;
+}
+
+
+void pthread_turnOnProcessors()
+{
+	*intr_ctrl = ON;
+}
+
+void pthread_turnOffProcessors()
+{
+	*intr_ctrl = OFF;
 }

@@ -137,6 +137,10 @@ int pthread_barrier_wait (pthread_barrier_t *);
 /* DVFS function */
 
 void pthread_changePowerState(int);
+void pthread_turnOnProcessors();
+void pthread_turnOffProcessors();
+
+
 
 /* join auxiliar functions */
 
