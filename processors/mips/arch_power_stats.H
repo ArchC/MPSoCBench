@@ -26,11 +26,11 @@
 //#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_250Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/powersc/ac_power_table_mips_ASIC_freepdk45_400Mhz.csv"
 
-/**** Power Tables using FPGAs and ADICs with multiples profiles *****/
+/**** Power Tables with multiples profiles *****/
 /**** Useful for DVFS control *****/
 // #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_cycloneV_25Mhz_100Mhz.csv"
 #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_50_125_250_400Mhz.csv"
-                                                        
+                                                      
 
 #define WINDOW_REPORT
 #define WINDOW_REPORT_FILE "window_power_report"
@@ -47,9 +47,10 @@
 #define TYPE_LINE_STALL       2
 #define TYPE_LINE_OP          3
 
-#define DEBUG
+#define CYCLES_PER_FREQUENCY_EXCHANGE 100
+#define CYCLES_TO_RESTART 300
 
-
+//#define DEBUG
 
 class power_stats {
 	private:
@@ -63,12 +64,14 @@ class power_stats {
 			double power_scale;
 			double power[NUM_INSTR+1];
       		double stall_power;
+    		
 		};
 
 		struct power_stats_data
 		{
 			char instr_name[NUM_INSTR+1][MAX_INSTR_NAME_SIZE];
 			profile* p;
+			int index_nop;
 		};
 
 		struct dynamic_data
@@ -92,7 +95,7 @@ class power_stats {
 
 		dynamic_data dyn;
 		power_stats_data psc_data;
-
+		
 		
 		#ifdef WINDOW_REPORT
 		FILE* out_window_power_report;
@@ -159,9 +162,7 @@ class power_stats {
 			print_psc_data();
 			#endif
 		}
-
-
-		
+	
 
 		// Destructor
 		~power_stats()
@@ -188,16 +189,12 @@ class power_stats {
 			double power = psc_data.p[profile].power[id] * psc_data.p[profile].power_scale * psc_data.p[profile].freq_scale * psc_data.p[profile].freq;
 
 			#ifdef DEBUG
-			if (contador_debug < 200)
-			{
-				fprintf(debug_file,"\nGetting power instruction.");
-				fprintf(debug_file,"\nprofile: %d\t id: %d\t power[id]*power_scale*freq_scale*freq = %f * %f * %f * %d" , profile, id, psc_data.p[profile].power[id], psc_data.p[profile].power_scale, psc_data.p[profile].freq_scale, psc_data.p[profile].freq);
-				fprintf(debug_file,"\nReturning: %f", power);
-				contador_debug++;
-			}	
+			fprintf(debug_file,"\nGetting power instruction.");
+			fprintf(debug_file,"\nprofile: %d\t id: %d\t power[id]*power_scale*freq_scale*freq = %f * %f * %f * %d" , profile, id, psc_data.p[profile].power[id], psc_data.p[profile].power_scale, psc_data.p[profile].freq_scale, psc_data.p[profile].freq);
+			fprintf(debug_file,"\nReturning: %f", power);
+			contador_debug++;
 			#endif
 
-			
 			
 			return power;
 		}
@@ -257,19 +254,32 @@ class power_stats {
     	void incr_execution_time(int num_instr, int p)
     	{
 			dyn.execution_time += num_instr / (psc_data.p[dyn.actual_profile].freq * psc_data.p[dyn.actual_profile].freq_scale);
+			//#ifdef DEBUG 
+			//printf("\nPOWER_STATS: Updating execution time: %f", dyn.execution_time);
+			//#endif
+
+
     	}
 
-		void update_stat_power(int instr_id)
+		void update_stat_power(int instr_id, int n = 1)
 		{
-  			dyn.total_num_instr++;
-			incr_total_energy(get_power_instruction(instr_id, dyn.actual_profile));
-      		incr_execution_time(1, dyn.actual_profile);
-      		//if (dyn.total_num_instr % 10000 == 0) {
-      		//  printf("[%10lld] %4d %10.5lf %10.5lf\n", dyn.total_num_instr, instr_id, get_power_instruction(instr_id, dyn.actual_profile), dyn.total_energy); 
-      		//}
-			#ifdef WINDOW_REPORT
-			dyn.window_num_instr++;
-			incr_window_energy(get_power_instruction(instr_id, dyn.actual_profile));
+
+			#ifdef DEBUG 
+			if (n!=1)
+			{	
+				printf("\nPOWER_STATS: calculating power after change frequency.");
+				printf("\nPOWER_STATS: NOP id: %d  , NOP power: %f",instr_id, get_power_instruction(instr_id, dyn.actual_profile));
+			}	
+			#endif
+
+  			dyn.total_num_instr = dyn.total_num_instr + n;
+			incr_execution_time(n, dyn.actual_profile);
+
+			incr_total_energy(n * get_power_instruction(instr_id, dyn.actual_profile));
+     		
+   			#ifdef WINDOW_REPORT
+			dyn.window_num_instr = dyn.window_num_instr + n;
+			incr_window_energy(n* get_power_instruction(instr_id, dyn.actual_profile));
 
 			
 			if (dyn.window_num_instr == dyn.window_size)
@@ -278,11 +288,11 @@ class power_stats {
 				calc_window_power();
 				window_power_report();
 				reset_window_data();
-				//if (dyn.window_count == 360) dyn.actual_profile = 1;
 			}
 			#endif
 		}
 
+		
 		void calc_total_power()
 		{
 			dyn.total_power = dyn.total_energy / dyn.total_num_instr;
@@ -409,15 +419,18 @@ class power_stats {
     						}
             			break;
             			default: // TYPE_LINE_OP
+            				
     						index = atoi(pch);
-
-              				if (index <= NUM_INSTR) {
+    						if (index <= NUM_INSTR) {
     					  		pch = next_strtok(",\"", f, pos_line);
     					  		strcpy(psc_data.instr_name[index], pch);
+    					  		if (!strcmp(pch,"nop")) psc_data.index_nop = index;
+
     					  		for(int i = 0; i < dyn.num_profiles;i++)
     					  		{
     					  			pch = next_strtok(",\"", f, pos_line);
     					  			psc_data.p[i].power[index] = atof(pch);
+
     					  		}
               				}
             			break;
@@ -442,15 +455,14 @@ class power_stats {
 				printf("Description: %s\n", psc_data.p[p].power_stats_descr);
 				printf("Frequency: %d\n\n", psc_data.p[p].freq);
 				printf("Frequency: %f\n\n", psc_data.p[p].freq_scale);
-
+				printf("NOP Power: %f\n\n", psc_data.p[p].power[psc_data.index_nop]);
 				
 				fprintf(debug_file,"\nProfile %d\n", p);
 				fprintf(debug_file,"Name: %s\n", psc_data.p[p].power_stats_name);
 				fprintf(debug_file,"Description: %s\n", psc_data.p[p].power_stats_descr);
 				fprintf(debug_file,"Frequency: %d\n\n", psc_data.p[p].freq);
 				fprintf(debug_file,"Frequency: %f\n\n", psc_data.p[p].freq_scale);
-				
-				
+				fprintf(debug_file,"NOP Power: %f\n\n", psc_data.p[p].power[psc_data.index_nop]);
 			}
 
 			printf("Instr ID | Instruction Name");
@@ -467,7 +479,9 @@ class power_stats {
 				for(p = 0; p < dyn.num_profiles; p++) {
 					printf(" | %15.3lf", psc_data.p[p].power[i]);
 					fprintf(debug_file," | %15.3lf", psc_data.p[p].power[i]);
+
 				}
+
 				printf("\n");
 				fprintf(debug_file,"\n");
 			}
@@ -488,6 +502,9 @@ class power_stats {
 			if (state < dyn.num_profiles)
 			{
 				dyn.actual_profile = state;
+
+				update_stat_power (psc_data.index_nop, CYCLES_PER_FREQUENCY_EXCHANGE);
+
 				#ifdef DEBUG 
 				printf("\nPOWER_STATS: updating the power state to %d ",state);
 				#endif
@@ -513,6 +530,11 @@ class power_stats {
 
 		}
 		
+
+		void computeRestartPower ()
+		{
+			update_stat_power (psc_data.index_nop, CYCLES_TO_RESTART);
+		}
 
 };
 #endif

@@ -40,6 +40,9 @@ AC_ARCH(mips){
   //ac_tlm2_port   DVFS:32K;
   
   ac_icache   IC("2w", 128, 16, "wb", "lru");
+  ac_tlm2_intr_port intr_port;
+  
+
   //ac_dcache   DC("dm", 512, 16, "wt", "none");
   
   ac_reg id;
@@ -47,12 +50,10 @@ AC_ARCH(mips){
   ac_reg npc;
   ac_reg hi, lo;
 
-
   ac_wordsize 32;
   ac_fetchsize 32;
 
   ARCH_CTOR(mips) {
-
     ac_isa("mips_isa.ac");
     set_endian("big");
     IC.bindTo(MEM);

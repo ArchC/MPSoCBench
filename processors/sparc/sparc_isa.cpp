@@ -43,6 +43,16 @@ static int processors_started = 0;
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
+
+   /*********************************************************************************/
+   /* SLEEP / AWAKE mode control                                                    */
+   /* INTR_REG may store 1 (AWAKE MODE) or 0 (SLEEP MODE)                           */
+   /* if intr_reg == 0, the simulator will be suspended until it receives a         */   
+   /* interruption 1                                                                */    
+   /*********************************************************************************/
+   if (intr_reg.read() == 0) ac_wait();
+
+
   dbg_printf("----- PC=0x%x  NPC=0x%x ----- #executed=%lld\n", (unsigned) ac_pc.read(), (unsigned)npc.read(), ac_instr_counter);
 }
  

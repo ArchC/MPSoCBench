@@ -5,10 +5,10 @@
 TARGET=arm
 INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 
-SRCS := arm.cpp  arm_arch.cpp  arm_arch_ref.cpp  arm_isa.cpp arm_syscall.cpp
+SRCS := arm.cpp  arm_arch.cpp  arm_arch_ref.cpp  arm_isa.cpp arm_syscall.cpp arm_intr_handlers.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)
+LOCALCFLAGS := $(CFLAGS) -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)
 
 #------------------------------------------------------
 .SILENT:
@@ -28,10 +28,10 @@ distclean: clean
 	rm -f $(OBJS) *~ $(EXE) core *.o 
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 arm.cpp:
 	echo --- No simulator found, using acsim to generate one.

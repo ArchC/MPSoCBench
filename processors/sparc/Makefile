@@ -5,10 +5,11 @@
 TARGET=sparc
 INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(POWERSC_PATH)/include -I$(POWERSC_PATH)/src
 
-SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp
+SRCS := sparc.cpp  sparc_arch.cpp  sparc_arch_ref.cpp  sparc_isa.cpp sparc_syscall.cpp sparc_intr_handlers.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
+
+LOCALCFLAGS := $(CFLAGS) -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 
 #------------------------------------------------------
 .SILENT:
@@ -28,10 +29,10 @@ distclean: clean
 	rm -f $(OBJS) *~ $(EXE) core *.o 
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 sparc.cpp:
 	echo --- No simulator found, using acsim to generate one.

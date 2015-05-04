@@ -43,6 +43,9 @@ AC_ARCH(powerpc) {
     //ac_dcache   DC("2w", 512, 16, "wt", "fifo");
   
     ac_reg id;
+
+	ac_tlm2_intr_port intr_port;
+   
 	ac_regbank GPR:32;
 
 	ac_reg SPRG4;

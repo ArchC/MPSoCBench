@@ -429,6 +429,16 @@ inline void dumpREG(ac_reg<ac_word> &XER, ac_reg<ac_word> &CR, ac_reg<ac_word> &
 //!Generic instruction behavior method.
 void ac_behavior( instruction )
 {
+
+
+    /*********************************************************************************/
+   /* SLEEP / AWAKE mode control                                                    */
+   /* INTR_REG may store 1 (AWAKE MODE) or 0 (SLEEP MODE)                           */
+   /* if intr_reg == 0, the simulator will be suspended until it receives a         */   
+   /* interruption 1                                                                */    
+   /*********************************************************************************/
+   if (intr_reg.read() == 0) ac_wait();
+
   dbg_printf("\n program counter=%#x\n",(int)ac_pc);
   ac_pc+=4;
   //dumpGPR();

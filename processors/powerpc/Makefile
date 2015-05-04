@@ -5,10 +5,10 @@
 TARGET=powerpc
 INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 
-SRCS := powerpc.cpp  powerpc_arch.cpp  powerpc_arch_ref.cpp  powerpc_isa.cpp powerpc_syscall.cpp
+SRCS := powerpc.cpp  powerpc_arch.cpp  powerpc_arch_ref.cpp  powerpc_isa.cpp powerpc_syscall.cpp powerpc_intr_handlers.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)  
+LOCALCFLAGS := $(CFLAGS) -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)  
 
 #------------------------------------------------------
 .SILENT:
@@ -28,10 +28,10 @@ distclean: clean
 	rm -f $(OBJS) *~ $(EXE) core *.o 
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 powerpc.cpp:
 	echo --- No simulator found, using acsim to generate one.

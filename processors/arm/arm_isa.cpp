@@ -106,6 +106,16 @@ void ac_behavior( begin ) {
 //!Generic instruction behavior method.
 void ac_behavior( instruction ) {
 
+
+
+  /*********************************************************************************/
+   /* SLEEP / AWAKE mode control                                                    */
+   /* INTR_REG may store 1 (AWAKE MODE) or 0 (SLEEP MODE)                           */
+   /* if intr_reg == 0, the simulator will be suspended until it receives a         */   
+   /* interruption 1                                                                */    
+   /*********************************************************************************/
+   if (intr_reg.read() == 0) ac_wait();
+
   dprintf("-------------------- PC=%#x -------------------- %lld\n", (uint32_t)ac_pc, ac_instr_counter);
 
   // Conditionally executes instruction based on COND field, common to all ARM instructions.
