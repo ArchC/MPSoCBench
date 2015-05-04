@@ -4,7 +4,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_lock.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := $(ENDIANESS) $(WAIT_TRANSPORT_FLAG)
+LOCALCFLAGS := $(CFLAGS) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG)
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------
@@ -21,7 +21,7 @@ clean:
 distclean: clean
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c -g $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c -g $<
