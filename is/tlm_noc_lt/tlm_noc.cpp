@@ -178,6 +178,40 @@ void tlm_noc::bindingInternalPorts()
 	}
 }
 
+
+
+void tlm_noc::print ()
+{
+	printf("\nNOC:\n");
+	printf("\n%d Lines\n",getNumberOfLines());
+	printf("\n%d Columns\n",getNumberOfColumns());
+        printf("\n%d Peripherals\n",getNumberOfPeripherals());
+        printf("\n%d Masters\n", getNumberOfMasters());
+        printf("\n%d Slaves\n", getNumberOfSlaves());
+	printf("\n%d Inactive Nodes\n", getNumberOfInactiveNodes());
+	printf("\n%d Wrappers for Masters/Slaves\n", getNumberOfWrappers());
+
+	unsigned int k = getNumberOfLines();
+	unsigned int m = getNumberOfColumns();
+
+	printf("\nPrinting mesh!\n");
+	for(int i=0; i<k; i++)
+	{
+		for (int j=0; j<m; j++)
+		{
+			printf("\nmesh[%d][%d]: status-> %d  x->%d  y->%d",i,j,mesh[i][j].getStatus(),mesh[i][j].getX(),mesh[i][j].getY());
+			
+		}
+	}
+
+
+     printf("\nPrinting Table of routs!");
+	tableOfRouts.print();       
+	
+}
+
+
+
  inline void tlm_noc::setNumberOfMasters(int n)
 {
 	this->numberOfMasters = n;
@@ -230,16 +264,16 @@ inline int tlm_noc::getNumberOfInactiveNodes()
 {
 	return this->numberOfInactiveNodes; 
 } 
-inline int tlm_noc::getNumberOfLines()
+int tlm_noc::getNumberOfLines()
 {
 	return this->numberOfLines; 
 }
-inline int tlm_noc::getNumberOfColumns()
+int tlm_noc::getNumberOfColumns()
 {
 	return this->numberOfColumns; 
 }
 
-inline int tlm_noc::getNumberOfNodes()
+int tlm_noc::getNumberOfNodes()
 {
 	return this->numberOfNodes; 
 }

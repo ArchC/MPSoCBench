@@ -4,7 +4,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_router.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS:= $(POWER_SIM_FLAG) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
+LOCALCFLAGS:= $(CFLAGS) $(POWER_SIM_FLAG) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------
@@ -21,7 +21,7 @@ clean:
 distclean: clean
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c $<
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<

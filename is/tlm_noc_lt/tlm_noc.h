@@ -90,6 +90,7 @@ public:
   int getNumberOfInactiveNodes();
   int getNumberOfLines();
   int getNumberOfColumns();
+  void print();
 
   tlm_node **mesh;
   routing_table tableOfRouts; 

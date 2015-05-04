@@ -69,6 +69,7 @@ tlm_router::tlm_router( sc_module_name module_name) :
   target_export("target_export"),
   MEM_port("MEM_port", 536870912U), 			
   LOCK_port("LOCK_PORT", 0U),
+  INTR_CTRL_port("INTR_CTRL_port",0U),
   DVFS_port("DVFS_port", 1073741824U)
   {
     target_export( *this );
@@ -77,7 +78,8 @@ tlm_router::tlm_router( sc_module_name module_name) :
 tlm_router::tlm_router( sc_module_name module_name) :
   sc_module( module_name ),
   target_export("target_export"),
-  MEM_port("MEM_port", 536870912U),       
+  MEM_port("MEM_port", 536870912U),      
+  INTR_CTRL_port("INTR_CTRL_port",0U), 
   LOCK_port("LOCK_PORT", 0U)  
   {
     target_export( *this );
@@ -127,18 +129,26 @@ void tlm_router::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_in
 
     }
 
-    else if ((addr >= LOCK_ADDRESS)&&(addr <= LOCK_ADDRESS+DELTA_IP_ADDRESS))
+    else if ((addr == LOCK_ADDRESS))
     {
       if (ROUTER_DEBUG)
       { 
         printf("\ntlm_router is transporting using LOCK_port"); 
         
       }
-
       LOCK_port->b_transport(payload, time_info);
     }
+    else if ((addr == INTR_CTRL_ADDRESS))
+    {
+      if (ROUTER_DEBUG)
+      { 
+        printf("\ntlm_router is transporting using INTR_CTRL_port"); 
+      }      
+      INTR_CTRL_port->b_transport(payload, time_info);
+    }  
+
     #ifdef POWER_SIM
-    else if (addr >= DVFS_ADDRESS)
+    else if (addr == DVFS_ADDRESS)
     {
       if (ROUTER_DEBUG)
       { 

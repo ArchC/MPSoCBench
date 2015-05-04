@@ -75,6 +75,7 @@ class tlm_router :
 public:
   ac_tlm2_port MEM_port;  
   ac_tlm2_port LOCK_port;
+  ac_tlm2_port INTR_CTRL_port;
   #ifdef POWER_SIM
   ac_tlm2_port DVFS_port;
   #endif
