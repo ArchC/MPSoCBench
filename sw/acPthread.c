@@ -27,7 +27,7 @@
 ***********************************************************************************/
 
 unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
-unsigned volatile int *dvfs = (unsigned volatile int *)DVFS_ADDRESS;
+unsigned volatile int *dfs = (unsigned volatile int *)DVFS_ADDRESS;
 unsigned volatile int *intr_ctrl = (unsigned volatile int *)INTR_CTRL_ADDRESS;
 
 
@@ -557,7 +557,7 @@ void pthread_changePowerState(int state)
 	//pthread_mutex_lock(&mutex_print);
 	//printf("\nem pthread_changePowerState , state %d",state);
 	//pthread_mutex_unlock(&mutex_print);
-	*dvfs = state;
+	*dfs = state;
 }
 
 

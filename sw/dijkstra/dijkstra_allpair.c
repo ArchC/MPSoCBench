@@ -41,7 +41,7 @@
 
 #define NUM_NODES                          16		//16 for small input; 160 for large input; 30 for medium input;
 #define NONE                               9999		//Maximum
-#define MAXPROCESSORS			   64		//The amount of processor
+#define MAXPROCESSORS			   		   64		//The amount of processor
 
 int PROCESSORS;
 
@@ -91,8 +91,7 @@ int main(int argc, char *argv[])
 	
 		#ifdef POWER_SIM
 		pthread_changePowerState(HIGH);
-		#endif
-		
+		#endif				
 
  		pthread_n_workers = NPROC;
         printf("\npthread_n_workers:%d",pthread_n_workers);
@@ -123,14 +122,14 @@ int main(int argc, char *argv[])
 		printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print);  
-
+	
+		
 		AcquireGlobalLock();
 		barrier_in = 1;
 		ReleaseGlobalLock();
 		
 		main0(m_argc,m_argv);
-
-
+		
 		pthread_my_exit();
 		fclose(fileout);
 	
@@ -142,7 +141,6 @@ int main(int argc, char *argv[])
 
 		while(pthread_finished == 0)
 		{
-
 			if (pthread_created == 1)
 			{
 				pthread_executeThread();
