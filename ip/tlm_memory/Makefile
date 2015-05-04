@@ -3,17 +3,16 @@
 # ####################################################
 
 TARGET=tlm_memory
-INC_DIR :=  -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
+INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_memory.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-LOCALCFLAGS := $(CFLAGS) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT) 
-
+CFLAGS := $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT)
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------
-.SUFFIXES: .cc .cpp .o .c
+.SUFFIXES: .cc .cpp .o
 #------------------------------------------------------
 lib: all
 	ar r lib$(TARGET).a $(OBJS)
@@ -26,7 +25,7 @@ clean:
 distclean: clean
 #------------------------------------------------------
 .cpp.o:
-	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
+	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<
 #------------------------------------------------------
 .cc.o:
-	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
+	$(CC) $(CFLAGS) $(INC_DIR) -c -g $<
