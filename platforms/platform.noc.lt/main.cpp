@@ -57,19 +57,20 @@ const char *archc_options="";
 #include  "tlm_memory.h"
 #include  "tlm_lock.h"
 //#include  "wrapper_noc.h"
-#include  "tlm_dvfs.h"
+#include  "tlm_dfs.h"
 #include  "tlm_noc.h"
+#include  "tlm_intr_ctrl.h"
 
 
 using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
-
+using user::tlm_intr_ctrl;
 
 //using user::wrapper_noc;
 
 #ifdef POWER_SIM
-using user::tlm_dvfs;
+using user::tlm_dfs;
 #endif
 
 /* This is an arbitrary limit for the number of processors 
@@ -134,14 +135,24 @@ int sc_main(int ac, char *av[])
 	}
 
 
-	// Creates memory, lock and dvfs devices 
+	// Creates memory, lock and dfs devices 
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
-
+	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
 
 	#ifdef POWER_SIM
-	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
+
+
+	// Binding processors and interruption controller
+	for (int i=0; i<N_WORKERS; i++)
+    {
+       intr_ctrl.CPU_port[i](processors[i]->intr_port);
+    }
+
+
+
 
 	// Creates the NoC with N_WORKERS+2 active nodes 
     // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
@@ -150,22 +161,20 @@ int sc_main(int ac, char *av[])
 
 	// noc constructor parameters:
     // masters = number of processors
-	// slaves = 2 (lock, memory) or 3 (+ dvfs)
+	// slaves = 2 (lock, memory) or 3 (+ dfs)
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 2; // mem, lock 
+	int slaves = 3; // mem, lock , intr_ctrl
 	
 	#ifdef POWER_SIM
-	slaves++; // and dvfs
+	slaves++; // and dfs
 	#endif
 
 	int peripherals = masters + slaves;
 	int r = ceil(sqrt(peripherals)); 
 	
 	tlm_noc noc ("noc", N_WORKERS, slaves, r, r);
-
-	
 
 	//***************************************************************
 	//  Binding platform components
@@ -175,48 +184,61 @@ int sc_main(int ac, char *av[])
 	int line = 0;
 	int column = 0;
 
-    // Connecting memory device with the noc node [0][0]
-    // Memory address space: 0...MEM_SIZE-1 = 0...0x20000000-1 
-    // (see defines.h)
 
-    noc.wrapper[wr].LOCAL_port(mem.target_export);
-    noc.tableOfRouts.newEntry(line,column, MEM_SIZE); 
+	noc.wrapper[wr].LOCAL_port(mem.target_export);
+    noc.tableOfRouts.newEntry(0,0, MEM_SIZE); 
 	wr++;
-	column++;
 	
-    // Connecting lock device with the noc node [0][1]
-    // second pheripheral address space: 0x20000000...0x21000000-1
-    noc.wrapper[wr].LOCAL_port(locker.target_export);
-	noc.tableOfRouts.newEntry(line,column);	
+	noc.wrapper[wr].LOCAL_port(locker.target_export);
+	noc.tableOfRouts.newEntry(0,1);	
 	wr++;
-	column++;
 
-	// third peripheral address space: 0x21000000...0x22000000-1
-    // In case of mesh 2x2, connecting next device with the noc node [1][0]
-    // in other cases, connection next device with the noc node [0][2]
+	//Special case - NoC 2x2 (MEM, LOCK, INTR_CTRL and PROCESSOR)
 	if (r==2)
 	{
+
+		noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
+		noc.tableOfRouts.newEntry(1,0);	
+		wr++;
+
 		line = 1;
-		column = 0;
+		column = 1;
+
 	}
+	else   // the NoC has at least 3x3 nodes
+	{
 
+		line = 0;
+		column = 2;
+		// Connecting the interrupt controler (intr_ctrl) with the noc node [1][0] (noc 2x2) or [0][2] (other cases)
+		// third peripheral address space: 0x21000000...0x22000000-1
+		noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
+		noc.tableOfRouts.newEntry(line,column);	
+		wr++;
+		column++;
 
-
-	// if POWER_SIM is defined, the next peripheral is the DVFS IP
-	#ifdef POWER_SIM 
-		noc.wrapper[wr].LOCAL_port(dvfs.target_export);
+		if (r==3)
+		{
+			line = 1;
+			column = 0;
+		}
+		// if POWER_SIM is defined, the next peripheral is the DFS IP
+		#ifdef POWER_SIM 
+		noc.wrapper[wr].LOCAL_port(dfs.target_export);
 		wr++;	
-	
 		noc.tableOfRouts.newEntry(line,column);
 		column++;
-	#endif
-
-	
+		if (r==4)
+		{
+			line = 1;
+			column = 0;
+		} 
+		#endif
+	}
+		
 	int proc=0;
 
-	
-
-	while (line<noc.getNumberOfLines() )
+	while (line < noc.getNumberOfLines() )
     {
 		while(column < noc.getNumberOfColumns())
         {
@@ -245,6 +267,14 @@ int sc_main(int ac, char *av[])
 
 	noc.preparingRoutingTable();
 	noc.print();
+
+
+	for (int i=1; i<N_WORKERS; i++)
+    {
+       intr_ctrl.send(i,OFF); // turn off processors 0,..,N_WORKERS-1
+    }
+
+	intr_ctrl.send(0,ON);    // turn on processor 0 (master)
 
 	// *****************************************************************************************
 	// Preparing for Simulation

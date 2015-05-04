@@ -62,10 +62,11 @@ const char *archc_options="";
 #include  "tlm_noc.h"
 #include  "tlm_lock.h"
 #include  "wrappers_noc.h"
-#include  "tlm_dvfs.h"
+#include  "tlm_dfs.h"
 
 #include "ac_utils.H"
 #include "ac_tlm_protocol.H"
+#include  "tlm_intr_ctrl.h"
 
 //#define AC_DEBUG
 
@@ -73,9 +74,10 @@ using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
+using user::tlm_intr_ctrl;
 
 #ifdef POWER_SIM
-using user::tlm_dvfs;
+using user::tlm_dfs;
 #endif
 
 
@@ -142,30 +144,37 @@ int sc_main(int ac, char *av[])
 	}
 
 
-	// Creates memory, lock and dvfs devices 
+	// Creates memory, lock and dfs devices 
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
-
+	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
 
 	#ifdef POWER_SIM
-	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
 
+
+	// Binding processors and interruption controller
+	for (int i=0; i<N_WORKERS; i++)
+    {
+       intr_ctrl.CPU_port[i](processors[i]->intr_port);
+    }
+
 	// Creates the NoC with N_WORKERS+2 active nodes 
-        // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
-	// created . This NoC has N_WORKERS master nodes (connected with processors) and 2 slave 
-	// nodes connected with memory and lock devices. 
+    // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
+	// created . This NoC has N_WORKERS master nodes (connected with processors) and 3 slave 
+	// nodes connected with memory, lock and interrrupt controler. 
 
 	// noc constructor parameters:
-        // masters = number of processors
-	// slaves = 2 (lock and memory) or 3 (+ dvfs)
+    // masters = number of processors
+	// slaves = 3 (lock, memory and interrupt controler ) or 4 (+ dfs)
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 2; // mem, lock 
+	int slaves = 3; // mem, lock 
 	
 	#ifdef POWER_SIM
-	slaves++; // and dvfs
+	slaves++; // and dfs
 	#endif
 
 	int peripherals = masters + slaves;
@@ -187,39 +196,77 @@ int sc_main(int ac, char *av[])
 	int emptySlaves = 0;
 	int column=0, line=0;
 
+
+	// NoC [0][0] -> MEM
 	noc.wrapper[wrMS].LOCAL_init_socket.bind(mem.LOCAL_target_socket);
 	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 	wrMS++;
 	emptyMasters++;
-	noc.tableOfRouts.newEntry(line,column,MEM_SIZE);		// the third argument is the last address of the range address of LOCK device
-	column++;
+	noc.tableOfRouts.newEntry(0,0,MEM_SIZE);		// the third argument is the last address of the range address of LOCK device
+	
        
+    // NoC [0][1] -> LOCK
 	noc.wrapper[wrMS].LOCAL_init_socket.bind(locker.LOCAL_target_socket);
 	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 	wrMS++;
 	emptyMasters++;
-    noc.tableOfRouts.newEntry(line,column);	
-    column++;
+    noc.tableOfRouts.newEntry(0,1);	
 
-    if (r==2)
-    {
+
+
+	//Special case - NoC 2x2 (MEM, LOCK, INTR_CTRL and PROCESSOR)
+	if (r==2)
+	{
+		//NoC [1][0] -> INTR_CTRL
+		noc.wrapper[wrMS].LOCAL_init_socket.bind(intr_ctrl.LOCAL_target_socket);
+		noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
+		wrMS++;
+		emptyMasters++;
+		noc.tableOfRouts.newEntry(1,0);		
+	
     	line = 1;
-    	column = 0;
+		column = 1;
     }
+    else   // the NoC has at least 3x3 nodes
+	{
 
-    #ifdef POWER_SIM
-	// DVFS is the third peripheral -> address space: 0x21000000...0x22000000-1
-	noc.wrapper[wrMS].LOCAL_init_socket.bind(dvfs.LOCAL_target_socket);
-    noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
-	wrMS++;
-	emptyMasters++;
-	noc.tableOfRouts.newEntry(line,column);	
-	column++;
-	#endif
+		line = 0;
+		column = 2;
+		
+		//NoC [0][2]-> INTR_CTRL
+		noc.wrapper[wrMS].LOCAL_init_socket.bind(intr_ctrl.LOCAL_target_socket);
+		noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
+		wrMS++;
+		emptyMasters++;
+		noc.tableOfRouts.newEntry(line,column);		// the third argument is the last address of the range address of LOCK device
 
+		column++;
+
+		if (r==3)
+		{
+			line = 1;
+			column = 0;
+		}
+		
+		#ifdef POWER_SIM
+
+		// DFS will be binded with NoC[1]0] in case of NoC 3x3, or NoC[0][3] in other NoCs
+		noc.wrapper[wrMS].LOCAL_init_socket.bind(dfs.LOCAL_target_socket);
+    	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
+		wrMS++;
+		emptyMasters++;
+		noc.tableOfRouts.newEntry(line,column);	
+		column++;
+		if (r==4)
+		{
+			// in case of NoC 4x4, the next peripheral must be on node [1][0]
+			line = 1;
+			column = 0;
+		} 
+		#endif
+	}
 
 	// Connecting processors and noc-mesh 
-
 	int proc = 0;
 
 

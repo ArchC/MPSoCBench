@@ -30,11 +30,13 @@ const char *archc_options="";
 #include "../../defines.h"
 
 #include  "tlm_memory.h"
-#include "tlm_router.h"
+#include  "tlm_router.h"
 #include  "tlm_lock.h"
-#include  "tlm_dvfs.h"
+#include  "tlm_dfs.h"
+#include  "tlm_intr_ctrl.h"
 
 
+/*
 #ifdef PROCMIPS 
 	#include "mips.H"
 	#define PROCESSOR_NAME mips
@@ -59,7 +61,7 @@ const char *archc_options="";
 	#define PROCESSOR_NAME arm
 	#define PROCESSOR_NAME_parms arm_parms
 #endif 
-
+*/
 
 
 //#define AC_DEBUG
@@ -68,8 +70,9 @@ const char *archc_options="";
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
+using user::tlm_intr_ctrl;
 #ifdef POWER_SIM
-using user::tlm_dvfs;
+using user::tlm_dfs;
 #endif
 
 
@@ -107,9 +110,6 @@ int sc_main(int ac, char *av[])
 		exit(1);
 	}
 
-	
-
-
   	PROCESSOR_NAME **processors;				// processors
     
 	processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
@@ -123,40 +123,62 @@ int sc_main(int ac, char *av[])
 	
 	}
 
-// Platform components
+    // Platform components
 	tlm_memory mem("mem", 0, MEM_SIZE-1);	// memory
   	tlm_router router("router");			// router
 	tlm_lock locker("locker");			// locker
+	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
+
 	#ifdef POWER_SIM
-	tlm_dvfs dvfs ("dvfs", N_WORKERS, processors);				// dvfs
+	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
 	
-
-
 	// Binding ports
 	
+
 	router.MEM_port(mem.target_export);  
     router.LOCK_port(locker.target_export);
-
+    router.INTR_CTRL_port(intr_ctrl.target_export);
 
     #ifdef POWER_SIM
-    router.DVFS_port(dvfs.target_export);
+    router.DFS_port(dfs.target_export);
     #endif
 
-    //   
+    // Initializing Memports
 	for (int i=0; i<N_WORKERS; i++)
 	{
 		processors[i]->MEM_port(router.target_export);
 		(processors[i]->MEM).setProcId(processors[i]->getId());
 	}
-  
+
+    
+	// Binding processors and interruption controller
+	for (int i=0; i<N_WORKERS; i++)
+    {
+       intr_ctrl.CPU_port[i](processors[i]->intr_port);
+    }
+
+
+
+	// Processor 0 starts simulatino in ON-mode while the other processors are in OFF-mode
+	for (int i=1; i<N_WORKERS; i++)
+    {
+       intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
+    }
+	intr_ctrl.send(0,ON);    // turn on processor 0 (master)
+
+
+
+
 	// Preparing the arguments
 	char **arguments[N_WORKERS];
-	for (int i=0; i<N_WORKERS; i++){
+	for (int i=0; i<N_WORKERS; i++)
+	{
                 arguments[i] = (char **) new char*[ac];
 	}
  
-	for (int i=0; i<N_WORKERS; i++) {
+	for (int i=0; i<N_WORKERS; i++)
+	{
 		for (int j=0; j<ac; j++) { 
             arguments[i][j] = new char[strlen(av[j])+1];
 			arguments[i][j] = av[j];
@@ -179,7 +201,6 @@ int sc_main(int ac, char *av[])
 	//sc_simcontext*  my_sim = sc_get_curr_simcontext();
     //ESLDiagram dotDiagram (my_sim);
     //dotDiagram.startCapture();
-
 
 	// Beggining of time measurement
 	
@@ -211,9 +232,13 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
   		 processors[i]->ps.powersc_connect();
+  		 processors[i]->IC.powersc_connect();
 		 // PowerSC Report related to ArchC Processor
-		 processors[i]->ps.report();
+		 //processors[i]->ps.report();
+		 //processors[i]->IC.ps.report();
 	}
+
+	processors[N_WORKERS-1]->ps.report();
 	#endif
 
 

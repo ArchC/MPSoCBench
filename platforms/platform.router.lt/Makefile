@@ -19,7 +19,7 @@ ifeq ($(PROCESSOR),powerpc)
 CFLAGS_AUX = -DPROCPOWERPC
 endif
 
-CFLAGS := $(ENDIANESS) $(CFLAGS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT) $(CFLAGS_AUX)
+LOCALCFLAGS := $(ENDIANESS) $(CFLAGS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT) $(CFLAGS_AUX)
 
 SRCS := main.cpp
 OBJS := $(SRCS:.cpp=.o)
@@ -35,10 +35,10 @@ LIB_DIR := $(LIB_DIR) -L$(POWERSC_PATH)/lib
 .SUFFIXES: .cc .cpp .o .x
 #------------------------------------------------------
 $(EXE): $(OBJS)
-	$(CC) $(CFLAGS) $(INC_DIR) $(LIB_DIR) -o $(EXE) $(OBJS) $(LIBS)
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) $(LIB_DIR) -o $(EXE) $(OBJS) $(LIBS)
 #------------------------------------------------------
 main.o:
-	$(CC) $(CFLAGS) $(INC_DIR) -c main.cpp
+	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c main.cpp
 #------------------------------------------------------
 all: $(EXE)
 #------------------------------------------------------
