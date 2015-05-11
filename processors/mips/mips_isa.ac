@@ -116,6 +116,7 @@ AC_ISA(mips){
     addi.set_asm("add %reg, %reg, %exp", rt, rs, imm);
     addi.set_asm("add %reg, $0, %exp", rt, imm, rs=0);
     addi.set_decoder(op=0x08);
+    addi.set_cycles(4);
   
     addiu.set_asm("addiu %reg, %reg, %exp", rt, rs, imm);
     addiu.set_asm("addiu %reg, %reg, \%lo(%exp)", rt, rs, imm);
@@ -133,38 +134,49 @@ AC_ISA(mips){
     andi.set_asm("andi %reg, %reg, %imm", rt, rs, imm);
     andi.set_asm("and %reg, %reg, %imm", rt, rs, imm);
     andi.set_decoder(op=0x0C);
+    andi.set_cycles(1);
 
     ori.set_asm("ori %reg, %reg, %imm", rt, rs, imm);
     ori.set_asm("or %reg, %reg, %imm", rt, rs, imm);
     ori.set_decoder(op=0x0D);
+    ori.set_cycles(1);
+
 
     xori.set_asm("xori %reg, %reg, %imm", rt, rs, imm);
     xori.set_asm("xor %reg, %reg, %imm", rt, rs, imm);
     xori.set_decoder(op=0x0E);
+    ori.set_cycles(1);
 
     lui.set_asm("lui %reg, %exp", rt, imm);
     lui.set_asm("lui %reg, \%hi(%imm(carry))", rt, imm);  
     lui.set_asm("lui %reg, \%hi(%exp(carry))", rt, imm);
     lui.set_decoder(op=0x0F, rs=0x00);
+    lui.set_cycles(1);
 
     add.set_asm("add %reg, %reg, %reg", rd, rs, rt);
     add.set_decoder(op=0x00, func=0x20);
+    add.set_cycles(4);
 
     addu.set_asm("addu %reg, %reg, %reg", rd, rs, rt);
     addu.set_asm("move %reg, %reg", rd, rs, rt="$zero");
     addu.set_decoder(op=0x00, func=0x21);
+    addu.set_cycles(4);
 
     sub.set_asm("sub %reg, %reg, %reg", rd, rs, rt);
     sub.set_decoder(op=0x00, func=0x22);
+    sub.set_cycles(4);
   
     subu.set_asm("subu %reg, %reg, %reg", rd, rs, rt);
     subu.set_decoder(op=0x00, func=0x23);
+    subu.set_cycles(4);
 
     slt.set_asm("slt %reg, %reg, %reg", rd, rs, rt);
     slt.set_decoder(op=0x00, func=0x2A);
+    slt.set_cycles(1);
   
     sltu.set_asm("sltu %reg, %reg, %reg", rd, rs, rt);
     sltu.set_decoder(op=0x00, func=0x2B);
+    slt.set_cycles(1);
 
     instr_and.set_asm("and %reg, %reg, %reg", rd, rs, rt);
     instr_and.set_decoder(op=0x00, func=0x24);
@@ -183,36 +195,47 @@ AC_ISA(mips){
 
     sll.set_asm("sll %reg, %reg, %imm", rd, rt, shamt);
     sll.set_decoder(op=0x00, func= 0x00);
+    sll.set_cycles(1);
   
     srl.set_asm("srl %reg, %reg, %imm", rd, rt, shamt);
     srl.set_decoder(op=0x00, func= 0x02);
+    sll.set_cycles(1);
   
     sra.set_asm("sra %reg, %reg, %imm", rd, rt, shamt);
     sra.set_decoder(op=0x00, func= 0x03);
+    sll.set_cycles(1);
   
     sllv.set_asm("sllv %reg, %reg, %reg", rd, rt, rs);
     sllv.set_asm("sll  %reg, %reg, %reg", rd, rt, rs);  // gas
     sllv.set_decoder(op=0x00, func= 0x04);
+    sllv.set_cycles(1);
   
     srlv.set_asm("srlv %reg, %reg, %reg", rd, rt, rs);
     srlv.set_asm("srl  %reg, %reg, %reg", rd, rt, rs);  // gas
     srlv.set_decoder(op=0x00, func= 0x06);
+    srlv.set_cycles(1);
   
     srav.set_asm("srav %reg, %reg, %reg", rd, rt, rs);
     srav.set_asm("sra  %reg, %reg, %reg", rd, rt, rs);  // gas
     srav.set_decoder(op=0x00, func= 0x07);
+    srlv.set_cycles(1);
   
     mult.set_asm("mult %reg, %reg", rs, rt);
     mult.set_decoder(op=0x00, func=0x18);
+    mult.set_cycles(4);
 
     multu.set_asm("multu %reg, %reg", rs, rt);
     multu.set_decoder(op=0x00, func=0x19);
+    multu.set_cycles(4);
 
     div.set_asm("div %reg, %reg", rs, rt);
     div.set_decoder(op=0x00, func=0x1A);
+    div.set_cycles(30);//media
 
     divu.set_asm("divu %reg, %reg", rs, rt);
     divu.set_decoder(op=0x00, func=0x1B);
+    divu.set_cycles(30);//media
+
 
     mfhi.set_asm("mfhi %reg", rd);
     mfhi.set_decoder(op=0x00, func=0x10);
@@ -285,9 +308,9 @@ AC_ISA(mips){
     }
 
     pseudo_instr("la %reg, %addr") { 
-      "lui %0, \%hi(%1)";	   
+      "lui %0, \%hi(%1)";    
       "addiu %0, %0, \%lo(%1)";    
-    }				  
+    }         
 
     pseudo_instr("sw %reg, %exp") {
       "lui $at, \%hi(%1)";
