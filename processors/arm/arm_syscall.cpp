@@ -27,7 +27,7 @@ void arm_syscall::get_buffer(int argn, unsigned char* buf, unsigned int size) {
   unsigned int addr = RB.read(argn);
 
   for (unsigned int i = 0; i<size; i++, addr++) {
-    buf[i] = MEM.read_byte(addr);
+    buf[i] = DC_port.read_byte(addr);
   }
 }
 
@@ -35,7 +35,7 @@ void arm_syscall::set_buffer(int argn, unsigned char* buf, unsigned int size) {
   unsigned int addr = RB.read(argn);
 
   for (unsigned int i = 0; i<size; i++, addr++) {
-    MEM.write_byte(addr, buf[i]);
+    DC_port.write_byte(addr, buf[i]);
   }
 }
 
@@ -43,7 +43,7 @@ void arm_syscall::set_buffer_noinvert(int argn, unsigned char* buf, unsigned int
   unsigned int addr = RB.read(argn);
 
   for (unsigned int i = 0; i<size; i+=4, addr+=4) {
-    MEM.write(addr, *(unsigned int *) &buf[i]);
+    DC_port.write(addr, *(unsigned int *) &buf[i]);
   }
 }
 
@@ -101,7 +101,7 @@ void arm_syscall::set_prog_args(int argc, char **argv) {
   if (ref.ac_dyn_loader.is_glibc()) {
     //Put argc into stack (required by glibc)
     RB.write(13, AC_RAM_END-512-124);
-    MEM.write(AC_RAM_END-512-124, argc);
+    DC_port.write(AC_RAM_END-512-124, argc);
   }
 
   if (ref.ac_dyn_loader.get_init_arraysz() != 0) {
