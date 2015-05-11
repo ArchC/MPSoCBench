@@ -34,6 +34,7 @@ const char *archc_options="";
 #include  "tlm_lock.h"
 #include  "tlm_dfs.h"
 #include  "tlm_intr_ctrl.h"
+#include  "tlm_dir.h"
 
 
 /*
@@ -71,6 +72,7 @@ using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
+using user::tlm_dir;
 #ifdef POWER_SIM
 using user::tlm_dfs;
 #endif
@@ -128,6 +130,7 @@ int sc_main(int ac, char *av[])
   	tlm_router router("router");			// router
 	tlm_lock locker("locker");			// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
+	tlm_dir dir("dir");
 
 	#ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
@@ -139,6 +142,7 @@ int sc_main(int ac, char *av[])
 	router.MEM_port(mem.target_export);  
     router.LOCK_port(locker.target_export);
     router.INTR_CTRL_port(intr_ctrl.target_export);
+ 	router.DIR_port(dir.target_export);
 
     #ifdef POWER_SIM
     router.DFS_port(dfs.target_export);
@@ -233,11 +237,9 @@ int sc_main(int ac, char *av[])
    		 // Connect Power Information from ArchC with PowerSC
   		 processors[i]->ps.powersc_connect();
   		 processors[i]->IC.powersc_connect();
-		 // PowerSC Report related to ArchC Processor
-		 //processors[i]->ps.report();
-		 //processors[i]->IC.ps.report();
+  		 processors[i]->DC.powersc_connect();
+		
 	}
-
 	processors[N_WORKERS-1]->ps.report();
 	#endif
 
@@ -246,6 +248,7 @@ int sc_main(int ac, char *av[])
 	bool status = 0;
 	for (int i=0; i<N_WORKERS; i++)
 		status = status + processors[i]->ac_exit_status; 
+
 
 	// free	
 	for (int i=0; i<N_WORKERS; i++){

@@ -56,18 +56,19 @@ const char *archc_options="";
 
 #include  "tlm_memory.h"
 #include  "tlm_lock.h"
-//#include  "wrapper_noc.h"
 #include  "tlm_dfs.h"
 #include  "tlm_noc.h"
 #include  "tlm_intr_ctrl.h"
+#include  "tlm_dir.h"
 
 
 using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
+using user::tlm_dir;
 
-//using user::wrapper_noc;
+
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -94,9 +95,11 @@ void load_elf(PROCESSOR_NAME &, tlm_memory& , char*, unsigned int, unsigned int)
 int sc_main(int ac, char *av[])
 {
 
+
+
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
 
-	/* Checking arguments */
+
 	int N_WORKERS;
 
 	if (ac!=0) {
@@ -139,6 +142,7 @@ int sc_main(int ac, char *av[])
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
+	tlm_dir dir ("dir");
 
 	#ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
@@ -165,7 +169,7 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 3; // mem, lock , intr_ctrl
+	int slaves = 4; // mem, lock , intr_ctrl, dir
 	
 	#ifdef POWER_SIM
 	slaves++; // and dfs
@@ -193,20 +197,6 @@ int sc_main(int ac, char *av[])
 	noc.tableOfRouts.newEntry(0,1);	
 	wr++;
 
-	//Special case - NoC 2x2 (MEM, LOCK, INTR_CTRL and PROCESSOR)
-	if (r==2)
-	{
-
-		noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
-		noc.tableOfRouts.newEntry(1,0);	
-		wr++;
-
-		line = 1;
-		column = 1;
-
-	}
-	else   // the NoC has at least 3x3 nodes
-	{
 
 		line = 0;
 		column = 2;
@@ -222,19 +212,32 @@ int sc_main(int ac, char *av[])
 			line = 1;
 			column = 0;
 		}
+
+
+		noc.wrapper[wr].LOCAL_port(dir.target_export);
+		noc.tableOfRouts.newEntry(line,column);	
+		wr++;
+		column++;
+		
+		if (r==4)
+		{
+			line = 1;
+			column = 0;	
+		}	
+
 		// if POWER_SIM is defined, the next peripheral is the DFS IP
 		#ifdef POWER_SIM 
 		noc.wrapper[wr].LOCAL_port(dfs.target_export);
 		wr++;	
 		noc.tableOfRouts.newEntry(line,column);
 		column++;
-		if (r==4)
+		if (r==5)
 		{
 			line = 1;
 			column = 0;
 		} 
 		#endif
-	}
+	
 		
 	int proc=0;
 
@@ -378,10 +381,8 @@ int sc_main(int ac, char *av[])
 	delete processors;
 
 
+
 	return status; 
-
-
-
 
 }
 
