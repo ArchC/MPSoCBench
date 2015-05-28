@@ -50,10 +50,6 @@
 #include "tlm_utils/simple_target_socket.h"
 #include "../../defines.h"
 
-
-//////////////////////////////////////////////////////////////////////////////
-using user::tlm_payload_extension;
-
 using tlm::tlm_dmi;
 
 using namespace sc_core;
@@ -66,20 +62,10 @@ namespace user
 	class packageType
 	{
 		public:
-			packageType(ac_tlm2_payload &p, tlm::tlm_phase& ph, sc_core::sc_time &t) {
-	
-				unsigned char *data_pointer = p.get_data_ptr();
-				payload.set_data_ptr(data_pointer);
-				payload.deep_copy_from(p);
-
-				time = t;
-				phase = ph;
-				next = NULL;
-				prev = NULL;
-			}
+			packageType(ac_tlm2_payload &p, tlm::tlm_phase& ph, sc_core::sc_time &t);
 	
 			ac_tlm2_payload payload;
-		        sc_core::sc_time time;
+		  sc_core::sc_time time;
 			tlm::tlm_phase phase;
 			packageType *next;
 			packageType *prev;

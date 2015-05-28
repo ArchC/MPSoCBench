@@ -48,7 +48,6 @@
  * 
  */
 
-
 #ifdef POWER_SIM
 
 #ifndef TLM_DFS_H_
@@ -84,10 +83,6 @@ class tlm_dfs:
 public:
    
   sc_export<ac_tlm2_blocking_transport_if> target_export;
-
-  sc_port<ac_tlm2_blocking_transport_if> *CPU_port; //[NPROCS];
-
-
   tlm_dfs(sc_module_name module_name, int, PROCESSOR_NAME**);
   ~tlm_dfs();
   
@@ -109,5 +104,6 @@ private:
 };
 
 #endif //TLM_DFS_H_
+
 
 #endif

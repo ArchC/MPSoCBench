@@ -62,8 +62,6 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 				/*NUMBER OF HOPS*/					
 
 			}
-			~tlm_payload_extension() {
-			}
 			
 			int getTargetX () { return targetX; }
 			int getTargetY () { return targetY; }
@@ -118,8 +116,17 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 			}
 			virtual void copy_from(tlm_extension_base const &ext) {  
 
-				printf("\nPayload extension copy_from() isn't implemented - clone() can be used intead, if necessary ");
-				exit(1);
+				tlm_extension_base* ext2 = ext.clone ();
+				tlm_payload_extension *new_ext = reinterpret_cast<tlm_payload_extension*>(ext2);
+				
+				this->targetX = new_ext->targetX; 
+				this->targetY = new_ext->targetY; 
+				this->initX = new_ext->initX;
+				this->initY = new_ext->initY;
+				this->firstForward = new_ext->firstForward;
+				this->firstBackward = new_ext->firstBackward;
+				this->direction = new_ext->direction;
+				this->numberOfHops = new_ext->numberOfHops;
 				
 			} 
 			

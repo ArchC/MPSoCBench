@@ -59,7 +59,7 @@ void powerpc_syscall::set_buffer_noinvert(int argn, unsigned char* buf, unsigned
   unsigned int addr = GPR.read(3+argn);
 
   for (unsigned int i = 0; i<size; i+=4, addr+=4) {
-    .write(addr, *(unsigned int *) &buf[i]);
+    DC_port.write(addr, *(unsigned int *) &buf[i]);
   }
 }
 

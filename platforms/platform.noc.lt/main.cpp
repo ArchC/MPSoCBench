@@ -29,31 +29,6 @@ const char *archc_options="";
 #include <string.h>
 #include "../../defines.h"
 
-/*#ifdef PROCMIPS 
-	#include "mips.H"
-	#define PROCESSOR_NAME mips
-	#define PROCESSOR_NAME_parms mips_parms
-#endif 
-
-#ifdef PROCSPARC 
-	#include "sparc.H"
-	#define PROCESSOR_NAME sparc
-	#define PROCESSOR_NAME_parms sparc_parms
-#endif 
-
-#ifdef PROCPOWERPC 
-	#include "powerpc.H"
-	#define PROCESSOR_NAME powerpc
-	#define PROCESSOR_NAME_parms powerpc_parms
-#endif 
-
-#ifdef PROCARM 
-	#include "arm.H"
-	#define PROCESSOR_NAME arm
-	#define PROCESSOR_NAME_parms arm_parms
-#endif 
-*/
-
 #include  "tlm_memory.h"
 #include  "tlm_lock.h"
 #include  "tlm_dfs.h"
@@ -68,11 +43,10 @@ using user::tlm_lock;
 using user::tlm_intr_ctrl;
 using user::tlm_dir;
 
-
-
 #ifdef POWER_SIM
 using user::tlm_dfs;
 #endif
+
 
 /* This is an arbitrary limit for the number of processors 
  If necessary, this value can be modified, but
@@ -94,7 +68,6 @@ void load_elf(PROCESSOR_NAME &, tlm_memory& , char*, unsigned int, unsigned int)
 
 int sc_main(int ac, char *av[])
 {
-
 
 
 	sc_report_handler::set_actions("/IEEE_Std_1666/deprecated", SC_DO_NOTHING);
@@ -142,17 +115,16 @@ int sc_main(int ac, char *av[])
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir ("dir");
-
+	tlm_dir dir ("dir", N_WORKERS);
 	#ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
-
 
 	// Binding processors and interruption controller
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
+       dir.CPU_port[i](processors[i]->intr_port);
     }
 
 
@@ -169,11 +141,8 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 4; // mem, lock , intr_ctrl, dir
+	int slaves = 5; // mem, lock , intr_ctrl, dir
 	
-	#ifdef POWER_SIM
-	slaves++; // and dfs
-	#endif
 
 	int peripherals = masters + slaves;
 	int r = ceil(sqrt(peripherals)); 
@@ -361,13 +330,11 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 // PowerSC Report related to ArchC Processor
-		 processors[i]->ps.report();
+		 processors[i]->DC.powersc_connect();
+		 processors[i]->IC.powersc_connect();
 	}
+	processors[N_WORKERS-1]->ps.report();
 	#endif
-
-
-
 
 	// Checking the status 
 	bool status = 0;

@@ -95,6 +95,8 @@ distclean:
 copy:
 	cd $(ARP)
 	cd platforms/$(PLATFORM); $(MAKE) copy;
+	cd $(ARP)
+	cd is/tlm_noc_at; $(MAKE) copy;
 	for sw in $(SW) ; do cd sw/$$sw ; \
         $(MAKE) copy; done
 #------------------------------------------------------

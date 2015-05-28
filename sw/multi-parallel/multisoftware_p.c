@@ -25,6 +25,7 @@
 
 #define NSOFTWARES 4
 
+
 /* OUTPUT FILES */
 FILE *fileout_sha;
 FILE *fileout_stringsearch;
@@ -83,21 +84,20 @@ void open_files ()
 	 fileout_dijkstra = fopen("output_dijkstra","w");
 	 if (fileout_dijkstra == NULL){
 		    printf("Error: fopen() fileout_dijkstra\n");
-		    exit(0);
+		 exit(0);
 	 }
 
 	 fileout_basicmath = fopen("output_basicmath","w");
 	 if (fileout_basicmath == NULL){
 		    printf("Error: fopen() fileout_basicmath\n");
-		    exit(0);
+		 exit(0);
 	 }
 	 
          fileout_sha = fopen("output_sha","w");
 	 if (fileout_sha == NULL){
 		    printf("Error: fopen() fileout_sha\n");
-		    exit(0);
- 	 }
-	
+		 exit(0);
+ 	 }	
 
 	 filein1_stringsearch = fopen("SearchString01.txt","r");
 	 if (filein1_stringsearch == NULL){
@@ -118,7 +118,6 @@ void open_files ()
 	     printf("Error: fopen() filein1_stringsearch\n");
 	     exit(0);
 	 }
-
     
 
 }
@@ -143,34 +142,39 @@ int main(int argc, char *argv[])
  	pthread_changePowerState(HIGH);
   	#endif
     
+	
+
+
     pthread_init(); 
 
 	pthread_mutex_init(&mutex_print, NULL);
 	pthread_mutex_lock(&mutex_print);	
 	printf("\n");
-        printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-       	printf("----------------Running: multisoftware platform --------------------\n");
-       	printf("--------------sha, stringsearch, dijkstra, basicmath ---------------\n");
-       	printf("--------------- The results will be available in -------------------\n");
-       	printf("--------------------------------------------------------------------\n");
-       	printf("-----------  sw/multi_parallel/sha_multi/output.dat ----------------\n");
-       	printf("-----  sw/multi_parallel/stringsearch_multi/testdata/output.dat ----\n");
-       	printf("--------  sw/multi_parallel/dijkstra_multi/output.dat --------------\n");
-       	printf("---------- sw/multi_parallel/basicmath_multi/output.dat ------------\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("----------------Running: multisoftware platform --------------------\n");
+    printf("--------------sha, stringsearch, dijkstra, basicmath ---------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("--------------------------------------------------------------------\n");
+    printf("-----------  sw/multi_parallel/sha_multi/output.dat ----------------\n");
+    printf("-----  sw/multi_parallel/stringsearch_multi/testdata/output.dat ----\n");
+    printf("--------  sw/multi_parallel/dijkstra_multi/output.dat --------------\n");
+    printf("---------- sw/multi_parallel/basicmath_multi/output.dat ------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("---------------------- %d processadores ----------------------------\n", pthread_n_workers);
 	printf("------------------------ %d softwares ------------------------------\n", pthread_n_softwares);
 	printf("------------ ------- %d threads per software -----------------------\n", pthread_threads_per_software);
-       	printf("--------------------------------------------------------------------\n");
-        pthread_mutex_unlock(&mutex_print);
+    printf("--------------------------------------------------------------------\n");
+    pthread_mutex_unlock(&mutex_print);
 
 	open_files ();
 
 	pthread_mutex_lock(&mutex_print);  
 	printf("---------------- Start running: stringsearch -----------------------\n");
 	pthread_mutex_unlock(&mutex_print);  
+
+    pthread_turnOnProcessors();	
 
 	AcquireGlobalLock();
 	barrier_in = 1;
@@ -186,9 +190,9 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
-  		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
-  		#endif
+  	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 
 	pthread_mutex_lock(&mutex_print);  
 	printf("------------------- Start running: dijkstra ------------------------\n");
@@ -202,12 +206,12 @@ int main(int argc, char *argv[])
 	while(barrier_in == 0);
 
 
- 		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
-  		#endif
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 
 	pthread_mutex_lock(&mutex_print);		
-      	printf("------------------- Start running: basicmath -----------------------\n");
+    printf("------------------- Start running: basicmath -----------------------\n");
  	pthread_mutex_unlock(&mutex_print);		
 
 	main_basicmath ();		
@@ -218,11 +222,11 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
- 		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
-  		#endif
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
 	pthread_mutex_lock(&mutex_print);  
-        printf("--------------------- Start running: sha --------------------------\n");
+    printf("--------------------- Start running: sha --------------------------\n");
 	pthread_mutex_unlock(&mutex_print); 
 	main_sha();  
   }
@@ -230,7 +234,6 @@ int main(int argc, char *argv[])
   {
 
 	while(barrier_in == 0);
-
 	pthread_executeThread();
   }
 

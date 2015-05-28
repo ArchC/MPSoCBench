@@ -28,35 +28,8 @@ const char *archc_options="";
 #include <stdio.h>
 #include <string.h>
 
-
 #include "../../defines.h"
 #define SC_INCLUDE_DYNAMIC_PROCESSES
-
-/*
-#ifdef PROCMIPS 
-	#include "mips.H"
-	#define PROCESSOR_NAME mips
-	#define PROCESSOR_NAME_parms mips_parms
-#endif 
-
-#ifdef PROCSPARC 
-	#include "sparc.H"
-	#define PROCESSOR_NAME sparc
-	#define PROCESSOR_NAME_parms sparc_parms
-#endif 
-
-#ifdef PROCPOWERPC 
-	#include "powerpc.H"
-	#define PROCESSOR_NAME powerpc
-	#define PROCESSOR_NAME_parms powerpc_parms
-#endif 
-
-#ifdef PROCARM 
-	#include "arm.H"
-	#define PROCESSOR_NAME arm
-	#define PROCESSOR_NAME_parms arm_parms
-#endif 
-*/
 
 #include  "tlm_memory.h"
 #include  "tlm_noc.h"
@@ -77,10 +50,8 @@ using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
 using user::tlm_intr_ctrl;
 using user::tlm_dir;
-
-#ifdef POWER_SIM
 using user::tlm_dfs;
-#endif
+
 
 
 // Global variables
@@ -144,23 +115,28 @@ int sc_main(int ac, char *av[])
 		(processors[i]->MEM).setProcId(processors[i]->getId());
 	}
 
-
 	// Creates memory, lock and dfs devices 
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir ("dir");
-
-	#ifdef POWER_SIM
+	tlm_dir dir ("dir", N_WORKERS);
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
-	#endif
 
 
 	// Binding processors and interruption controller
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
+       dir.CPU_port[i](processors[i]->intr_port);
     }
+
+
+	// Processor 0 starts simulatino in ON-mode while the other processors are in OFF-mode
+	for (int i=1; i<N_WORKERS; i++)
+    {
+        intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
+    }
+    intr_ctrl.send(0,ON);    // turn on processor 0 (master)
 
 	// Creates the NoC with N_WORKERS+2 active nodes 
     // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
@@ -173,12 +149,8 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 4; // mem, lock, intr_ctrl, dir 
+	int slaves = 5; // mem, lock, intr_ctrl, dir , dfs
 	
-	#ifdef POWER_SIM
-	slaves++; // and dfs
-	#endif
-
 	int peripherals = masters + slaves;
 	int r = ceil(sqrt(peripherals)); 
 	
@@ -215,24 +187,6 @@ int sc_main(int ac, char *av[])
     noc.tableOfRouts.newEntry(0,1);	
 
 
-
-	/*Special case - NoC 2x2 (MEM, LOCK, INTR_CTRL and PROCESSOR)
-	if (r==2)
-	{
-		//NoC [1][0] -> INTR_CTRL
-		noc.wrapper[wrMS].LOCAL_init_socket.bind(intr_ctrl.LOCAL_target_socket);
-		noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
-		wrMS++;
-		emptyMasters++;
-		noc.tableOfRouts.newEntry(1,0);		
-	
-    	line = 1;
-		column = 1;
-    }
-    else   // the NoC has at least 3x3 nodes
-	{
-	*/
-
 		line = 0;
 		column = 2;
 		
@@ -267,7 +221,6 @@ int sc_main(int ac, char *av[])
 		}	
 
 
-		#ifdef POWER_SIM
 		// DFS will be binded with NoC[1]0] in case of NoC 3x3, or NoC[0][4] in other NoCs
 		noc.wrapper[wrMS].LOCAL_init_socket.bind(dfs.LOCAL_target_socket);
     	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
@@ -281,7 +234,7 @@ int sc_main(int ac, char *av[])
 			line = 1;
 			column = 0;
 		} 
-		#endif
+		
 	//}
 
 	// Connecting processors and noc-mesh 
@@ -297,6 +250,8 @@ int sc_main(int ac, char *av[])
 				
 				processors[proc]->MEM_port.LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.slaveEmptyNodes[emptySlaves].LOCAL_slave_target_socket);
+				noc.wrapper[wrMS].initDFS(processors[proc]);
+
 				wrMS++;
 				emptySlaves++;
 				noc.tableOfRouts.newEntry(line,column);
@@ -322,7 +277,6 @@ int sc_main(int ac, char *av[])
 	// *****************************************************************************************
 	// Preparing for Simulation
     // *****************************************************************************************
-
 	
 
 	// Preparing the processors arguments 
@@ -371,10 +325,9 @@ int sc_main(int ac, char *av[])
 	// Endding the time measurement
 	report_end();
 
-
 	// ******************************************************************************************
 	// Printing Simulation Statistics and Finishing
-        // ******************************************************************************************
+    // ******************************************************************************************
 
 	// Printing statistics 
 	for (int i=0; i<N_WORKERS; i++) {
@@ -395,11 +348,10 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 processors[i]->IC.powersc_connect();
-		 processors[i]->DC.powersc_connect();
-		 // PowerSC Report related to ArchC Processor
-		 processors[i]->ps.report();
+		 //processors[i]->IC.powersc_connect();
+		 //processors[i]->DC.powersc_connect();
 	}
+	processors[N_WORKERS-1]->ps.report();
 	#endif
 
 	// Checking the status 
@@ -407,6 +359,7 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++)
 		status = status + processors[i]->ac_exit_status; 
 
+	noc.destroyComponents();
 
 	for (int i=0; i<N_WORKERS; i++){
 		delete processors[i];

@@ -16,6 +16,7 @@
 	without any warranty.
 
 *********************************************************************************/
+
 /******************************************************************************
  * @file      tlm_payload_extension.h
  * @author    Liana Duenha
@@ -56,8 +57,10 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 				firstForward = true;
 				direction = FORWARD;
 
-			}
-			~tlm_payload_extension() {
+				/*NUMBER OF HOPS*/					
+				numberOfHops = 0;
+				/*NUMBER OF HOPS*/					
+
 			}
 			
 			int getTargetX () { return targetX; }
@@ -83,6 +86,9 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 			}
 
 			
+			void incNumberOfHops() { numberOfHops++; }
+			int getNumberOfHops () {return numberOfHops;}
+
 
 			void setFirstBackward (bool v) { firstBackward = v; }
 			bool getFirstBackward () { return firstBackward; }
@@ -94,6 +100,7 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 			
 			
 			virtual tlm_extension_base* clone() const {
+			
 				tlm_payload_extension *ext = new tlm_payload_extension();
 				ext->targetX = targetX; 
 				ext->targetY = targetY; 
@@ -102,14 +109,24 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 				ext->firstForward = firstForward;
 				ext->firstBackward = firstBackward;
 				ext->direction = direction;
+				ext->numberOfHops = numberOfHops;
 				
 				return ext;
 
 			}
 			virtual void copy_from(tlm_extension_base const &ext) {  
 
-				printf("\nPayload extension copy_from() isn't implemented - clone() can be used intead, if necessary ");
-				exit(1);
+				tlm_extension_base* ext2 = ext.clone ();
+				tlm_payload_extension *new_ext = reinterpret_cast<tlm_payload_extension*>(ext2);
+				
+				this->targetX = new_ext->targetX; 
+				this->targetY = new_ext->targetY; 
+				this->initX = new_ext->initX;
+				this->initY = new_ext->initY;
+				this->firstForward = new_ext->firstForward;
+				this->firstBackward = new_ext->firstBackward;
+				this->direction = new_ext->direction;
+				this->numberOfHops = new_ext->numberOfHops;
 				
 			} 
 			
@@ -122,6 +139,10 @@ class tlm_payload_extension : public tlm::tlm_extension<tlm_payload_extension>
 
 			bool firstBackward;
 			bool firstForward;
+
+			/*NUMBER OF HOPS*/	
+			int numberOfHops;
+			/*NUMBER OF HOPS*/
 	};
 
 

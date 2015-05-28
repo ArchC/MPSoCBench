@@ -35,47 +35,20 @@ const char *archc_options="";
 #include  "tlm_dfs.h"
 #include  "tlm_intr_ctrl.h"
 #include  "tlm_dir.h"
-
-
-/*
-#ifdef PROCMIPS 
-	#include "mips.H"
-	#define PROCESSOR_NAME mips
-	#define PROCESSOR_NAME_parms mips_parms
-#endif 
-
-
-#ifdef PROCSPARC 
-	#include "sparc.H"
-	#define PROCESSOR_NAME sparc
-	#define PROCESSOR_NAME_parms sparc_parms
-#endif 
-
-#ifdef PROCPOWERPC 
-	#include "powerpc.H"
-	#define PROCESSOR_NAME powerpc
-	#define PROCESSOR_NAME_parms powerpc_parms
-#endif 
-
-#ifdef PROCARM 
-	#include "arm.H"
-	#define PROCESSOR_NAME arm
-	#define PROCESSOR_NAME_parms arm_parms
-#endif 
-*/
-
-
-//#define AC_DEBUG
-
+#include  "wrapper.h"
+#include  "network_if.h"
 
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
 using user::tlm_dir;
+using user::wrapper;
+using user::network_if;
 #ifdef POWER_SIM
 using user::tlm_dfs;
 #endif
+
 
 
 // Global variables
@@ -113,16 +86,17 @@ int sc_main(int ac, char *av[])
 	}
 
   	PROCESSOR_NAME **processors;				// processors
+
     
 	processors =  (PROCESSOR_NAME **) new PROCESSOR_NAME*[N_WORKERS];
-	
+
+
 	for (int i=0; i<N_WORKERS; i++){
 		char name[10] = "proc"; 
 		char number_str[3];
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
-	
 	}
 
     // Platform components
@@ -130,29 +104,33 @@ int sc_main(int ac, char *av[])
   	tlm_router router("router");			// router
 	tlm_lock locker("locker");			// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir("dir");
+	tlm_dir dir("dir", N_WORKERS);
+   //network_if ni ("ni", N_WORKERS);
 
-	#ifdef POWER_SIM
+    #ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
-	
-	// Binding ports
-	
 
-	router.MEM_port(mem.target_export);  
-    router.LOCK_port(locker.target_export);
-    router.INTR_CTRL_port(intr_ctrl.target_export);
- 	router.DIR_port(dir.target_export);
+	// Binding ports
+	router.MEM_port  (mem.target_export);  
+    router.LOCK_port (locker.target_export);
+    router.INTR_CTRL_port (intr_ctrl.target_export);
+ 	router.DIR_port (dir.target_export);
 
     #ifdef POWER_SIM
     router.DFS_port(dfs.target_export);
     #endif
+   
 
     // Initializing Memports
 	for (int i=0; i<N_WORKERS; i++)
 	{
 		processors[i]->MEM_port(router.target_export);
 		(processors[i]->MEM).setProcId(processors[i]->getId());
+		//processors[i]->MEM_port(ni.wr[i].LOCAL_export);
+		//ni.wr[i].ROUTER_port(router.target_export);
+		//ni.wr[i].initDFS(processors[i]);
+	
 	}
 
     
@@ -160,6 +138,7 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
+       dir.CPU_port[i](processors[i]->intr_port);
     }
 
 
@@ -167,12 +146,9 @@ int sc_main(int ac, char *av[])
 	// Processor 0 starts simulatino in ON-mode while the other processors are in OFF-mode
 	for (int i=1; i<N_WORKERS; i++)
     {
-       intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
+        intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
     }
-	intr_ctrl.send(0,ON);    // turn on processor 0 (master)
-
-
-
+    intr_ctrl.send(0,ON);    // turn on processor 0 (master)
 
 	// Preparing the arguments
 	char **arguments[N_WORKERS];
@@ -237,10 +213,13 @@ int sc_main(int ac, char *av[])
    		 // Connect Power Information from ArchC with PowerSC
   		 processors[i]->ps.powersc_connect();
   		 processors[i]->IC.powersc_connect();
-  		 processors[i]->DC.powersc_connect();
-		
+  		 //processors[i]->DC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
+	
+	//processors[N_WORKERS-1]->ps.energy_report();
+	//processors[N_WORKERS-1]->IC.powersc_energy_report();
+	//processors[N_WORKERS-1]->DC.powersc_energy_report();
 	#endif
 
 
@@ -254,8 +233,8 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
 		delete processors[i];
 	}
-	delete processors;
-
+	delete [] processors;
+	//delete [] wr;
 	return status; 
 
 

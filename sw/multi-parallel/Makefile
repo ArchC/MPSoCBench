@@ -1,42 +1,35 @@
 CC = $(CROSS)
+TARGET = $(SOFTWARE).$(PROCESSOR)
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 
 ifeq ($(PROCESSOR),arm)
 CFLAGS = -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 endif
+
 LDFLAGS = -lm
-
-TARGET = $(SOFTWARE).$(PROCESSOR)
-
 INC_DIR := -I.
-
-SRCS := acPthread_p.c multisoftware_p.c sha_multi/sha.c sha_multi/sha_driver.c basicmath_multi/parallel_basicmath.c basicmath_multi/rad2deg.c basicmath_multi/cubic.c basicmath_multi/isqrt.c stringsearch_multi/stringsearch.c stringsearch_multi/bmhasrch.c stringsearch_multi/bmhisrch.c stringsearch_multi/bmhsrch.c dijkstra_multi/dijkstra_allpair.c 
-
-OBJSAUX :=  acPthread_p.o multisoftware_p.o sha.o sha_driver.o parallel_basicmath.o rad2deg.o cubic.o isqrt.o stringsearch.o bmhasrch.o bmhisrch.o bmhsrch.o dijkstra_allpair.o 
-
+SRCS := acPthread_p.c multisoftware_p.c sha_multi/sha.c sha_multi/sha_driver.c basicmath_multi/parallel_basicmath.c basicmath_multi/rad2deg.c basicmath_multi/cubic.c basicmath_multi/isqrt.c stringsearch_multi/stringsearch.c stringsearch_multi/bmhasrch.c stringsearch_multi/bmhisrch.c stringsearch_multi/bmhsrch.c dijkstra_multi/dijkstra_allpair.c
+OBJSAUX :=  acPthread_p.o multisoftware_p.o sha.o sha_driver.o parallel_basicmath.o rad2deg.o cubic.o isqrt.o stringsearch.o bmhasrch.o bmhisrch.o bmhsrch.o dijkstra_allpair.o
 OBJS := $(SRCS:.c=.o)
 
 #------------------------------------------------------
 .SILENT:
-
 #------------------------------------------------------
 .SUFFIXES: .o .c .h
-
 #------------------------------------------------------
 all: $(OBJS)
 	$(CC) $(OBJSAUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 #------------------------------------------------------
 clean:
-	rm -f *.o *.x *~ 
+	rm -f *.o *~ *.x 
 #------------------------------------------------------
 distclean: clean
 #------------------------------------------------------
-bin:
-	
+bin:	
 #------------------------------------------------------
 .c.o:
 	$(CC) -c $(CFLAGS) $(INC_DIR) -c $<
-copy:
+copy: 	
 	echo ---copy $(TARGET).x to the appropriate rundir
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp stringsearch_multi/SearchString01.txt ../../rundir/$(RUNDIRNAME)/
@@ -47,7 +40,6 @@ copy:
 	cp stringsearch_multi/output.stringsearch.$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output_stringsearch.base
 	cp basicmath_multi/output.basicmath.$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output_basicmath.base
 	cp dijkstra_multi/output.dijkstra.$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output_dijkstra.base
-
 check:
 	echo "\n\nTESTING RESULTS"
 	sort output_sha > output_sha.sorted
@@ -58,7 +50,4 @@ check:
 	if diff output_stringsearch.sorted output_stringsearch.base > diff_strinsearch.txt ; then echo "\n Stringsearch Passed."; else echo "\n Stringsearch Failed."; fi
 	if diff output_basicmath.sorted output_basicmath.base > diff_basicmath.txt ; then echo "\n Basicmath Passed."; else echo "\n Basicmath Failed."; fi
 	if diff output_dijkstra.sorted output_dijkstra.base > diff_dijkstra.txt ; then echo "\n Dijkstra Passed."; else echo "\n Dijkstra Failed."; fi
-
-
-
 

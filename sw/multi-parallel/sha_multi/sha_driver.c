@@ -25,7 +25,7 @@ SHA Secure Hash Algorithm
 
 
 #define MAX_NO_FILES 16
-#define MAX_WORKERS 16
+#define MAX_WORKERS_LOCAL 16
 #define PRINT 1
 
 int no_files;// = MAX_NO_FILES;    // this value can be modified but will interfere with the partitioning
@@ -156,7 +156,7 @@ struct fileData{
 /*struct Tinputs{
 	BYTE *data;
 	int size;
-}inputs[MAX_WORKERS];*/
+}inputs[MAX_WORKERS_LOCAL];*/
 
 
 //char* in_file_list[MAX_NO_FILES]={"in_file0.asc", "in_file1.asc", "in_file2.asc","in_file3.asc","in_file4.asc","in_file5.asc","in_file6.asc","in_file7.asc","in_file8.asc","in_file9.asc","in_file10.asc","in_file11.asc","in_file12.asc","in_file13.asc","in_file14.asc","in_file15.asc"};
@@ -164,10 +164,10 @@ struct fileData{
 
 pthread_attr_t sha_attr;
 pthread_mutex_t string_mutex;
-pthread_t workers[MAX_WORKERS]; 
+pthread_t workers[MAX_WORKERS_LOCAL]; 
 
 static int partition_size;
-static parameters paramsArr[MAX_WORKERS];
+static parameters paramsArr[MAX_WORKERS_LOCAL];
 
 void readFilesData(){
 

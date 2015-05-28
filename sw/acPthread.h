@@ -24,7 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../../defines.h"
+#include "../defines.h"
 
 #define MAX_ESL_PTHREADS 64
 

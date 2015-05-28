@@ -10,23 +10,22 @@
  *******************************************************/
 
 
-#ifndef WRAPPER_NOC_H
-#define WRAPPER_NOC_H
+#ifndef TLM_WRAPPER_NOC_H
+#define TLM_WRAPPER_NOC_H
 
 #include <systemc>
 #include <tlm.h>
 #include "ac_tlm_protocol.H"
-#include "ac_tlm2_port.H"
-#include "../../defines.h"
 #include "tlm_payload_extension.h"
 #include "routing_table.h"
+#include "ac_tlm2_port.H" 
+//#include "local_dfs.h"
+#include "../../defines.h"
 
-using user::tlm_payload_extension;
 using tlm::tlm_blocking_transport_if;
 using user::routing_table;
 
 using namespace sc_core;
-
 
 namespace user
 {
@@ -73,6 +72,8 @@ public:
 
   routing_table tableOfRouts;
 
+
+  
  private:
    
    int posX;

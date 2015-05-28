@@ -39,41 +39,43 @@
 // The address to access the Lock IP is 0x20000000
 // The address to access the DVFS IP is 0x21000000
 // The address to access the INTR_CTRL IP is 0x22000000
+// The address to access the DIR IP is 0x23000000
 // Next, we use a DELTA_IP_ADDRESS = 0x100 as a default value
 // If you want to update these values, be carefull maintaining the coherency with the tlm_router, tlm_noc_at and tlm_noc_lt
 // routing definitions (see is/tlm_router, is/tlm_noc_lt, is/tlm_noc_at)
-#define BASE_MEMORY_ADDRESS 536870912
-#define LOCK_ADDRESS       0x20000000
-#define INTR_CTRL_ADDRESS  0X21000000
-#define DVFS_ADDRESS	   0x22000000
-#define DELTA_IP_ADDRESS   0X00000100
-#define DELTA 16777216  // 16^6 = 0x1000000
+#define BASE_MEMORY_ADDRESS 536870912 // 0x20000000 -  last memory byte address is 536870911
+#define LOCK_ADDRESS        0x20000000
+#define INTR_CTRL_ADDRESS   0X21000000
+#define DIR_ADDRESS		    0x22000000
+#define DFS_ADDRESS	        0x23000000
+#define DELTA_IP_ADDRESS    0x00000100
+#define DELTA               16777216  // 16^6 = 0x1000000
 
 
 
 // DEBUG FLAGS
-#define NOC_DEBUG 0
-#define LOCK_DEBUG 0
-#define MEMORY_DEBUG 0
-#define ROUTER_DEBUG 0
-#define DVFS_DEBUG 0
+#define NOC_DEBUG       0
+#define LOCK_DEBUG      0
+#define MEMORY_DEBUG    0
+#define ROUTER_DEBUG    0
+#define DFS_DEBUG       1
 #define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS
 
 // TLM2 PAYLOAD STATIC PARAMETERS
 // Define the transaction direction
-#define FORWARD 0
+#define FORWARD  0
 #define BACKWARD 1
 
-
 // TIMING STATIC PARAMETERS
-#define TIME_MEMORY 100
-#define TIME_NODE 2
-#define TIME_ROUTER 2
-#define TIME_LOCK 1
-#define TIME_DVFS 1
-
+#define TIME_MEMORY    100
+#define TIME_DIR       2
+#define TIME_NODE      2
+#define TIME_ROUTER    2
+#define TIME_LOCK      2
+#define TIME_DFS       1
+#define TIME_INTR_CTRL 5
 
 
 // DVFS STATIC PARAMETERS
@@ -89,6 +91,12 @@
 #define HIGH 3
 #define LOW 0
 
+#define DFS_AUTO_SELECTION_CPU_RATE
+//#define DFS_AUTO_SELECTION_ENERGY_STAMP
+
+ 
+#define DELTA_T 0.00005     
+#define N_DELTA_T 50
 
 #ifdef PROCMIPS 
 	#include "../../processors/mips/mips.H"
@@ -120,5 +128,9 @@
  
 
 //#define CACHE_POWER_TABLE_FILE "table_cache_8k_2w_45nm.csv"
+
+#define INTR_PROC_OFF  0
+#define INTR_PROC_ON   1
+#define INTR_CACHE_INVALIDATE  2
 
 #endif

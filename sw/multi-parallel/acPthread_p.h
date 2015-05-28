@@ -3,9 +3,11 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "../../defines.h"
 
 #define MAX_ESL_PTHREADS 64
-#define LOCK_ADDRESS 0x20000000
 
 #define PTHREAD_CREATE_JOINABLE 0    // for compatibility
 
@@ -122,9 +124,15 @@ void join_basicmath(pthread_t thread, const pthread_attr_t *attr);
 void join_dijkstra(pthread_t thread, const pthread_attr_t *attr);
 */
 
-
 void *acPthread_malloc(size_t);
 void *acPthread_realloc(void *, size_t);
 void *acPthread_calloc(size_t , size_t );
 void acPthread_free(void *);
+
+/* DVFS function */
+
+void pthread_changePowerState(int);
+void pthread_turnOnProcessors();
+void pthread_turnOffProcessors();
+
 #endif

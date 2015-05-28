@@ -84,12 +84,9 @@ tlm_intr_ctrl::~tlm_intr_ctrl()
 void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
 {
     
-    // forward and backward paths   
-    time_info = time_info + sc_core::sc_time(TIME_DVFS,SC_NS);
-
+    
     uint32_t addr = (uint32_t) payload.get_address();
     
-
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
@@ -135,6 +132,7 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
         
     if (INTR_CTRL_DEBUG) printf("\ntlm_intr_ctrl b_transport returning");
       
+    wait (TIME_INTR_CTRL,SC_NS);
 }
 
 

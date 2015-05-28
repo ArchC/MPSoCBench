@@ -33,7 +33,6 @@
  *
  *******************************************************************************/
 
-
 #ifndef TLM_NOC_H_
 #define TLM_NOC_H_
 #define SC_INCLUDE_DYNAMIC_PROCESSES
@@ -41,8 +40,6 @@
 
 #include <systemc>
 #include "ac_tlm_protocol.H"
-
-
 #include "tlm_node.h"
 #include "routing_table.h"
 #include "wrappers_noc.h"
@@ -50,7 +47,9 @@
 
 //////////////////////////////////////////////////////////////////////////////
 
+using tlm::tlm_blocking_transport_if;
 using user::tlm_node;
+
 
 //////////////////////////////////////////////////////////////////////////////
 

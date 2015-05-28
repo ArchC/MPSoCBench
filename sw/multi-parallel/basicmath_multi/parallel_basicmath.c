@@ -18,7 +18,7 @@
 //#include <pthread.h>
 #define  PRINT  1 // Print Switch
 
-#define MAX_WORKERS 16
+#define MAX_WORKERS_LOCAL 16
 
 #define 		CUBIC 		1
 #define 		ISQRT			2
@@ -61,7 +61,7 @@ acPthread
 
 
 pthread_attr_t basicmath_attr;
-pthread_t workers[MAX_WORKERS]; 
+pthread_t workers[MAX_WORKERS_LOCAL]; 
 int math_operation;
 int data_set_type;
 int no_workers;
@@ -86,10 +86,10 @@ typedef struct DoubleLimits{  // Limits of double type
 }dlimit;
 
 
-  static ilimit  _ilim,_ilimParams[MAX_WORKERS];
-  static ullimit _ullim,_ullimParams[MAX_WORKERS];
-  static dlimit  _dlim1,_dlim2,_dlimParams1[MAX_WORKERS],_dlimParams2[MAX_WORKERS];
-  static dlimit  _adlim,_bdlim,_cdlim,_ddlim,_adlimParams[MAX_WORKERS];  // double type limits for variable's a,b,c,d
+  static ilimit  _ilim,_ilimParams[MAX_WORKERS_LOCAL];
+  static ullimit _ullim,_ullimParams[MAX_WORKERS_LOCAL];
+  static dlimit  _dlim1,_dlim2,_dlimParams1[MAX_WORKERS_LOCAL],_dlimParams2[MAX_WORKERS_LOCAL];
+  static dlimit  _adlim,_bdlim,_cdlim,_ddlim,_adlimParams[MAX_WORKERS_LOCAL];  // double type limits for variable's a,b,c,d
 
 
 int main_basicmath()
@@ -512,7 +512,8 @@ int main0_basicmath(int argc,char *argv[])
          
        // no_workers= atoi(argv[2]);  //pthread_n_workers;
  	//printf("\nn_workers inicializado com %d em main0_basicmath\n",no_workers);   
-       if (no_workers >MAX_WORKERS)
+       if (no_workers >
+MAX_WORKERS_LOCAL)
        {
 	         printf("ERROR: Number of worker should be no more than 8\n");
 	         exit(0);

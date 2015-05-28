@@ -20,8 +20,12 @@
 #include "tlm_node.h"
 
 using user::tlm_node;
+using user::tlm_payload_extension;
 using user::tlm_empty_master_node;
 using user::tlm_empty_slave_node;
+using tlm::tlm_extension_base;
+
+
 
 unsigned int tlm_node::numberOfNodes = 0;
 
@@ -71,8 +75,16 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 	
 	//wait(1,SC_NS);
 
-	tlm_payload_extension *ex;
-	payload.get_extension(ex);
+
+    user::tlm_payload_extension *ex;
+  	tlm::tlm_extension_base* base;
+	base = payload.get_extension(1);
+
+   	ex = reinterpret_cast<user::tlm_payload_extension*>(base);
+
+
+	//user::tlm_payload_extension *ex;
+	//payload.get_extension(ex);
 
 	if (getStatus() == OFF)
 	{

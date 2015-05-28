@@ -44,16 +44,21 @@
 #include <tlm.h>
 #include "ac_tlm_protocol.H"
 #include "tlm_payload_extension.h"
+//#include "tlm_payload_dir_extension.H"
+#include "routing_table.h"
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/simple_target_socket.h"
+#include "local_dfs.h"
 #include "../../defines.h"
 
-#include "routing_table.h"
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 
 //using user::tlm_payload_extension;
 using user::routing_table;
+using user::local_dfs;
 using namespace sc_core;
 
 namespace user
@@ -78,7 +83,10 @@ public:
   wrapper_master_slave_to_noc(); 
   wrapper_master_slave_to_noc(sc_module_name module_name);
 
-  ~wrapper_master_slave_to_noc() { }
+  ~wrapper_master_slave_to_noc() { 
+      if (dfs!=NULL) delete dfs;
+
+  }
 
   inline void setStatus(int st){
 	this->status = st;
@@ -112,12 +120,13 @@ public:
   inline long int getNumberOfPackages() {
   	return this->numberOfPackages;
   }
-
-
  
   void b_transport(ac_tlm2_payload &, sc_core::sc_time &) {}
   tlm::tlm_sync_enum  nb_transport_fw(ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
   tlm::tlm_sync_enum  nb_transport_bw(ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
+
+  local_dfs *dfs;
+  void initDFS (PROCESSOR_NAME* proc);
 
 private:
 
@@ -130,6 +139,10 @@ private:
   long int numberOfHops;
   long int numberOfPackages;
   /* NUMBER OF HOPS */
+
+
+
+  
   
   
 };

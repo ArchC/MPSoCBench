@@ -67,15 +67,10 @@ class tlm_noc :  public sc_module
 public:
 
   tlm_noc( sc_module_name module_name, int, int, int, int);
-  //tlm_noc(int, int, int, int);
+  
   ~tlm_noc();
  
-  void create();
-  void init();
-  int getNodeIndex(int,int);
-  void bindingInternalPorts();
-  void preparingRoutingTable();
-
+  
   inline void setNumberOfMasters(unsigned  int); 
   inline void setNumberOfSlaves(unsigned int ); 
   inline void setNumberOfMasterEmptyNodes(unsigned int); 
@@ -102,7 +97,8 @@ public:
   
   unsigned int getNumberOfLines();
   unsigned int getNumberOfColumns();
-
+  void preparingRoutingTable();
+  void destroyComponents();
 
   tlm_node **mesh;
   routing_table tableOfRouts; 
@@ -126,6 +122,13 @@ private:
   unsigned int numberOfSlaveEmptyNodes;
   unsigned int numberOfWrappers;
 
+
+ 
+  void create();
+  void init();
+  int getNodeIndex(int,int);
+  void bindingInternalPorts();
+  
 };
 
 };

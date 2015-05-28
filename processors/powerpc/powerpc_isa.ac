@@ -258,7 +258,7 @@ AC_ISA(powerpc) {
     
     addic.set_asm("addic %reg, %reg, %exp", rt, ra, d);
     addic.set_decoder(opcd=12);
-    addic.set_cycles(1);
+   addic.set_cycles(1);
     
     addic_.set_asm("addic. %reg, %reg, %exp", rt, ra, d);
     addic_.set_decoder(opcd=13);
@@ -288,7 +288,7 @@ AC_ISA(powerpc) {
     
     addze.set_asm("addze %reg, %reg", rt, ra);
     addze.set_decoder(opcd=31, oe=0, xos=202, rc=0);
-    addze.set_cycles(1);
+  addze.set_cycles(1);
     
     addze_.set_asm("addze. %reg, %reg", rt, ra);
     addze_.set_decoder(opcd=31, oe=0, xos=202, rc=1);
@@ -313,7 +313,7 @@ AC_ISA(powerpc) {
     andc.set_asm("andc %reg, %reg, %reg", ra, rs, rb);
     andc.set_decoder(opcd=31, xog=60, rc=0);
     andc.set_cycles(1);
-    
+   
     andc_.set_asm("andc. %reg, %reg, %reg", ra, rs, rb);
     andc_.set_decoder(opcd=31, xog=60, rc=1);
     andc_.set_cycles(1);
@@ -536,7 +536,7 @@ AC_ISA(powerpc) {
     lhz.set_asm("lhz %reg, %imm (%reg)", rt, d, ra);
     lhz.set_asm("lhz %reg, %exp@l(%reg)", rt, d, ra);
     lhz.set_decoder(opcd=40);
-    lhz.set_cycles(1); 
+   lhz.set_cycles(1); 
 
     lhzu.set_asm("lhzu %reg, %imm (%reg)", rt, d, ra);
     lhzu.set_asm("lhzu %reg, %exp@l(%reg)", rt, d, ra);
@@ -580,7 +580,7 @@ AC_ISA(powerpc) {
 
     lwzux.set_asm("lwzux %reg, %reg, %reg", rt, ra, rb);
     lwzux.set_decoder(opcd=31, xog=55);
-    .set_cycles(1); 
+    lwzux.set_cycles(1); 
 
     lwzx.set_asm("lwzx %reg, %reg, %reg", rt, ra, rb);
     lwzx.set_decoder(opcd=31, xog=23);
@@ -743,7 +743,7 @@ AC_ISA(powerpc) {
 
     mfcr.set_asm("mfcr %imm", rt);
     mfcr.set_decoder(opcd=31, xog=19);
-    mfcr.set_cycles(1); 
+   mfcr.set_cycles(1); 
 
     /* INCOMPLETE IMPLEMENTATION! */
     mfspr.set_asm("mfctr %imm", rt, sprf=0x120);
@@ -1033,7 +1033,7 @@ AC_ISA(powerpc) {
 
     stswi.set_asm("stswi %reg, %reg, %reg", rs, ra, nb);
     stswi.set_decoder(opcd=31, xog=725);
-    stswi.set_cycles(1); 
+   stswi.set_cycles(1); 
     
     stswx.set_asm("stswx %reg, %reg, %reg", rs, ra, rb);
     stswx.set_decoder(opcd=31, xog=661);
@@ -1091,8 +1091,8 @@ AC_ISA(powerpc) {
 
     subfco_.set_asm("subfco. %reg, %reg, %reg", rt, ra, rb);
     subfco_.set_decoder(opcd=31, oe=1, xos=8, rc=1);
-    subfco_.set_cycles(1);
-
+   subfco_.set_cycles(1);
+ 
     subfe.set_asm("subfe %reg, %reg, %reg", rt, ra, rb);
     subfe.set_decoder(opcd=31, oe=0, xos=136, rc=0);
     subfe.set_cycles(1);
@@ -1111,7 +1111,7 @@ AC_ISA(powerpc) {
 
     subfic.set_asm("subfic %reg, %reg, %exp", rt, ra, d);
     subfic.set_decoder(opcd=8);
-    subfic.set_cycles(1);
+   subfic.set_cycles(1);
 
     subfme.set_asm("subfme %reg, %reg", rt, ra);
     subfme.set_decoder(opcd=31, oe=0, xos=232, rc=0);

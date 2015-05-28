@@ -1187,7 +1187,7 @@ inline void LDC(){
 //------------------------------------------------------
 inline void LDM(arm_isa *ref, int rlist, bool r,
          ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-         ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+         ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   // todo special cases
 
@@ -1200,14 +1200,14 @@ inline void LDM(arm_isa *ref, int rlist, bool r,
     dprintf("Initial address: 0x%lX\n",ref->ls_address.entire);
     for(i=0;i<15;i++){
       if(isBitSet(rlist,i)) {
-        RB_write(i,DC_port.read(ref->ls_address.entire));
+        RB_write(i,MEM.read(ref->ls_address.entire));
         ref->ls_address.entire += 4;
         dprintf(" *  Loaded register: 0x%X; Value: 0x%X; Next address: 0x%lX\n", i,RB_read(i),ref->ls_address.entire-4);
       }
     }
     
     if((isBitSet(rlist,PC))) { // LDM(1)
-      value = DC_port.read(ref->ls_address.entire);
+      value = MEM.read(ref->ls_address.entire);
       RB_write(PC,value & 0xFFFFFFFE);
       ref->ls_address.entire += 4;
       dprintf(" *  Loaded register: PC; Next address: 0x%lX\n", ref->ls_address.entire);
@@ -1225,13 +1225,13 @@ inline void LDM(arm_isa *ref, int rlist, bool r,
     dprintf("Initial address: 0x%lX\n",ref->ls_address.entire);
     for(i=0;i<15;i++){
       if(isBitSet(rlist,i)) {
-        RB.write(i,DC_port.read(ref->ls_address.entire));
+        RB.write(i,MEM.read(ref->ls_address.entire));
         ref->ls_address.entire += 4;
         dprintf(" *  Loaded register: 0x%X; Value: 0x%X; Next address: 0x%lX\n", i,RB_read(i),ref->ls_address.entire);
       }
     }
     if((isBitSet(rlist,PC))) { // LDM(3)
-      value = DC_port.read(ref->ls_address.entire);
+      value = MEM.read(ref->ls_address.entire);
       RB.write(PC,value & 0xFFFFFFFE);
       ref->ls_address.entire += 4;
       dprintf(" *  Loaded register: PC; Next address: 0x%lX\n", ref->ls_address.entire);
@@ -1247,7 +1247,7 @@ inline void LDM(arm_isa *ref, int rlist, bool r,
 //------------------------------------------------------
 inline void LDR(arm_isa* ref, int rd, int rn,
          ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-         ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+         ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   int32_t value;
   arm_isa::reg_t tmp;
@@ -1263,18 +1263,18 @@ inline void LDR(arm_isa* ref, int rd, int rn,
       
   switch(addr10) {
   case 0:
-    value = DC_port.read(ref->ls_address.entire);
+    value = MEM.read(ref->ls_address.entire);
     break;
   case 1:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = (arm_isa::RotateRight(8,tmp)).entire;
     break;
   case 2:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = (arm_isa::RotateRight(16,tmp)).entire;
     break;
   default:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = (arm_isa::RotateRight(24,tmp)).entire;
   }
     
@@ -1295,14 +1295,14 @@ inline void LDR(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRB(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
   uint8_t value;
 
   dprintf("Instruction: LDRB\n");
 
   // Special cases
   dprintf("Reading memory position 0x%08X\n", ref->ls_address.entire);
-  value = (uint8_t) DC_port.read_byte(ref->ls_address.entire);
+  value = (uint8_t) MEM.read_byte(ref->ls_address.entire);
   
   dprintf("Byte: 0x%X\n", value);
   RB_write(rd, ((uint32_t)value));
@@ -1315,7 +1315,7 @@ inline void LDRB(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRBT(arm_isa* ref, int rd, int rn,
            ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-           ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+           ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   uint8_t value;
 
@@ -1323,7 +1323,7 @@ inline void LDRBT(arm_isa* ref, int rd, int rn,
 
   // Special cases
   dprintf("Reading memory position 0x%08X\n", ref->ls_address.entire);
-  value = (uint8_t) DC_port.read_byte(ref->ls_address.entire);
+  value = (uint8_t) MEM.read_byte(ref->ls_address.entire);
   
   dprintf("Byte: 0x%X\n", (uint32_t) value);
   RB_write(rd, (uint32_t) value);
@@ -1336,13 +1336,13 @@ inline void LDRBT(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRD(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
   uint32_t value1, value2;
 
   dprintf("Instruction: LDRD\n");
   dprintf("Reading memory position 0x%08X\n", ref->ls_address.entire);
-  value1 = DC_port.read_byte(ref->ls_address.entire);
-  value2 = DC_port.read_byte(ref->ls_address.entire+4);
+  value1 = MEM.read_byte(ref->ls_address.entire);
+  value2 = MEM.read_byte(ref->ls_address.entire+4);
 
   // Special cases
   // Registrador destino deve ser par
@@ -1367,7 +1367,7 @@ inline void LDRD(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRH(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
   uint32_t value;
 
   dprintf("Instruction: LDRH\n");
@@ -1379,7 +1379,7 @@ inline void LDRH(arm_isa* ref, int rd, int rn,
     printf("Unpredictable LDRH instruction result (Address is not Halfword Aligned)\n");
     return;
   }
-  value = DC_port.read(ref->ls_address.entire);
+  value = MEM.read(ref->ls_address.entire);
   value &= 0xFFFF; /* Zero extends halfword value 
 		      BUG: Model must be little endian in order to the code work  */
 
@@ -1393,7 +1393,7 @@ inline void LDRH(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRSB(arm_isa* ref, int rd, int rn,
            ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-           ac_reg<unsigned>& ac_pc, ac_memory& DC_port) {
+           ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   uint32_t data;
 
@@ -1401,7 +1401,7 @@ inline void LDRSB(arm_isa* ref, int rd, int rn,
     
   // Special cases
   dprintf("Reading memory position 0x%08X\n", ref->ls_address.entire);  
-  data = DC_port.read_byte(ref->ls_address.entire);
+  data = MEM.read_byte(ref->ls_address.entire);
   data = arm_isa::SignExtend(data, 8);
 
   RB_write(rd, data);
@@ -1414,7 +1414,7 @@ inline void LDRSB(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRSH(arm_isa* ref, int rd, int rn,
            ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-           ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port){
+           ac_reg<unsigned>& ac_pc, ac_memory& MEM){
 
   uint32_t data;
 
@@ -1428,7 +1428,7 @@ inline void LDRSH(arm_isa* ref, int rd, int rn,
   }
   // Verify coprocessor alignment
 
-  data = DC_port.read(ref->ls_address.entire);
+  data = MEM.read(ref->ls_address.entire);
   data &= 0xFFFF; /* Extracts halfword 
 		     BUG: Model must be little endian */
   data = arm_isa::SignExtend(data,16);
@@ -1442,7 +1442,7 @@ inline void LDRSH(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void LDRT(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   int addr10;
   arm_isa::reg_t tmp;
@@ -1452,28 +1452,28 @@ inline void LDRT(arm_isa* ref, int rd, int rn,
 
   addr10 = (int)ref->ls_address.entire & 0x00000003;
   ref->ls_address.entire &= 0xFFFFFFFC;
-  dprintf("Reading DC_portory position 0x%08X\n", ref->ls_address.entire);
+  dprintf("Reading memory position 0x%08X\n", ref->ls_address.entire);
     
   // Special cases
   // Verify coprocessor alignment
     
   switch(addr10) {
   case 0:
-    value = DC_port.read(ref->ls_address.entire);
+    value = MEM.read(ref->ls_address.entire);
     RB_write(rd, value);
     break;
   case 1:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = arm_isa::RotateRight(8,tmp).entire;
     RB_write(rd, value);
     break;
   case 2:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = arm_isa::RotateRight(16,tmp).entire;
     RB_write(rd, value);
     break;
   default:
-    tmp.entire = DC_port.read(ref->ls_address.entire);
+    tmp.entire = MEM.read(ref->ls_address.entire);
     value = arm_isa::RotateRight(24, tmp).entire;
     RB_write(rd, value);
   }
@@ -1893,7 +1893,7 @@ inline void STC(){
 //------------------------------------------------------
 inline void STM(arm_isa* ref, int rn, int rlist,
         ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-        ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port, unsigned r) {
+        ac_reg<unsigned>& ac_pc, ac_memory& MEM, unsigned r) {
 
     // todo special cases
 
@@ -1906,9 +1906,9 @@ inline void STM(arm_isa* ref, int rn, int rlist,
             if(isBitSet(rlist,i)) {
                 // rn is in rlist. e.g. push {sp,...}
                 if (i == rn)
-                    DC_port.write(ref->ls_address.entire,ref->lsm_oldrn.entire);
+                    MEM.write(ref->ls_address.entire,ref->lsm_oldrn.entire);
                 else 
-                    DC_port.write(ref->ls_address.entire,RB_read(i));
+                    MEM.write(ref->ls_address.entire,RB_read(i));
 
                 ref->ls_address.entire += 4;
                 dprintf(" *  Stored register: 0x%X; value: 0x%X; address: 0x%lX\n",i,RB_read(i),ref->ls_address.entire-4);
@@ -1925,7 +1925,7 @@ inline void STM(arm_isa* ref, int rn, int rlist,
         ref->ls_address = ref->lsm_startaddress;
         for(i=0;i<16;i++){
             if(isBitSet(rlist,i)) {
-                DC_port.write(ref->ls_address.entire,RB .read(i));
+                MEM.write(ref->ls_address.entire,RB .read(i));
                 ref->ls_address.entire += 4;
                 dprintf(" *  Stored register: 0x%X; value: 0x%X; address: 0x%lX\n",i,RB_read(i),ref->ls_address.entire-4);
             }
@@ -1938,16 +1938,16 @@ inline void STM(arm_isa* ref, int rn, int rlist,
 //------------------------------------------------------
 inline void STR(arm_isa* ref, int rd, int rn,
          ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-         ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+         ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   dprintf("Instruction: STR\n");
 
   // Special cases
   // verify coprocessor alignment
   
-  DC_port.write(ref->ls_address.entire, RB_read(rd));
+  MEM.write(ref->ls_address.entire, RB_read(rd));
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%08X\n", ref->ls_address.entire, RB_read(rd)); 
+  dprintf(" *  MEM[0x%08X] <= 0x%08X\n", ref->ls_address.entire, RB_read(rd)); 
 
   ac_pc = RB_read(PC);
 }
@@ -1955,7 +1955,7 @@ inline void STR(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void STRB(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   arm_isa::reg_t RD2;
 
@@ -1964,9 +1964,9 @@ inline void STRB(arm_isa* ref, int rd, int rn,
   // Special cases
 
   RD2.entire = RB_read(rd);
-  DC_port.write_byte(ref->ls_address.entire, RD2.byte[0]);
+  MEM.write_byte(ref->ls_address.entire, RD2.byte[0]);
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%02X\n", ref->ls_address.entire, RD2.byte[0]); 
+  dprintf(" *  MEM[0x%08X] <= 0x%02X\n", ref->ls_address.entire, RD2.byte[0]); 
 
   ac_pc = RB_read(PC);
 }
@@ -1974,7 +1974,7 @@ inline void STRB(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void STRBT(arm_isa* ref, int rd, int rn,
            ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-           ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+           ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   arm_isa::reg_t RD2;
 
@@ -1983,9 +1983,9 @@ inline void STRBT(arm_isa* ref, int rd, int rn,
   // Special cases
   
   RD2.entire = RB_read(rd);
-  DC_port.write_byte(ref->ls_address.entire, RD2.byte[0]);
+  MEM.write_byte(ref->ls_address.entire, RD2.byte[0]);
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%02X\n", ref->ls_address.entire, RD2.byte[0]); 
+  dprintf(" *  MEM[0x%08X] <= 0x%02X\n", ref->ls_address.entire, RD2.byte[0]); 
 
   ac_pc = RB_read(PC);
 }
@@ -1993,7 +1993,7 @@ inline void STRBT(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void STRD(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   dprintf("Instruction: STRD\n");
 
@@ -2010,10 +2010,10 @@ inline void STRD(arm_isa* ref, int rd, int rn,
   }
 
   //FIXME: Check if writeback receives +4 from second address
-  DC_port.write(ref->ls_address.entire,RB_read(rd));
-  DC_port.write(ref->ls_address.entire+4,RB_read(rd+1));
+  MEM.write(ref->ls_address.entire,RB_read(rd));
+  MEM.write(ref->ls_address.entire+4,RB_read(rd+1));
 
-  dprintf(" *  DC_port[0x%08X], DC_port[0x%08X] <= 0x%08X %08X\n", ref->ls_address.entire, ref->ls_address.entire+4, RB_read(rd+1), RB_read(rd)); 
+  dprintf(" *  MEM[0x%08X], MEM[0x%08X] <= 0x%08X %08X\n", ref->ls_address.entire, ref->ls_address.entire+4, RB_read(rd+1), RB_read(rd)); 
 
   ac_pc = RB_read(PC);
 }
@@ -2021,7 +2021,7 @@ inline void STRD(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void STRH(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   int16_t data;
 
@@ -2036,9 +2036,9 @@ inline void STRH(arm_isa* ref, int rd, int rn,
   }
 
   data = (int16_t) (RB_read(rd) & 0x0000FFFF);
-  DC_port.write_half(ref->ls_address.entire, data);
+  MEM.write_half(ref->ls_address.entire, data);
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%04X\n", ref->ls_address.entire, data); 
+  dprintf(" *  MEM[0x%08X] <= 0x%04X\n", ref->ls_address.entire, data); 
     
   ac_pc = RB_read(PC);
 }
@@ -2046,16 +2046,16 @@ inline void STRH(arm_isa* ref, int rd, int rn,
 //------------------------------------------------------
 inline void STRT(arm_isa* ref, int rd, int rn,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   dprintf("Instruction: STRT\n");
 
   // Special cases
   // verificar caso do coprocessador (alinhamento)
   
-  DC_port.write(ref->ls_address.entire, RB_read(rd));
+  MEM.write(ref->ls_address.entire, RB_read(rd));
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%08X\n", ref->ls_address.entire, RB_read(rd)); 
+  dprintf(" *  MEM[0x%08X] <= 0x%08X\n", ref->ls_address.entire, RB_read(rd)); 
 
   ac_pc = RB_read(PC);
 }
@@ -2103,7 +2103,7 @@ inline void SUB(arm_isa* ref, int rd, int rn, bool s,
 //------------------------------------------------------
 inline void SWP(arm_isa* ref, int rd, int rn, int rm,
          ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-         ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+         ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   arm_isa::reg_t RN2, RM2, rtmp;
   int32_t tmp;
@@ -2124,25 +2124,25 @@ inline void SWP(arm_isa* ref, int rd, int rn, int rm,
 
   switch(rn10) {
   case 0:
-    tmp = DC_port.read(RN2.entire);
+    tmp = MEM.read(RN2.entire);
     break;
   case 1:
-    rtmp.entire = DC_port.read(RN2.entire);
+    rtmp.entire = MEM.read(RN2.entire);
     tmp = (arm_isa::RotateRight(8,rtmp)).entire;
     break;
   case 2:
-    rtmp.entire = DC_port.read(RN2.entire);
+    rtmp.entire = MEM.read(RN2.entire);
     tmp = (arm_isa::RotateRight(16,rtmp)).entire;
     break;
   default:
-    rtmp.entire = DC_port.read(RN2.entire);
+    rtmp.entire = MEM.read(RN2.entire);
     tmp = (arm_isa::RotateRight(24,rtmp)).entire;
   }
     
-  DC_port.write(RN2.entire,RM2.entire);
+  MEM.write(RN2.entire,RM2.entire);
   RB_write(rd,tmp);
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%08X (%d)\n", RN2.entire, RM2.entire, RM2.entire); 
+  dprintf(" *  MEM[0x%08X] <= 0x%08X (%d)\n", RN2.entire, RM2.entire, RM2.entire); 
   dprintf(" *  R%d <= 0x%08X (%d)\n", rd, tmp, tmp); 
 
   ac_pc = RB_read(PC);
@@ -2151,7 +2151,7 @@ inline void SWP(arm_isa* ref, int rd, int rn, int rm,
 //------------------------------------------------------
 inline void SWPB(arm_isa* ref, int rd, int rn, int rm,
           ac_regbank<16, arm_parms::ac_word, arm_parms::ac_Dword>& RB,
-          ac_reg<unsigned>& ac_pc, ac_DC_portory& DC_port) {
+          ac_reg<unsigned>& ac_pc, ac_memory& MEM) {
 
   uint32_t tmp;
   arm_isa::reg_t RM2, RN2;
@@ -2167,11 +2167,11 @@ inline void SWPB(arm_isa* ref, int rd, int rn, int rm,
   RM2.entire = RB_read(rm);
   RN2.entire = RB_read(rn);
 
-  tmp = (uint32_t) DC_port.read_byte(RN2.entire);
-  DC_port.write_byte(RN2.entire,RM2.byte[0]);
+  tmp = (uint32_t) MEM.read_byte(RN2.entire);
+  MEM.write_byte(RN2.entire,RM2.byte[0]);
   RB_write(rd,tmp);
 
-  dprintf(" *  DC_port[0x%08X] <= 0x%02X (%d)\n", RN2.entire, RM2.byte[0], RM2.byte[0]); 
+  dprintf(" *  MEM[0x%08X] <= 0x%02X (%d)\n", RN2.entire, RM2.byte[0], RM2.byte[0]); 
   dprintf(" *  R%d <= 0x%02X (%d)\n", rd, tmp, tmp); 
 
   ac_pc = RB_read(PC);
@@ -2512,10 +2512,10 @@ void ac_behavior( blx2 ){
 }
 
 //!Instruction swp behavior method.
-void ac_behavior( swp ){ SWP(this, rd, rn, rm, RB, ac_pc, DC_port); }
+void ac_behavior( swp ){ SWP(this, rd, rn, rm, RB, ac_pc, MEM); }
 
 //!Instruction swpb behavior method.
-void ac_behavior( swpb ){ SWPB(this, rd, rn, rm, RB, ac_pc, DC_port); }
+void ac_behavior( swpb ){ SWPB(this, rd, rn, rm, RB, ac_pc, MEM); }
 
 //!Instruction mla behavior method.
 void ac_behavior( mla ){ MLA(this, rn, rd, rm, rs, s, RB, ac_pc);}
@@ -2538,70 +2538,70 @@ void ac_behavior( umlal ){ UMLAL(this, rdhi, rdlo, rm, rs, s, RB, ac_pc);}
 void ac_behavior( umull ){ UMULL(this, rdhi, rdlo, rm, rs, s, RB, ac_pc);}
 
 //!Instruction ldr1 behavior method.
-void ac_behavior( ldr1 ){ LDR(this, rd, rn, RB, ac_pc, DC_port);  }
+void ac_behavior( ldr1 ){ LDR(this, rd, rn, RB, ac_pc, MEM);  }
 
 //!Instruction ldrt1 behavior method.
-void ac_behavior( ldrt1 ){ LDRT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrt1 ){ LDRT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrb1 behavior method.
-void ac_behavior( ldrb1 ){ LDRB(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrb1 ){ LDRB(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrbt1 behavior method.
-void ac_behavior( ldrbt1 ){ LDRBT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrbt1 ){ LDRBT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction str1 behavior method.
-void ac_behavior( str1 ){ STR(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( str1 ){ STR(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strt1 behavior method.
-void ac_behavior( strt1 ){ STRT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strt1 ){ STRT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strb1 behavior method.
-void ac_behavior( strb1 ){ STRB(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strb1 ){ STRB(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strbt1 behavior method.
-void ac_behavior( strbt1 ){ STRBT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strbt1 ){ STRBT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldr2 behavior method.
-void ac_behavior( ldr2 ){ LDR(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldr2 ){ LDR(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrt2 behavior method.
-void ac_behavior( ldrt2 ){ LDRT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrt2 ){ LDRT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrb2 behavior method.
-void ac_behavior( ldrb2 ){ LDRB(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrb2 ){ LDRB(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrbt2 behavior method.
-void ac_behavior( ldrbt2 ){ LDRBT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrbt2 ){ LDRBT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction str2 behavior method.
-void ac_behavior( str2 ){ STR(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( str2 ){ STR(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strt2 behavior method.
-void ac_behavior( strt2 ){ STRT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strt2 ){ STRT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strb2 behavior method.
-void ac_behavior( strb2 ){ STRB(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strb2 ){ STRB(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strbt2 behavior method.
-void ac_behavior( strbt2 ){ STRBT(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strbt2 ){ STRBT(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrh behavior method.
-void ac_behavior( ldrh ){ LDRH(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrh ){ LDRH(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrsb behavior method.
-void ac_behavior( ldrsb ){ LDRSB(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrsb ){ LDRSB(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrsh behavior method.
-void ac_behavior( ldrsh ){ LDRSH(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrsh ){ LDRSH(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction strh behavior method.
-void ac_behavior( strh ){ STRH(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strh ){ STRH(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldm behavior method.
-void ac_behavior( ldm ){ LDM(this, rlist,r, RB, ac_pc, DC_port); }
+void ac_behavior( ldm ){ LDM(this, rlist,r, RB, ac_pc, MEM); }
 
 //!Instruction stm behavior method.
-void ac_behavior( stm ){ STM(this, rn, rlist, RB, ac_pc, DC_port, r); }
+void ac_behavior( stm ){ STM(this, rn, rlist, RB, ac_pc, MEM, r); }
 
 //!Instruction cdp behavior method.
 void ac_behavior( cdp ){ CDP();}
@@ -2768,10 +2768,10 @@ void ac_behavior( msr2 ){
 }
 
 //!Instruction ldrd2 behavior method.
-void ac_behavior( ldrd ){ LDRD(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( ldrd ){ LDRD(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction ldrd2 behavior method.
-void ac_behavior( strd ){ STRD(this, rd, rn, RB, ac_pc, DC_port); }
+void ac_behavior( strd ){ STRD(this, rd, rn, RB, ac_pc, MEM); }
 
 //!Instruction dsmla behavior method.
 void ac_behavior( dsmla ){ DSMLA(this, drd, drn, RB, ac_pc); }

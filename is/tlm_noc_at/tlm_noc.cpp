@@ -70,6 +70,7 @@ sc_module( module_name )
 	bindingInternalPorts();
 }
 
+
 void tlm_noc::create ()
 {
 
@@ -78,24 +79,16 @@ void tlm_noc::create ()
 	for (unsigned int i=0; i<numberOfLines; i++)
         	mesh[i] = new tlm_node[numberOfColumns];
 		
-        wrapper = new wrapper_master_slave_to_noc[getNumberOfWrappers()];
- 
-	slaveEmptyNodes = new tlm_slave_node [getNumberOfSlaveEmptyNodes()];
+    wrapper = new wrapper_master_slave_to_noc[getNumberOfWrappers()];
+    slaveEmptyNodes = new tlm_slave_node [getNumberOfSlaveEmptyNodes()];
 	masterEmptyNodes = new tlm_master_node [getNumberOfMasterEmptyNodes()];
-	
-	
+
 }
 
-
-
-tlm_noc::~tlm_noc()
+void tlm_noc::destroyComponents ()
 {
-	for (unsigned int i=0; i<numberOfLines; i++)
-		delete [] mesh[i];
 
-	delete [] mesh;
-        delete [] masterEmptyNodes;
-	delete [] slaveEmptyNodes;
+ 	
 
 	if (measures) 
 	{
@@ -137,13 +130,20 @@ tlm_noc::~tlm_noc()
  		printf("\nTotal Number of Hops:\t%ld", totalNumberOfHops);
 		printf("\nAverage Number of Hops per package:\t%d", (int) (totalNumberOfHops / totalNumberOfPackages));
 
-
-	     	fclose (local_noc_file);
-	     	fclose (global_noc_file);
+	    fclose (local_noc_file);
+	    fclose (global_noc_file);
 	}
+	
+	for (unsigned int i=0; i<numberOfLines; i++)
+		delete [] mesh[i];
 
-
+	delete [] mesh;
+    delete [] masterEmptyNodes;
+	delete [] slaveEmptyNodes;
 	delete [] wrapper;
+}
+tlm_noc::~tlm_noc()
+{
 	
 
 }
@@ -199,7 +199,7 @@ void tlm_noc::bindingInternalPorts()
 		
 			// bind node and wrapper
 			mesh[i][j].LOCAL_init_socket.bind(wrapper[wrMS].NODE_target_socket);
-        		wrapper[wrMS].NODE_init_socket.bind(mesh[i][j].LOCAL_target_socket);	
+        	wrapper[wrMS].NODE_init_socket.bind(mesh[i][j].LOCAL_target_socket);	
 
 			wrMS++;
 

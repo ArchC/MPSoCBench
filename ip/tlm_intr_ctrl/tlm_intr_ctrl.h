@@ -63,8 +63,6 @@
 
 using tlm::tlm_blocking_transport_if;
 
-
-
 namespace user
 {
 
@@ -83,8 +81,8 @@ public:
   ~tlm_intr_ctrl();
   
    void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
-   void turnOnProcessors(int);
-   void turnOffProcessors(int);
+   void turnOnProcessors(int procId);
+   void turnOffProcessors(int procId);
    void send(int, int);
    void send (int id, unsigned char intr);
 

@@ -211,6 +211,8 @@ void tlm_memory::b_transport(ac_tlm2_payload& payload, sc_core::sc_time &time_in
 	     break; 
     }
 
+    wait(TIME_MEMORY, SC_NS);
+
 }
 
 // LOADER FUNCTIONS

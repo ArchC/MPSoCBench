@@ -8,7 +8,7 @@ INC_DIR :=  -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH)
 SRCS := tlm_memory.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-CFLAGS := $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT)
+CFLAGS := -g $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) $(MEM_SIZE_DEFAULT)
 
 #------------------------------------------------------
 .SILENT:

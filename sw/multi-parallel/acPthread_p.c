@@ -7,7 +7,8 @@
 ***********************************************************************************/
 
 unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
-
+unsigned volatile int *dfs = (unsigned volatile int *) DFS_ADDRESS;
+unsigned volatile int *intr_ctrl = (unsigned volatile int *)INTR_CTRL_ADDRESS;
 
 ThreadQueue tQueue;  // threads queue
 int pthread_n_workers; // number of processors or threads, given as a main argument (argv[1])
@@ -331,7 +332,16 @@ void pthread_executeThread ()
 	void (*fp)(void *) = node->functionPointer;
 	void *arg = node->arg;
 
+	#ifdef POWER_SIM 
+	pthread_changePowerState(HIGH);  
+	#endif 
+	
 	(*fp)(arg);
+
+	#ifdef POWER_SIM
+	pthread_changePowerState(LOW);
+	#endif 
+
 
 	if (DEBUG)
 	{
@@ -489,3 +499,21 @@ void acPthread_free(void *ptr)
 }
 */
 
+void pthread_changePowerState(int state)
+{
+	//pthread_mutex_lock(&mutex_print);
+	//printf("\nem pthread_changePowerState , state %d",state);
+	//pthread_mutex_unlock(&mutex_print);
+	*dfs = state;
+}
+
+
+void pthread_turnOnProcessors()
+{
+	*intr_ctrl = ON;
+}
+
+void pthread_turnOffProcessors()
+{
+	*intr_ctrl = OFF;
+}

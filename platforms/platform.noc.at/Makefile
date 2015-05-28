@@ -59,7 +59,7 @@ copy:
 	echo ---copy $(EXE) to the appropriate rundir
 	cp $(EXE) ../../rundir/$(RUNDIRNAME)/
 	cp ../../Makefile.conf ../../rundir/$(RUNDIRNAME)/
-
+	
 
 
 

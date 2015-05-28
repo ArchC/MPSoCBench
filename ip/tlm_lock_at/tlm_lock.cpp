@@ -144,7 +144,7 @@ void tlm_lock::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_inf
       		break; 
     }
 
-    
+    wait (TIME_LOCK, SC_NS);
   }
 
 

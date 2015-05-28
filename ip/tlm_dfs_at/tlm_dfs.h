@@ -19,7 +19,7 @@
 *********************************************************************************/
 
 /**
- * @file      tlm_dvfs.h
+ * @file      tlm_dfs.h
  * @author    Liana Duenha
  *
  * @author    The ArchC Team
@@ -31,7 +31,7 @@
  * 
  * @version   0.1
  * @date      Sun, 20 Oct 2014
- * @brief     Defines a TLM 2.0 DVFS IP using blocking blocking transport method. 
+ * @brief     Defines a TLM 2.0 dfs IP using blocking blocking transport method. 
 
  * @attention Copyright (C) 2002-2012 --- The ArchC Team
  * 
@@ -48,21 +48,20 @@
  * 
  */
 
- #ifdef POWER_SIM
 
-#ifndef TLM_DVFS_H_
-#define TLM_DVFS_H_
+#ifndef TLM_DFS_H_
+#define TLM_DFS_H_
  
 #define SC_INCLUDE_DYNAMIC_PROCESSES
+
+
 
 #include <systemc>
 #include "ac_module.H"
 #include "ac_tlm_protocol.H"
-#include "../../defines.h"
-
 #include "ac_tlm_protocol.H"
 #include "tlm_utils/simple_target_socket.h"
-
+#include "../../defines.h"
 
 
 //using tlm::tlm_blocking_transport_if;
@@ -80,21 +79,20 @@ namespace user
 {
 
 
-class tlm_dvfs:
+class tlm_dfs:
   public sc_module
 {
 public:
 
-  tlm_utils::simple_target_socket<tlm_dvfs> LOCAL_target_socket; 
+  tlm_utils::simple_target_socket<tlm_dfs> LOCAL_target_socket; 
 
   
   //sc_export<ac_tlm2_blocking_transport_if> target_export;
 
-  tlm_dvfs(sc_module_name module_name, int, PROCESSOR_NAME**);
-  ~tlm_dvfs();
+  tlm_dfs(sc_module_name module_name, int, PROCESSOR_NAME**);
+  ~tlm_dfs();
   
    void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
-   //ac_tlm_rsp_status changeFrequency();
    void initializePowerStates(PROCESSOR_NAME **);
    int getPowerState (int);
    void setPowerState (int, int);
@@ -110,5 +108,4 @@ private:
 
 };
 
-#endif //TLM_DVFS_H_
-#endif //POWER_SIM
+#endif //TLM_dfs_H_

@@ -52,6 +52,6 @@ AC_ARCH(sparc){
     ac_isa("sparc_isa.ac");
     set_endian("big");
     IC.bindTo(MEM);
-    //DC.bindTo(MEM);
+    DC.bindTo(MEM);
   };
 };

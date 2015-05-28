@@ -6,9 +6,6 @@
 #include "ac_module.H"
 #include "../../defines.h"
 
-#define DELTA_T 0.0001    // 1x10^5 segundos = 100microseconds
-
-
 typedef struct
 {
   double low;
@@ -19,7 +16,6 @@ typedef struct
 namespace user
 {
 
-
 class local_dfs:  public sc_module
 {
 public:
@@ -28,30 +24,56 @@ public:
   ~local_dfs();
      
    void initializePowerStates();
-   int getPowerState ();
+   int  getPowerState ();
    void setPowerState (int);
+   
+
+   #ifdef  DFS_AUTO_SELECTION_CPU_RATE
    void noteFwTime();
    void noteBwTime();
    void calculateCpuUsage();
    void calculateCpuWaitTime();
+   void readBounds ();
+   void remakeBounds();
+   void autoSelectionCPUrate();
    void needToDFS ();
    bool timeExceeded ();
-   void readBounds ();
-   
-   
+   #endif
+
+   #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
+   void autoSelectionEnergyStamp();
+   int  getBestFrequency (); 
+   #endif
+
 private:
 	
-	
-	PROCESSOR_NAME *proc; 
-  int numberOfStates;
-  int *listOfStates;
+	PROCESSOR_NAME *proc;
+  int     numberOfStates;
+  int     *listOfStates;
+  
+  #ifdef  DFS_AUTO_SELECTION_CPU_RATE
+  double  cpu_usage_rate;
+  double  max_cpu_usage_rate;
+  double  min_cpu_usage_rate;
+  double  cpu_wait_time;
+  double  fwTime;   // last time that the wrapper insert a package into the network
+  double  bwTime;   // last time that the wrapper return the package to the processor 
+  double  lastTime; // last measure of time
+  int     deltaCounter; 
   tBounds *bounds;
-  double cpu_usage_rate;
-  double cpu_wait_time;
-  double fwTime; // last time that the wrapper insert a package into the network
-  double bwTime; // last time that the wrapper return the package to the processor 
-  double lastTime; // last measure of time   
-  FILE* file_bounds;
+  FILE*   file_bounds;
+  #endif
+
+  
+    
+
+  #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
+  double  lastTimeES;
+  double  *energyStamp;
+  bool    end_of_elab_phase;
+  #endif
+  
+
 };
 
 };

@@ -50,7 +50,6 @@
  */
 
 
-#ifdef POWER_SIM
 
 #include "tlm_dfs.h"
 
@@ -75,12 +74,9 @@ tlm_dfs::tlm_dfs( sc_module_name module_name, int N_WORKERS, PROCESSOR_NAME **pr
    LOCAL_target_socket("LOCAL_target_socket")
   {
     LOCAL_target_socket.register_b_transport(this, &tlm_dfs::b_transport);
-
     workers = N_WORKERS;
     powerStates = new tPowerStates [workers];
-
     initializePowerStates((PROCESSOR_NAME**)processors);
-  
   }
 
 
@@ -97,7 +93,6 @@ tlm_dfs::~tlm_dfs()
      fprintf(global_dfs_file, "\ndfs Access:\t%ld", count_dfs);
      printf("\ndfs Access:\t%ld", count_dfs);
      fclose (global_dfs_file);
-
   }
 
   for (int i=0; i<workers; i++)
@@ -111,35 +106,33 @@ tlm_dfs::~tlm_dfs()
 
 void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
 {
+    int temp;
     
-    // forward and backward paths   
     time_info = time_info + sc_core::sc_time(TIME_DFS,SC_NS);
 
     uint32_t addr = (uint32_t) payload.get_address();
     unsigned char* d = payload.get_data_ptr();
-
+    
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
+    printf("\ntml_dfs_at transport: procId=%d", procId);
 
     if (measures) count_dfs ++;
+
+
+    uint32_t *T = reinterpret_cast<uint32_t*>(d);
 
     switch( command )
     {
       case TLM_READ_COMMAND :    
     
-          // just for test
-          (((uint8_t*)d)[0]) = 0;
-          (((uint8_t*)d)[1]) = 0;
-          (((uint8_t*)d)[2]) = 0;
-          (((uint8_t*)d)[3]) = (uint8_t) getPowerState (procId);
-
-
+          T[0] = getPowerState(procId);
 
           if (DFS_DEBUG)
           {
             printf("\nDFS: tlm_dfs received a READ request from processor %d", procId);
-            printf("\nDFS: Current Power State -> %d", *d);
+            printf("\nDFS: Current Power State -> %d", T[0]); //*d);
           }
 
       
@@ -147,15 +140,20 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
           break; 
       case TLM_WRITE_COMMAND: 
 
+          temp = (int) T[0];
+
+          #ifdef AC_GUEST_BIG_ENDIAN
+          temp = be32toh(temp);
+          #endif
+
           if (DFS_DEBUG)
           {
             printf("\nDFS: received a WRITE request from processor %d", procId);
             printf("\nDFS: Current Power State -> %d", getPowerState(procId));
-            printf("\nDFS: New Required Power State-> %d", d[3]);
+            printf("\nDFS: New Required Power State -> %d", temp);
           }
 
-          
-          setPowerState (procId, (int) d[3]);
+          setPowerState (procId, temp);
           payload.set_response_status(tlm::TLM_OK_RESPONSE);
           break;
       default :
@@ -163,6 +161,8 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
     }
         
     if (DFS_DEBUG) printf("\ntlm_dfs b_transport returning");
+
+    wait (TIME_DFS, SC_NS);
       
 }
 
@@ -190,12 +190,6 @@ void tlm_dfs::initializePowerStates(PROCESSOR_NAME** processors)
               printf("%d,",powerStates[i].listOfStates[j]);
             }    
           }
-
-          if (DFS_DEBUG) printf("\nDFS: Initializing Processor %d with power state %d.",i,0);
-
-          setPowerState (i,0);
-
-
       }
 
 
@@ -222,11 +216,12 @@ void tlm_dfs::setPowerState (int id, int state)
    {
          
         newFrequency = powerStates[id].listOfStates[state];
-     //   powerStates[id].procPointer->set_proc_freq(newFrequency);
-         if (DFS_DEBUG)
-         { 
-            printf("\nDFS: Updating processor frequency->%d",newFrequency);
-         }
+        //powerStates[id].procPointer->set_proc_freq(newFrequency);
+        
+        if (DFS_DEBUG)
+        { 
+          printf("\nDFS: Updating processor frequency->%d",newFrequency);
+        }
    }
    else
    { 
@@ -234,7 +229,6 @@ void tlm_dfs::setPowerState (int id, int state)
         printf("\nDFS: Maintaining the current frequency.");
    }    
 
-    ((powerStates[id].procPointer)->ps).setPowerState(state);
+   ((powerStates[id].procPointer)->ps).setPowerState(state);
 }
 
-#endif

@@ -27,15 +27,17 @@ void arm_syscall::get_buffer(int argn, unsigned char* buf, unsigned int size) {
   unsigned int addr = RB.read(argn);
 
   for (unsigned int i = 0; i<size; i++, addr++) {
-    buf[i] = DC_port.read_byte(addr);
+    buf[i] = MEM.read_byte(addr);
   }
 }
 
 void arm_syscall::set_buffer(int argn, unsigned char* buf, unsigned int size) {
   unsigned int addr = RB.read(argn);
 
+  printf("ac_syscall set_buffer size=%d  addr inicial=%d", size, addr);
   for (unsigned int i = 0; i<size; i++, addr++) {
-    DC_port.write_byte(addr, buf[i]);
+     MEM.write_byte(addr, buf[i]);
+      printf("\ni=%d addr=%d", i,addr);
   }
 }
 
@@ -43,7 +45,7 @@ void arm_syscall::set_buffer_noinvert(int argn, unsigned char* buf, unsigned int
   unsigned int addr = RB.read(argn);
 
   for (unsigned int i = 0; i<size; i+=4, addr+=4) {
-    DC_port.write(addr, *(unsigned int *) &buf[i]);
+    MEM.write(addr, *(unsigned int *) &buf[i]);
   }
 }
 

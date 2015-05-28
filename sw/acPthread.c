@@ -26,8 +26,8 @@
                        STRUCTURES AND GLOBAL VARIABLES
 ***********************************************************************************/
 
-unsigned volatile int *lock = (unsigned volatile int *)LOCK_ADDRESS;
-unsigned volatile int *dfs = (unsigned volatile int *)DVFS_ADDRESS;
+unsigned volatile int *lock = (unsigned volatile int *) LOCK_ADDRESS;
+unsigned volatile int *dfs = (unsigned volatile int *) DFS_ADDRESS;
 unsigned volatile int *intr_ctrl = (unsigned volatile int *)INTR_CTRL_ADDRESS;
 
 
@@ -431,9 +431,7 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void (*start_r
 
 		pthread_executeThread();
 
-		//#ifdef POWER_SIM 
-		//pthread_changePowerState(HIGH);
-		//#endif
+		
 
 	}
 

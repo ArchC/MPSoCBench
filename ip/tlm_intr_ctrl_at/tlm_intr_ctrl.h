@@ -56,7 +56,6 @@
 #include <systemc>
 #include "ac_module.H"
 #include "ac_tlm_protocol.H"
-#include "ac_tlm2_port.H"
 #include "ac_tlm2_payload.H"
 
 #include "tlm_utils/simple_target_socket.h"
@@ -75,7 +74,9 @@ public:
 
   tlm_utils::simple_target_socket<tlm_intr_ctrl> LOCAL_target_socket; 
    
+
   sc_port<ac_tlm2_blocking_transport_if> *CPU_port; //[NPROCS];
+ 
 
   tlm_intr_ctrl(sc_module_name module_name,int);
   ~tlm_intr_ctrl();

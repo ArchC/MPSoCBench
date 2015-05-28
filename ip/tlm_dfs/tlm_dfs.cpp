@@ -49,9 +49,7 @@
  * 
  */
 
-
 #ifdef POWER_SIM
-
 
 #include "tlm_dfs.h"
 #include <tlm.h>
@@ -68,16 +66,6 @@ FILE *local_dfs_file;
 FILE *global_dfs_file;
 
 using user::tlm_dfs;
-
-/*uint32_t _swap(uint32_t value)
-{
-  #ifdef AC_GUEST_BIG_ENDIAN
-    return be32toh(value);
-  #else
-    return le32toh(value);
-  #endif
-}
-*/
 
 
 tlm_dfs::tlm_dfs( sc_module_name module_name, int N_WORKERS, PROCESSOR_NAME **processors) :
@@ -134,6 +122,7 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
+    printf("\ntml_dfs transport: procId=%d", procId);
 
     if (measures) count_dfs ++;
 
@@ -186,17 +175,21 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
 void tlm_dfs::initializePowerStates()
 {
 
-   
+      
       if (DFS_DEBUG) printf("\nInitializing DFS");
      
       for (int i=0; i<workers; i++)
       {
         
+
         powerStates[i].procPointer = processors[i];
         powerStates[i].numberOfStates = ((powerStates[i].procPointer)->ps).getNumberOfStates();
         powerStates[i].listOfStates = new int [powerStates[i].numberOfStates];
 
+
+       
         ((powerStates[i].procPointer)->ps).completeListOfStates(powerStates[i].listOfStates); 
+        
 
           if (DFS_DEBUG) 
           {
@@ -206,34 +199,28 @@ void tlm_dfs::initializePowerStates()
               printf("%d,",powerStates[i].listOfStates[j]);
             }    
           }
-
-          if (DFS_DEBUG) printf("\nDFS: Initializing Processor %d with power state %d.",i,0);
-
-          setPowerState (i,0);
-
-
       }
+      
   }
-
-
-
 
 // POWER CONTROL
 int tlm_dfs::getPowerState (int id)
 {
 
+
+   
     if (DFS_DEBUG) printf("\nDFS: getPowerState is returning the power state of processor %d", id);
     return ((powerStates[id].procPointer)->ps).getPowerState();
+   
 
 }
 
 void tlm_dfs::setPowerState (int id, int state)
-{
+{  
 
    if (DFS_DEBUG){
       printf("\nDFS: setPowerState is updating the power state of processor %d", id);
       printf("\nDFS: setPowerState -> old power state:%d\tnew power state->%d", getPowerState (id), state);
-
    }
 
    int newFrequency;
@@ -241,7 +228,7 @@ void tlm_dfs::setPowerState (int id, int state)
    {
          
         newFrequency = powerStates[id].listOfStates[state];
-     //   powerStates[id].procPointer->set_proc_freq(newFrequency);
+
          if (DFS_DEBUG)
          { 
             printf("\nDFS: Updating processor frequency->%d",newFrequency);
@@ -254,11 +241,10 @@ void tlm_dfs::setPowerState (int id, int state)
    }    
 
    ((powerStates[id].procPointer)->ps).setPowerState(state);
+
+ 
 }
 
 
-
-
-
-
 #endif
+

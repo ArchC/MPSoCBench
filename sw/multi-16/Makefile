@@ -1,4 +1,6 @@
 CC = $(CROSS)
+TARGET := $(SOFTWARE).$(PROCESSOR) 
+
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 
 ifeq ($(PROCESSOR),arm)
@@ -6,7 +8,7 @@ CFLAGS = -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 endif
 LDFLAGS = -lm
 
-TARGET = $(SOFTWARE).$(PROCESSOR) 
+TARGET := $(SOFTWARE).$(PROCESSOR) 
 
 INC_DIR := -I.
 
@@ -24,6 +26,7 @@ OBJS := $(SRCS:.c=.o)
 
 #------------------------------------------------------
 all: $(OBJS)
+	echo $(CC) $(OBJSAUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 	$(CC) $(OBJSAUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 #------------------------------------------------------
 clean:

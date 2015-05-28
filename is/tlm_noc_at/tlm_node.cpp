@@ -42,9 +42,11 @@
 /// Namespace to isolate router from ArchC
 using user::tlm_node;
 using user::tlm_payload_extension;
-
 using user::tlm_slave_node;
 using user::tlm_master_node;
+using tlm::tlm_extension_base;
+using user::packageType;
+
 unsigned int tlm_node::numberOfNodes = 0;
 
 
@@ -193,8 +195,15 @@ void tlm_node::thread_node ()
 			if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d",getX(),getY());	
 			removeFromBuffer(payload,phase,time_info);
 		
+
 			tlm_payload_extension *ex;
-			payload.get_extension(ex);
+  			tlm::tlm_extension_base* base;
+   			base = payload.get_extension(1);
+
+   			ex = reinterpret_cast<tlm_payload_extension*>(base);
+
+			//payload.get_extension(ex);
+			
 
 			if (ex == NULL)
 			{
@@ -480,8 +489,16 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 	}
 
 
-	tlm_payload_extension *ex;
-	payload.get_extension(ex);
+	tlm_payload_extension *ex;	
+  	tlm::tlm_extension_base* base;
+   	base = payload.get_extension(1);
+
+   	ex = reinterpret_cast<tlm_payload_extension*>(base);
+
+
+	
+	//payload.get_extension(ex);
+	
 
 	
 	if (getX() == ex->getTargetX())
@@ -490,7 +507,10 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 		{
 
 			if (NOC_DEBUG) printf("\nTransporting to the wrapper using LOCAL port. \n");
-			payload.clear_extension(ex);	
+			
+			//payload.clear_extension(1);	
+			payload.clear_extension(ex); // we can not use clear_extension (1) because is private
+
 			LOCAL_init_socket->b_transport(payload,time_info);
 		}
 		else if ( getY() > ex->getTargetY() )
@@ -559,6 +579,19 @@ tlm_master_node::tlm_master_node():
 	
   } 
 
+packageType::packageType(ac_tlm2_payload &p, tlm::tlm_phase& ph, sc_core::sc_time &t)
+{
 
+				/* TESTTTTT */
+				payload.free_all_extensions();
 
+				unsigned char *data_pointer = p.get_data_ptr();
+				payload.set_data_ptr(data_pointer);
 
+				payload.deep_copy_from(p);
+
+				time = t;
+				phase = ph;
+				next = NULL;
+				prev = NULL;
+}

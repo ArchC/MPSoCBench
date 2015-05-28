@@ -71,10 +71,6 @@ void ac_behavior(begin)
   lo = 0;
 
   RB[29] =  AC_RAM_END - 1024 - processors_started++ * DEFAULT_STACK_SIZE;
-
-
- 
-
 }
 
 //!Behavior called after finishing simulation

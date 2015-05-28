@@ -33,6 +33,9 @@
 
 using user::wrapper_master_slave_to_noc;
 using user::tlm_payload_extension;
+using tlm::tlm_extension_base;
+
+
 //using user::wrapper_master_to_noc;
 //using user::wrapper_slave_to_noc;
 
@@ -42,8 +45,10 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc():
   LOCAL_init_socket(),
   LOCAL_target_socket(),
   NODE_init_socket(),
-  NODE_target_socket()  {
+  NODE_target_socket()
+  {
 
+  	dfs = NULL;
 	/* NUMBER OF HOPS */
 	numberOfHops = 0;
 	numberOfPackages = 0;
@@ -66,12 +71,16 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc(sc_module_name module_n
   LOCAL_init_socket(),
   LOCAL_target_socket(),
   NODE_init_socket(),
-  NODE_target_socket()  {
+  NODE_target_socket()
+  {
 
+	dfs = NULL;
 	/* NUMBER OF HOPS */
 	numberOfHops = 0;
 	numberOfPackages = 0;
 	/* NUMBER OF HOPS */
+
+	
 
 	LOCAL_init_socket.register_nb_transport_bw(this, &wrapper_master_slave_to_noc::nb_transport_bw);
 	LOCAL_target_socket.register_nb_transport_fw(this, &wrapper_master_slave_to_noc::nb_transport_fw);
@@ -89,13 +98,25 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc(sc_module_name module_n
 tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload& payload, tlm::tlm_phase& phase, sc_core::sc_time& time_info)
 {
 
-
+	
+		
 	tlm::tlm_sync_enum status;
 
 	if (NOC_DEBUG) printf("\n\nNB_TRANSPORT_FW--> Wrapper %d,%d with status %d is receiving a package",getX(), getY(), getStatus());
  	
-	tlm_payload_extension *ex;
-	payload.get_extension(ex);
+	
+    tlm_payload_extension *ex;
+  	tlm::tlm_extension_base* base;
+   	base = payload.get_extension(1);
+
+   	ex = reinterpret_cast<tlm_payload_extension*>(base);
+
+ 	//tlm::tlm_extension_base* teste = payload.get_extension(0);
+ 	//if (teste == 0) printf("\nwrapper nao deu certo a extensao 0 ");
+    //else   printf("\nwrapper - deu certo a extensao 0 (de dir)");
+
+	// payload.get_extension(ex);
+	
 
 	if (ex==NULL)
 	{
@@ -122,7 +143,8 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW --> Wrapper %d,%d is setting firstForward with false into the payload extension",getX(),getY());
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW-->Wrapper %d,%d is processing transaction from InitX-> %d InitY-> %d to TargetX-> %d TargetY-> %d", getX(), getY(), ex->getInitX(), ex->getInitY(), ex->getTargetX(), ex->getTargetY());				
 
-		payload.set_extension(ex);
+		//payload.set_extension(ex);
+		payload.set_extension(1,ex);
 	}
 
 	if (ex->isFirstForward())
@@ -136,11 +158,14 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 			printf("\nNB_TRANSPORT_FW--> Wrapper %d,%d TRANSPORT ERROR (2)", getX(), getY());
 			exit(1);
 		}
-		
-		payload.release_extension(ex);
-		
 
+		
+		#ifdef DFS_AUTO_SELECTION_CPU_RATE
+		dfs->noteFwTime();
+		#endif
+	
 
+		//payload.release_extension(1);
 	}
 	else
 	{
@@ -152,8 +177,6 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 			printf("\nNB_TRANSPORT_FW--> Wrapper %d,%d TRANSPORT ERROR (1)", getX(), getY());
 			exit(1);
 		}
-		
-
 
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW--> Wrapper %d,%d is transporting into the NOC using non-blocking-backward transport trought the NODE-target-socket",getX(), getY());
 		status = this->nb_transport_bw(payload,phase,time_info);
@@ -181,8 +204,14 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 	tlm::tlm_sync_enum status;
 
 	tlm_payload_extension *ex;
-	payload.get_extension(ex);
+  	tlm::tlm_extension_base* base;
+   	base = payload.get_extension(1);
 
+   	ex = reinterpret_cast<tlm_payload_extension*>(base);
+
+	//payload.get_extension(ex);
+	
+	
 	if (ex == NULL)  {
 		printf("\n\nNB_TRANSPORT_BW ERROR --> Wrapper %d,%d is processing a NULL payload extension",getX(),getY());
 		exit(1);
@@ -208,6 +237,10 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 	}
 	else
 	{
+
+
+		//printf("\ncpu_wait_time: %.10lf", cpu_wait_time);
+
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_BW--> Wrapper %d,%d is cleaning payload extension", getX(), getY());
 		
 		/*NUMBER OF HOPS*/
@@ -215,7 +248,9 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW --> Wrapper %d,%d is updating the number of hops (%ld)",getX(), getY(),this->getNumberOfHops());
 		/*NUMBER OF HOPS*/
 
-		payload.release_extension(ex);
+		// TESTE
+		//payload.release_extension(ex);
+		//payload.release_extension(1);
 
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_BW--> Wrapper %d,%d is trasporting package OUT of NOC using non-blocking-backward transport trought LOCAL-target-socket", getX(), getY());
 		status = LOCAL_target_socket->nb_transport_bw(payload,phase,time_info); 
@@ -225,86 +260,26 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 			exit(1);
 		}
 		phase = tlm::END_RESP;
+
+
+		
+		#ifdef DFS_AUTO_SELECTION_CPU_RATE
+		dfs->noteBwTime();
+		dfs->autoSelectionCPUrate();
+		#endif
+		#ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
+		dfs->autoSelectionEnergyStamp();
+		#endif
+		
+
 		return status;
-
-
 	}
 
 	
-
-	
-
-	
-
-
 }
 
-/*wrapper_master_to_noc::wrapper_master_to_noc():
-  module_name("wrapper_master"),
-  sc_module((sc_module_name)module_name),
-  LOCAL_init_socket(),
-  NODE_init_socket(),
-  NODE_target_socket()
-  {
 
-	LOCAL_init_socket.register_nb_transport_bw(this, &wrapper_master_to_noc::nb_transport_bw);
-	NODE_init_socket.register_nb_transport_bw(this, &wrapper_master_to_noc::nb_transport_bw);
-	NODE_target_socket.register_nb_transport_fw(this, &wrapper_master_to_noc::nb_transport_fw);
-	setStatus(OFF);
-
-	
-  }
-
-
-
-wrapper_master_to_noc::wrapper_master_to_noc(sc_module_name module_name) :
-  sc_module( module_name ),
-  LOCAL_init_socket(),
-  NODE_init_socket(),
-  NODE_target_socket()
- {
-
-	LOCAL_init_socket.register_nb_transport_bw(this, &wrapper_master_to_noc::nb_transport_bw);
-	NODE_init_socket.register_nb_transport_bw(this, &wrapper_master_to_noc::nb_transport_bw);
-	NODE_target_socket.register_nb_transport_fw(this, &wrapper_master_to_noc::nb_transport_fw);
-
-	setStatus(OFF);
-
-	
-  }
-
-
-wrapper_slave_to_noc::wrapper_slave_to_noc():
-  module_name("wrapper_slave"),
-  sc_module((sc_module_name)module_name),
-  LOCAL_target_socket(),
-  NODE_init_socket(),
-  NODE_target_socket()
+void wrapper_master_slave_to_noc::initDFS (PROCESSOR_NAME* proc)
 {
-
-	LOCAL_target_socket.register_nb_transport_fw(this, &wrapper_slave_to_noc::nb_transport_fw);
-	NODE_init_socket.register_nb_transport_bw(this, &wrapper_slave_to_noc::nb_transport_bw);
-	NODE_target_socket.register_nb_transport_fw(this, &wrapper_slave_to_noc::nb_transport_fw);
-
-	setStatus(OFF);
-
-	
-  }
-
-
-
-wrapper_slave_to_noc::wrapper_slave_to_noc(sc_module_name module_name) :
-  sc_module( module_name ),
-  LOCAL_target_socket(),
-  NODE_init_socket(),
-  NODE_target_socket()  {
-
-	LOCAL_target_socket.register_nb_transport_fw(this, &wrapper_slave_to_noc::nb_transport_fw);
-	NODE_init_socket.register_nb_transport_bw(this, &wrapper_slave_to_noc::nb_transport_bw);
-	NODE_target_socket.register_nb_transport_fw(this, &wrapper_slave_to_noc::nb_transport_fw);
-
-	setStatus(OFF);
-
-	
-  }
-*/
+    dfs = new local_dfs("dfs",proc);
+}

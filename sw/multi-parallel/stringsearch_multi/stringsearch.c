@@ -36,7 +36,7 @@
 //#include <pthread.h>
 
 
-#define MAX_WORKERS 16 //8
+#define MAX_WORKERS_LOCAL 16 //8
 #define NO_OF_QUERY_STRINGS 1024
 
 #define PRINT 	1 //  1 for print. 0 for no print
@@ -110,7 +110,7 @@ typedef struct Params {
 static int partition_size;
 static int search_method;
 
-static parameters paramsArr[MAX_WORKERS];
+static parameters paramsArr[MAX_WORKERS_LOCAL];
 
 char* search_strings;
 char* find_strings[NO_OF_QUERY_STRINGS];
@@ -126,7 +126,7 @@ int no_workers;
 
 pthread_attr_t string_attr;
 pthread_mutex_t string_mutex;
-pthread_t workers[MAX_WORKERS]; 
+pthread_t workers[MAX_WORKERS_LOCAL]; 
 
 
 char *strsearch(const char *findString,const char *searchString) {
@@ -391,7 +391,8 @@ int main0_stringsearch(int argc,char *argv[])
 	
 
 
-	if (no_workers >MAX_WORKERS)
+	if (no_workers >
+MAX_WORKERS_LOCAL)
 	{
 		  printf("ERROR: Number of worker should be no more than 8\n");
 		  exit(0);

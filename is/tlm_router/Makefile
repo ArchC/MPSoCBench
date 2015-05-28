@@ -1,10 +1,12 @@
 TARGET=tlm_router
 INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
-SRCS := tlm_router.cpp
+SRCS := tlm_router.cpp 
 OBJS := $(SRCS:.cpp=.o)
 
-LOCALCFLAGS:= $(CFLAGS) $(POWER_SIM_FLAG) $(ENDIANESS) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
+
+
+LOCALCFLAGS:= $(CFLAGS) $(POWER_SIM_FLAG) $(ENDIANESS) $(CFLAGS_AUX) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 #------------------------------------------------------
 .SILENT:
 #------------------------------------------------------

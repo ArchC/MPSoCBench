@@ -71,7 +71,7 @@ AC_ARCH(powerpc) {
 		ac_isa("powerpc_isa.ac");
 		set_endian("big");
 		IC.bindTo(MEM);
-        //DC.bindTo(MEM);
+        DC.bindTo(MEM);
 	};
 
 };

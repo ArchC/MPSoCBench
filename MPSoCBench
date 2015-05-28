@@ -177,9 +177,9 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
            "\nexport SOFTWARE := " + sw + "\nexport PLATFORM := platform." + intercon + "\n"
     
     if proc=='arm':
-        make = make + "\nexport CROSS := " + proc + "-newlib-eabi-gcc\n"
+        make = make + "export CROSS := " + proc + "-newlib-eabi-gcc\n"
     else:
-        make = make + "\nexport CROSS := " + proc + "-newlib-elf-gcc\n"
+        make = make + "export CROSS := " + proc + "-newlib-elf-gcc\n"
     
     # for older compilers
     #make = make + "\nexport CROSS := " + proc + "-elf-gcc\n"

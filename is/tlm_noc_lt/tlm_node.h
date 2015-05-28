@@ -23,18 +23,20 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include <systemc>
+#include <tlm.h>
 #include "ac_tlm_protocol.H"
-#include "ac_tlm2_port.H"
-#include "routing_table.h"
 #include "tlm_payload_extension.h"
-
+#include "ac_tlm2_port.H"
+//#include "routing_table.h"
 #include "../../defines.h"
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 
 using tlm::tlm_blocking_transport_if;
-using user::tlm_payload_extension;
-using user::routing_table;
+//using user::routing_table;
+
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -59,9 +61,8 @@ public:
 
   static unsigned int numberOfNodes;
 
-  routing_table tableOfRouts;
+  //routing_table tableOfRouts;
 
-  //pthread_mutex_t mymutex;
   
   tlm_node(); 
   tlm_node(sc_module_name module_name);

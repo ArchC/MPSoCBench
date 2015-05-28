@@ -85,17 +85,15 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
 {
     
     // forward and backward paths   
-    time_info = time_info + sc_core::sc_time(TIME_DVFS,SC_NS);
-
     uint32_t addr = (uint32_t) payload.get_address();
     
-
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
    
 
     unsigned char* d = payload.get_data_ptr();
+    
     uint32_t *T = reinterpret_cast<uint32_t*>(d);
     int intr;
 
@@ -103,7 +101,7 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
     switch( command )
     {
       case TLM_READ_COMMAND :    
-          printf("\nTLM_INTR_CTRL: received a READ request from processor %d, but this does not make sense...Ignored.", procId);
+          
           break; 
       
       case TLM_WRITE_COMMAND: 
@@ -119,10 +117,10 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
           intr = be32toh(intr);
           #endif  
 
-          if (intr == ON)
+          if (intr == INTR_PROC_ON)
               turnOnProcessors (procId);
           
-          else if (intr == OFF)
+          else if (intr == INTR_PROC_OFF)
               turnOffProcessors (procId);
 
           else 
@@ -146,7 +144,7 @@ void tlm_intr_ctrl::turnOnProcessors(int procId)
     if (INTR_CTRL_DEBUG) printf("\nTLM_INTR_CTRL: turninng on all processors \n");
     for (int i=0; i<workers; i++)
     {
-        if (i!=procId) send(i,ON);
+        if (i!=procId) send(i,INTR_PROC_ON);
     }
 }
 // procId is the processor that send the interruption to turning off all processors (except itself)
@@ -156,7 +154,7 @@ void tlm_intr_ctrl::turnOffProcessors(int procId)
     if (INTR_CTRL_DEBUG) printf("\nTLM_INTR_CTRL: turninng off all processors \n");
     for (int i=0; i<workers; i++)
     { 
-        if (i!=procId) send(i,OFF);
+        if (i!=procId) send(i,INTR_PROC_OFF);
     }
 }
 

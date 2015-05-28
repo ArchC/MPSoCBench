@@ -117,16 +117,16 @@ int main(int argc, char *argv[])
 
 		pthread_init();
 
-	       	pthread_mutex_init(&mutex_print, NULL);
+	    pthread_mutex_init(&mutex_print, NULL);
 		pthread_mutex_lock(&mutex_print);  
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	    printf("\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("---------------------- Running: basicmath --------------------------\n");
-        	printf("---------------  The results will be available ---------------------\n");
-        	printf("---------------------- in the output file ------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+        printf("---------------------- Running: basicmath --------------------------\n");
+        printf("---------------  The results will be available ---------------------\n");
+        printf("---------------------- in the output file ------------------------\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print); 
 

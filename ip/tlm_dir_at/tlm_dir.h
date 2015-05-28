@@ -58,6 +58,7 @@
 
 #include <systemc>
 #include "ac_tlm_protocol.H"
+#include "ac_tlm2_payload.H"
 #include "../../defines.h"
 #include "Dir.h"
 
@@ -75,18 +76,21 @@ public:
 
 
    tlm_utils::simple_target_socket<tlm_dir> LOCAL_target_socket; 
-   //sc_export< ac_tlm2_blocking_transport_if > target_export;	
+   sc_port<ac_tlm2_blocking_transport_if> *CPU_port; 
    
    uint32_t readm (uint32_t & );
    void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
    bool read_dir();
    bool write_dir();
-   tlm_dir( sc_module_name module_name);
+   void send (int id, int intr);
+   tlm_dir( sc_module_name module_name, int n);
    ~tlm_dir();
 
 private:
 	Dir *dir;
-   uint32_t value;
+    uint32_t value;
+    int workers;
+    ac_tlm2_payload payload;
 
 };
 
