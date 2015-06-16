@@ -51,15 +51,16 @@
 #include "local_dfs.h"
 #include "../../defines.h"
 
-
-
-
 //////////////////////////////////////////////////////////////////////////////
 
 //using user::tlm_payload_extension;
 using user::routing_table;
-using user::local_dfs;
 using namespace sc_core;
+
+#ifdef POWER_SIM
+using user::local_dfs;
+#endif
+
 
 namespace user
 {
@@ -84,7 +85,10 @@ public:
   wrapper_master_slave_to_noc(sc_module_name module_name);
 
   ~wrapper_master_slave_to_noc() { 
+
+      #ifdef POWER_SIM
       if (dfs!=NULL) delete dfs;
+      #endif
 
   }
 
@@ -125,8 +129,10 @@ public:
   tlm::tlm_sync_enum  nb_transport_fw(ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
   tlm::tlm_sync_enum  nb_transport_bw(ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
 
+  #ifdef POWER_SIM
   local_dfs *dfs;
   void initDFS (PROCESSOR_NAME* proc);
+  #endif
 
 private:
 

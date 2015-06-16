@@ -48,6 +48,7 @@
  * 
  */
 
+#ifdef POWER_SIM
 
 #ifndef TLM_DFS_H_
 #define TLM_DFS_H_
@@ -86,7 +87,6 @@ public:
 
   tlm_utils::simple_target_socket<tlm_dfs> LOCAL_target_socket; 
 
-  
   //sc_export<ac_tlm2_blocking_transport_if> target_export;
 
   tlm_dfs(sc_module_name module_name, int, PROCESSOR_NAME**);
@@ -102,10 +102,10 @@ private:
 	int workers;
 	tPowerStates *powerStates;
 
-
 	
 };
 
 };
 
 #endif //TLM_dfs_H_
+#endif

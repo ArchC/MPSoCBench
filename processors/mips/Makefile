@@ -8,7 +8,7 @@ INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) -I$(PO
 SRCS := mips.cpp  mips_arch.cpp  mips_arch_ref.cpp  mips_isa.cpp mips_syscall.cpp mips_intr_handlers.cpp
 OBJS := $(SRCS:.cpp=.o)
 
-LOCALCFLAGS := $(CFLAGS) -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG)  -Wno-deprecated
+LOCALCFLAGS := $(CFLAGS) -g $(ENDIANESS) $(POWER_SIM_FLAG) $(WAIT_TRANSPORT_FLAG) -Wno-deprecated
 
 #------------------------------------------------------
 .SILENT:

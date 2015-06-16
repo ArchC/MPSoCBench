@@ -351,12 +351,12 @@ def run(tracker, nobuild, power, condor):
                                 # creates rundir
                                 build([[i],[j],[k],[l]], power, condor)
                                 os.chdir(rundir_path)
-                                os.system("make run")
+                                os.system("make run > saida.txt")
                                 os.system("make -f Makefile.check check")
                                 os.chdir("../../")
                         else:
                             os.chdir(rundir_path)
-                            os.system("make run")
+                            os.system("make run > saida.txt")
                             os.system("make -f Makefile.check check")
                             os.chdir("../../")
     except:

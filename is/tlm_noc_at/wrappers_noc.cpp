@@ -47,8 +47,10 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc():
   NODE_init_socket(),
   NODE_target_socket()
   {
-
+	#ifdef POWER_SIM
   	dfs = NULL;
+  	#endif
+
 	/* NUMBER OF HOPS */
 	numberOfHops = 0;
 	numberOfPackages = 0;
@@ -74,13 +76,13 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc(sc_module_name module_n
   NODE_target_socket()
   {
 
+    #ifdef POWER_SIM
 	dfs = NULL;
+	#endif
 	/* NUMBER OF HOPS */
 	numberOfHops = 0;
 	numberOfPackages = 0;
 	/* NUMBER OF HOPS */
-
-	
 
 	LOCAL_init_socket.register_nb_transport_bw(this, &wrapper_master_slave_to_noc::nb_transport_bw);
 	LOCAL_target_socket.register_nb_transport_fw(this, &wrapper_master_slave_to_noc::nb_transport_fw);
@@ -98,7 +100,6 @@ wrapper_master_slave_to_noc::wrapper_master_slave_to_noc(sc_module_name module_n
 tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload& payload, tlm::tlm_phase& phase, sc_core::sc_time& time_info)
 {
 
-	
 		
 	tlm::tlm_sync_enum status;
 
@@ -159,9 +160,10 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 			exit(1);
 		}
 
-		
+		#ifdef POWER_SIM
 		#ifdef DFS_AUTO_SELECTION_CPU_RATE
 		dfs->noteFwTime();
+		#endif
 		#endif
 	
 
@@ -262,7 +264,7 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 		phase = tlm::END_RESP;
 
 
-		
+		#ifdef POWER_SIM
 		#ifdef DFS_AUTO_SELECTION_CPU_RATE
 		dfs->noteBwTime();
 		dfs->autoSelectionCPUrate();
@@ -270,7 +272,7 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 		#ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
 		dfs->autoSelectionEnergyStamp();
 		#endif
-		
+		#endif
 
 		return status;
 	}
@@ -279,7 +281,11 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 }
 
 
+#ifdef POWER_SIM
 void wrapper_master_slave_to_noc::initDFS (PROCESSOR_NAME* proc)
 {
+	
     dfs = new local_dfs("dfs",proc);
+    
 }
+#endif

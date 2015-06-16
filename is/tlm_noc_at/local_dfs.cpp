@@ -28,11 +28,12 @@ sc_module( module_name )
   this->min_cpu_usage_rate = 1;
   #endif 
 
-
   #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
   this->lastTimeES = 0;
   this->end_of_elab_phase = false;
+  this->end_of_init_phase = false;
   energyStamp = NULL;
+  newEnergyStamp = NULL;
   #endif
 
   initializePowerStates();
@@ -49,6 +50,7 @@ local_dfs::~local_dfs()
 
   #ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
   delete [] energyStamp;
+  delete [] newEnergyStamp;
   #endif
 
   delete [] listOfStates;
@@ -57,17 +59,13 @@ local_dfs::~local_dfs()
 void local_dfs::initializePowerStates()
 {
 
-
-    
   if (DFS_DEBUG) printf("\nInitializing LOCAL_DFS");
-
 
   numberOfStates = (proc->ps).getNumberOfStates();
   listOfStates = new int [numberOfStates];
   (proc->ps).completeListOfStates(listOfStates); 
   
-  if (DFS_DEBUG) printf("\nLOCAL_DFS: There are %d available frequencies for Processor %d: ", numberOfStates, proc->getId() );
-
+  if (DFS_DEBUG) printf("\nLOCAL_DFS: There are %d available frequencies for Processor %d. ", numberOfStates, proc->getId() );
 
   #ifdef DFS_AUTO_SELECTION_CPU_RATE
   bounds = new tBounds [numberOfStates];
@@ -83,17 +81,31 @@ void local_dfs::initializePowerStates()
 
   #ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
   energyStamp  = new double [numberOfStates];
+  newEnergyStamp  = new double [numberOfStates];
   for (int i=0; i<numberOfStates; i++)   energyStamp[i] = 0;
   #endif
 
-  
-  if (DFS_DEBUG) printf("\nLOCAL_DFS: Initializing Processor %d with power state %d.",proc->getId(),0);
-  
+  setInitialPowerState (0);
 
-  setPowerState(0);
+  //if (proc->getId() >= 0 && proc->getId() < 8)  setInitialPowerState (2);
+  //else if (proc->getId() >= 8 && proc->getId() < 16) setInitialPowerState (0);  
+  //else if (proc->getId() >= 11 && proc->getId() < 16) setInitialPowerState (3);  
+  
+  //if (proc->getId() >= 0 && proc->getId() < 6) setPowerState(0);
+  //if (proc->getId() >=6 && proc->getId() < 11) setPowerState(1);
+  //if (proc->getId() >=11 && proc->getId() < 16) setPowerState(2);
+
   
   }
 
+
+void local_dfs::setInitialPowerState(int state)
+{
+  if (DFS_DEBUG) printf("\nLOCAL_DFS: Initializing Processor %d with power state %d.",proc->getId(),state);
+  int newFrequency = listOfStates[state];
+  proc->set_proc_freq(newFrequency);
+  (proc->ps).setPowerState(state);
+}
 
 // POWER CONTROL
 int local_dfs::getPowerState ()
@@ -101,36 +113,40 @@ int local_dfs::getPowerState ()
   return (proc->ps).getPowerState();
 }
 
+
 void local_dfs::setPowerState (int state)
 {
 
    if ( (state >= 0) && (state < numberOfStates) )
    {
-        
-      if (DFS_DEBUG)
-      {
-        //printf("\nLOCAL_DFS: cpu_usage_rate of processor %d is %0.4lf", proc->getId(),cpu_usage_rate*100);
-        printf("\nLOCAL_DFS: updating the power state of processor %d", proc->getId());
-        printf("\nLOCAL_DFS: old power state:%d\tnew power state->%d", getPowerState(), state);
+
+      int state_cur = getPowerState();
+
+      if (state_cur != state)
+      {  
+          int newFrequency = listOfStates[state];
+          proc->set_proc_freq(newFrequency);
+          (proc->ps).setPowerState(state);
+
+          double t = sc_time_stamp().to_seconds();
+
+          printf("\n%.8f,%d,%d,%d", t, proc->getId(), state_cur, state);
+          if (DFS_DEBUG)
+          {
+            //printf("\nLOCAL_DFS: cpu_usage_rate of processor %d is %0.4lf", proc->getId(),cpu_usage_rate*100);
+            printf("\nLOCAL_DFS: updating the power state of processor %d", proc->getId());
+            printf("\nLOCAL_DFS: old power state:%d\tnew power state->%d", state_cur, state);
+            printf("\nLOCAL_DFS: Updating processor frequency->%d",newFrequency);
+          }
+
       }
-
-      int newFrequency = listOfStates[state];
-      proc->set_proc_freq(newFrequency);
-      (proc->ps).setPowerState(state);
-
-      if (DFS_DEBUG)
-      { 
-        printf("\nLOCAL_DFS: Updating processor frequency->%d",newFrequency);
-      }
-
    }
    else
    { 
         printf("\nLOCAL_DFS: The new frequency required is not availabe for this processors;");
         printf("\nLOCAL_DFS: Maintaining the current frequency.");
    }    
-  
- 
+
 }
 
 
@@ -140,14 +156,26 @@ void local_dfs::autoSelectionEnergyStamp ()
 {
   double t = sc_time_stamp().to_seconds();
   
+  /*if (!end_of_init_phase)
+  {
+      if (t >= FIRST_DELTA_T)
+      {
+         end_of_init_phase = true;
+         (proc->ps).initialize_energy_stamp();
+    
+      }
+  }*/
+  //else 
   if (!end_of_elab_phase)
   {  
-    if (t > lastTimeES + DELTA_T)
+    //if (t >= (lastTimeES + FIRST_DELTA_T + DELTA_T))
+    if (t >= (lastTimeES + DELTA_T))
     {
-       
+      //printf("\nFase de elaboração: nova avaliação");
       int actualState = getPowerState();
-      energyStamp[actualState] = (proc->ps).get_energy_stamp(actualState); 
-      
+      //energyStamp[actualState] = (proc->ps).get_energy_stamp(actualState); 
+      newEnergyStamp[actualState] = (proc->ps).get_newEnergy_stamp(actualState);       
+      //printf("\nnewEnergyStamp[%d]: %.20lf", actualState, newEnergyStamp[actualState]);
 
       if (DFS_DEBUG)
       {
@@ -156,7 +184,8 @@ void local_dfs::autoSelectionEnergyStamp ()
         printf("\nActual State: %d", actualState);
         printf("\nDelta: %0.5lf", DELTA_T);
         printf("\nLast time measured: %0.5lf", t);
-        printf("\nEnergyStamp: %.10lf \n", energyStamp[actualState]);
+        //printf("\nEnergyStamp: %.10lf \n", energyStamp[actualState]);
+        printf("\nNewEnergyStamp:%.10lf \n", newEnergyStamp[actualState]);
       }
      
       actualState++;
@@ -165,44 +194,64 @@ void local_dfs::autoSelectionEnergyStamp ()
       {
           end_of_elab_phase = true;
           actualState = getBestFrequency (); 
-          printf("\nBest state for processor %d is %d", proc->getId(), actualState);
+
+        //  printf("\nAcabou fase de elaboração");
+        //  printf("\nBest state for processor %d is %d", proc->getId(), actualState);
       }
+      
       setPowerState(actualState);
       (proc->ps).initialize_energy_stamp();
 
+      lastTimeES = t; /*****/
     }
   }
   else // the elaboration phase is over
   {
-      if (t > lastTimeES + DELTA_T)
+      //if (t >= lastTimeES + FIRST_DELTA_T + DELTA_T)
+      if (t >= lastTimeES + DELTA_T)
       {
 
         int actualState = getPowerState();
       
-        double ES_cur = (proc->ps).get_energy_stamp(actualState);
+        //double ES_cur = (proc->ps).get_energy_stamp(actualState);
+
+        double NewES_cur = (proc->ps).get_newEnergy_stamp(actualState);
+        newEnergyStamp[actualState] = NewES_cur;
+
+       // printf("\nNewEScur: %.20lf", NewES_cur);
+
         int newState = actualState;
 
         for (int i=0; i<numberOfStates; i++)
         {
-            if (ES_cur < energyStamp[i]) newState = i;
+            //if (ES_cur < energyStamp[i]) newState = i;
+            if (NewES_cur < newEnergyStamp[i]) newState = i;
+
         }
         if (newState != actualState)
         {
             setPowerState (newState);
+            //printf("\nFase de simulação...");
+            //printf("\nVai mudar o estado do processador %d para %d", proc->getId(),newState);
         } 
+        (proc->ps).initialize_energy_stamp();
         lastTimeES = t;
       }  
 
-  }  
+  } 
 }
 
 int local_dfs::getBestFrequency ()
 {
     int bestState = 0;
-    double minES = energyStamp[0];
+    //double minES = energyStamp[0];
+    double newMinES = newEnergyStamp[0];
+    
     for (int i=0; i<numberOfStates; i++)
     {
-      if (energyStamp[i] < minES)
+      ////  if (energyStamp[i] < minES)
+      printf("\nProcessor %d: newEnergyStamp[%d] = %.20lf", proc->getId(), i, newEnergyStamp[i]);
+      if (newEnergyStamp[i] < newMinES)
       {
         bestState = i;
       }
@@ -244,17 +293,20 @@ void local_dfs::autoSelectionCPUrate()
 void local_dfs::remakeBounds()
 {
   
-  printf("\nProcessor %d remaking bounds.", proc->getId() );
-  printf("\nDelta Counter: %d", deltaCounter);
-
-  printf("\n\nBefore Remake Bounds:");
-
-  for (int i=0; i<numberOfStates; i++)
+  if (DFS_DEBUG)
   {
+    printf("\nProcessor %d remaking bounds.", proc->getId() );
+    printf("\nDelta Counter: %d", deltaCounter);
+
+    printf("\n\nBefore Remake Bounds:");
+
+    for (int i=0; i<numberOfStates; i++)
+    {
       printf("\nMin_cpu_usage_rate: %.3f", min_cpu_usage_rate*100);
       printf("\nMax_cpu_usage_rate: %.3f", max_cpu_usage_rate*100);
       printf("\nThe low bound for state %d is %.1f", i, bounds[i].low);
       printf("\nThe high bound for state %d is %.1f", i, bounds[i].high);
+    }
   }
 
   deltaCounter = 0;
@@ -263,29 +315,49 @@ void local_dfs::remakeBounds()
   bounds[0].low  = 0;
   bounds[0].high = min_cpu_usage_rate*100/2;
 
-  /* state 1: when cpu_usage is close the minimum */
+
   bounds[1].low  = bounds[0].high - 0.25*(bounds[0].high);
   bounds[1].high = min_cpu_usage_rate*100;
 
-  /* state 1: when cpu_usage is between the minimum and the maximum */
+
   bounds[2].low  = bounds[1].high - 0.25*(bounds[1].high);
   bounds[2].high = ((max_cpu_usage_rate+min_cpu_usage_rate)/2)*100;
 
-  /* state 2: include the max cpu_usage */
+
   bounds[3].low  = bounds[2].high - 0.25*(bounds[2].high);
   bounds[3].high = 100;
+
+
+
+/*
+  bounds[0].low  = 0;
+  bounds[0].high = min_cpu_usage_rate*100;
+
+  bounds[1].low  = bounds[0].high - 0.25*(bounds[0].high);
+  bounds[1].high = ((min_cpu_usage_rate+max_cpu_usage_rate)/2)*100;
+
+
+  bounds[2].low  = bounds[1].high - 0.25*(bounds[1].high);
+  bounds[2].high = (max_cpu_usage_rate*100);
+
+  bounds[3].low  = bounds[2].high - 0.25*(bounds[2].high);
+  bounds[3].high = 100;
+
+*/
 
   min_cpu_usage_rate = 1;
   max_cpu_usage_rate = 0;
 
-  printf("\n\nAfter Remake Bounds:");
-
-  for (int i=0; i<numberOfStates; i++)
+  if (DFS_DEBUG)
   {
+    printf("\n\nAfter Remake Bounds:");
+
+    for (int i=0; i<numberOfStates; i++)
+    {
       printf("\nThe low bound for state %d is %.1f", i, bounds[i].low);
       printf("\nThe high bound for state %d is %.1f", i, bounds[i].high);
+    }
   }
- 
 }
 
 void local_dfs::needToDFS ()

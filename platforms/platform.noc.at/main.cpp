@@ -50,8 +50,10 @@ using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
 using user::tlm_intr_ctrl;
 using user::tlm_dir;
-using user::tlm_dfs;
 
+#ifdef POWER_SIM
+using user::tlm_dfs;
+#endif
 
 
 // Global variables
@@ -120,7 +122,9 @@ int sc_main(int ac, char *av[])
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
 	tlm_dir dir ("dir", N_WORKERS);
+    #ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
+	#endif
 
 
 	// Binding processors and interruption controller
@@ -134,7 +138,7 @@ int sc_main(int ac, char *av[])
 	// Processor 0 starts simulatino in ON-mode while the other processors are in OFF-mode
 	for (int i=1; i<N_WORKERS; i++)
     {
-        intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
+        intr_ctrl.send(i,ON); // turn off processors 1,..,N_WORKERS-1
     }
     intr_ctrl.send(0,ON);    // turn on processor 0 (master)
 
@@ -149,7 +153,11 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 5; // mem, lock, intr_ctrl, dir , dfs
+	int slaves = 4; // mem, lock, intr_ctrl, dir 
+
+	#ifdef POWER_SIM
+	slaves++; // dfs
+	#endif
 	
 	int peripherals = masters + slaves;
 	int r = ceil(sqrt(peripherals)); 
@@ -220,7 +228,7 @@ int sc_main(int ac, char *av[])
 			column = 0;	
 		}	
 
-
+		#ifdef POWER_SIM
 		// DFS will be binded with NoC[1]0] in case of NoC 3x3, or NoC[0][4] in other NoCs
 		noc.wrapper[wrMS].LOCAL_init_socket.bind(dfs.LOCAL_target_socket);
     	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
@@ -228,6 +236,10 @@ int sc_main(int ac, char *av[])
 		emptyMasters++;
 		noc.tableOfRouts.newEntry(line,column);	
 		column++;
+		#endif
+
+
+
 		if (r==5)
 		{
 			// in case of NoC 5x5, the next peripheral must be on node [1][0]
@@ -240,7 +252,6 @@ int sc_main(int ac, char *av[])
 	// Connecting processors and noc-mesh 
 	int proc = 0;
 
-
 	while (line< noc.getNumberOfLines() )
         {
 		while(column < noc.getNumberOfColumns())
@@ -250,7 +261,9 @@ int sc_main(int ac, char *av[])
 				
 				processors[proc]->MEM_port.LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.slaveEmptyNodes[emptySlaves].LOCAL_slave_target_socket);
+				#ifdef POWER_SIM
 				noc.wrapper[wrMS].initDFS(processors[proc]);
+				#endif
 
 				wrMS++;
 				emptySlaves++;
@@ -348,11 +361,23 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 //processors[i]->IC.powersc_connect();
+		 processors[i]->IC.powersc_connect();
 		 //processors[i]->DC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
 	#endif
+
+	// RETIRAR ISSO DEPOIS -= SOMENTE PAR AEXPERIMENTOS
+	#ifdef POWER_SIM
+	double d = 0;
+	for (int i=0; i<N_WORKERS; i++){
+   		 // Connect Power Information from ArchC with PowerSC
+		 d += processors[i]->ps.getEnergyPerCore();
+ 	}
+	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	#endif
+
+
 
 	// Checking the status 
 	bool status = 0;

@@ -58,7 +58,7 @@
 #define LOCK_DEBUG      0
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
-#define DFS_DEBUG       1
+#define DFS_DEBUG       0
 #define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS
@@ -69,7 +69,7 @@
 #define BACKWARD 1
 
 // TIMING STATIC PARAMETERS
-#define TIME_MEMORY    100
+#define TIME_MEMORY    50
 #define TIME_DIR       2
 #define TIME_NODE      2
 #define TIME_ROUTER    2
@@ -91,11 +91,11 @@
 #define HIGH 3
 #define LOW 0
 
-#define DFS_AUTO_SELECTION_CPU_RATE
+//#define DFS_AUTO_SELECTION_CPU_RATE
 //#define DFS_AUTO_SELECTION_ENERGY_STAMP
 
- 
-#define DELTA_T 0.00005     
+//#define FIRST_DELTA_T 0.025   // 50*0,0005
+#define DELTA_T 0.00025     
 #define N_DELTA_T 50
 
 #ifdef PROCMIPS 

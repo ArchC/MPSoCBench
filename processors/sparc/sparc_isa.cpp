@@ -110,23 +110,23 @@ inline void update_pc(bool branch, bool taken, bool b_always, bool annul, ac_wor
 #endif
 
 
-void trap_reg_window_overflow(ac_memory& DC_port, ac_regbank<256, ac_word, ac_Dword>& RB, ac_reg<unsigned char>& WIM)
+void trap_reg_window_overflow(ac_memory& MEM, ac_regbank<256, ac_word, ac_Dword>& RB, ac_reg<unsigned char>& WIM)
 {
   WIM = (WIM-0x10);
   int sp = (WIM+14) & 0xFF;
   int l0 = (WIM+16) & 0xFF;
   for (int i=0; i<16; i++) {
-    DC_port.write(RB.read(sp)+(i<<2), RB.read(l0+i));
+    MEM.write(RB.read(sp)+(i<<2), RB.read(l0+i));
   }
 }
 
 
-void trap_reg_window_underflow(ac_memory& DC_port, ac_regbank<256, ac_word, ac_Dword>& RB, ac_reg<unsigned char>& WIM)
+void trap_reg_window_underflow(ac_memory& MEM, ac_regbank<256, ac_word, ac_Dword>& RB, ac_reg<unsigned char>& WIM)
 {
   int sp = (WIM+14) & 0xFF;
   int l0 = (WIM+16) & 0xFF;
   for (int i=0; i<16; i++) {
-    RB.write(l0+i, DC_port.read(RB.read(sp)+(i<<2)));
+    RB.write(l0+i, MEM.read(RB.read(sp)+(i<<2)));
   }
   WIM = (WIM+0x10);
 }
@@ -295,7 +295,7 @@ void ac_behavior( bvs )
 void ac_behavior( ldsb_reg )
 {
   dbg_printf("ldsb_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  writeReg(rd, (int)(char) DC_port.read_byte(readReg(rs1) + readReg(rs2)));
+  writeReg(rd, (int)(char) MEM.read_byte(readReg(rs1) + readReg(rs2)));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -304,7 +304,7 @@ void ac_behavior( ldsb_reg )
 void ac_behavior( ldsh_reg )
 {
   dbg_printf("ldsh_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  writeReg(rd, (int)(short) DC_port.read_half(readReg(rs1) + readReg(rs2)));
+  writeReg(rd, (int)(short) MEM.read_half(readReg(rs1) + readReg(rs2)));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -313,7 +313,7 @@ void ac_behavior( ldsh_reg )
 void ac_behavior( ldub_reg )
 {
   dbg_printf("ldub_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  writeReg(rd, DC_port.read_byte(readReg(rs1) + readReg(rs2)));
+  writeReg(rd, MEM.read_byte(readReg(rs1) + readReg(rs2)));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -322,7 +322,7 @@ void ac_behavior( ldub_reg )
 void ac_behavior( lduh_reg )
 {
   dbg_printf("lduh_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  writeReg(rd, DC_port.read_half(readReg(rs1) + readReg(rs2)));
+  writeReg(rd, MEM.read_half(readReg(rs1) + readReg(rs2)));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -331,7 +331,7 @@ void ac_behavior( lduh_reg )
 void ac_behavior( ld_reg )
 {
   dbg_printf("ld_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  writeReg(rd, DC_port.read(readReg(rs1) + readReg(rs2)));
+  writeReg(rd, MEM.read(readReg(rs1) + readReg(rs2)));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -340,8 +340,8 @@ void ac_behavior( ld_reg )
 void ac_behavior( ldd_reg )
 {
   dbg_printf("ldd_reg [r%d+r%d], r%d\n", rs1, rs2, rd);
-  int tmp = DC_port.read(readReg(rs1) + readReg(rs2) + 4);
-  writeReg(rd,   DC_port.read(readReg(rs1) + readReg(rs2)    ));
+  int tmp = MEM.read(readReg(rs1) + readReg(rs2) + 4);
+  writeReg(rd,   MEM.read(readReg(rs1) + readReg(rs2)    ));
   writeReg(rd+1, tmp);
   dbg_printf("Result = 0x%x\n", readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd+1));
@@ -352,7 +352,7 @@ void ac_behavior( ldd_reg )
 void ac_behavior( stb_reg )
 {
   dbg_printf("stb_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  DC_port.write_byte(readReg(rs1) + readReg(rs2), (char) readReg(rd));
+  MEM.write_byte(readReg(rs1) + readReg(rs2), (char) readReg(rd));
   dbg_printf("Result = 0x%x\n", (char) readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -361,7 +361,7 @@ void ac_behavior( stb_reg )
 void ac_behavior( sth_reg )
 {
   dbg_printf("sth_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  DC_port.write_half(readReg(rs1) + readReg(rs2), (short) readReg(rd));
+  MEM.write_half(readReg(rs1) + readReg(rs2), (short) readReg(rd));
   dbg_printf("Result = 0x%x\n", (short) readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -370,7 +370,7 @@ void ac_behavior( sth_reg )
 void ac_behavior( st_reg )
 {
   dbg_printf("st_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  DC_port.write(readReg(rs1) + readReg(rs2), readReg(rd));
+  MEM.write(readReg(rs1) + readReg(rs2), readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -379,8 +379,8 @@ void ac_behavior( st_reg )
 void ac_behavior( std_reg )
 {
   dbg_printf("std_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  DC_port.write(readReg(rs1) + readReg(rs2),     readReg(rd  ));
-  DC_port.write(readReg(rs1) + readReg(rs2) + 4, readReg(rd+1));
+  MEM.write(readReg(rs1) + readReg(rs2),     readReg(rd  ));
+  MEM.write(readReg(rs1) + readReg(rs2) + 4, readReg(rd+1));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd+1));
   update_pc(0,0,0,0,0, ac_pc, npc);
@@ -390,8 +390,8 @@ void ac_behavior( std_reg )
 void ac_behavior( ldstub_reg )
 {
   dbg_printf("atomic ldstub_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  writeReg(rd, DC_port.read_byte(readReg(rs1) + readReg(rs2)));
-  DC_port.write_byte(readReg(rs1) + readReg(rs2), 0xFF);
+  writeReg(rd, MEM.read_byte(readReg(rs1) + readReg(rs2)));
+  MEM.write_byte(readReg(rs1) + readReg(rs2), 0xFF);
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
 
@@ -399,8 +399,8 @@ void ac_behavior( ldstub_reg )
 void ac_behavior( swap_reg )
 {
   dbg_printf("swap_reg r%d, [r%d+r%d]\n", rd, rs1, rs2);
-  int swap_temp = DC_port.read(readReg(rs1) + readReg(rs2));
-  DC_port.write(readReg(rs1) + readReg(rs2), readReg(rd));
+  int swap_temp = MEM.read(readReg(rs1) + readReg(rs2));
+  MEM.write(readReg(rs1) + readReg(rs2), readReg(rd));
   writeReg(rd, swap_temp);
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -708,7 +708,7 @@ void ac_behavior( save_reg )
 
   //realy change reg window
   CWP = (CWP-0x10);
-  if (CWP == WIM) trap_reg_window_overflow(DC_port, RB, WIM);
+  if (CWP == WIM) trap_reg_window_overflow(MEM, RB, WIM);
 
   //copy local and out from buffer
   for (int i=8; i<24; i++) {
@@ -739,7 +739,7 @@ void ac_behavior( restore_reg )
 
   //realy change reg window
   CWP = (CWP+0x10);
-  if (CWP == WIM) trap_reg_window_underflow(DC_port, RB, WIM);
+  if (CWP == WIM) trap_reg_window_underflow(MEM, RB, WIM);
 
   //copy in and local from buffer
   for (int i=16; i<32; i++) {
@@ -913,7 +913,7 @@ void ac_behavior( wry_reg )
 void ac_behavior( ldsb_imm )
 {
   dbg_printf("ldsb_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  writeReg(rd, (int)(char) DC_port.read_byte(readReg(rs1) + simm13));
+  writeReg(rd, (int)(char) MEM.read_byte(readReg(rs1) + simm13));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -922,7 +922,7 @@ void ac_behavior( ldsb_imm )
 void ac_behavior( ldsh_imm )
 {
   dbg_printf("ldsh_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  writeReg(rd, (int)(short) DC_port.read_half(readReg(rs1) + simm13));
+  writeReg(rd, (int)(short) MEM.read_half(readReg(rs1) + simm13));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -931,7 +931,7 @@ void ac_behavior( ldsh_imm )
 void ac_behavior( ldub_imm )
 {
   dbg_printf("ldub_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  writeReg(rd, DC_port.read_byte(readReg(rs1) + simm13));
+  writeReg(rd, MEM.read_byte(readReg(rs1) + simm13));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -940,7 +940,7 @@ void ac_behavior( ldub_imm )
 void ac_behavior( lduh_imm )
 {
   dbg_printf("lduh_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  writeReg(rd, DC_port.read_half(readReg(rs1) + simm13));
+  writeReg(rd, MEM.read_half(readReg(rs1) + simm13));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -949,7 +949,7 @@ void ac_behavior( lduh_imm )
 void ac_behavior( ld_imm )
 {
   dbg_printf("ld_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  writeReg(rd, DC_port.read(readReg(rs1) + simm13));
+  writeReg(rd, MEM.read(readReg(rs1) + simm13));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -958,8 +958,8 @@ void ac_behavior( ld_imm )
 void ac_behavior( ldd_imm )
 {
   dbg_printf("ldd_imm [r%d + %d], r%d\n", rs1, simm13, rd);
-  int tmp = DC_port.read(readReg(rs1) + simm13 + 4);
-  writeReg(rd,   DC_port.read(readReg(rs1) + simm13));
+  int tmp = MEM.read(readReg(rs1) + simm13 + 4);
+  writeReg(rd,   MEM.read(readReg(rs1) + simm13));
   writeReg(rd+1, tmp);
   dbg_printf("Result = 0x%x\n", readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd+1));
@@ -1260,7 +1260,7 @@ void ac_behavior( sdivcc_imm )
 void ac_behavior( stb_imm )
 {
   dbg_printf("stb_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  DC_port.write_byte(readReg(rs1) + simm13, (char) readReg(rd));
+  MEM.write_byte(readReg(rs1) + simm13, (char) readReg(rd));
   dbg_printf("Result = 0x%x\n", (char) readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -1269,7 +1269,7 @@ void ac_behavior( stb_imm )
 void ac_behavior( sth_imm )
 {
   dbg_printf("sth_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  DC_port.write_half(readReg(rs1) + simm13, (short) readReg(rd));
+  MEM.write_half(readReg(rs1) + simm13, (short) readReg(rd));
   dbg_printf("Result = 0x%x\n", (short) readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -1278,7 +1278,7 @@ void ac_behavior( sth_imm )
 void ac_behavior( st_imm )
 {
   dbg_printf("st_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  DC_port.write(readReg(rs1) + simm13, readReg(rd));
+  MEM.write(readReg(rs1) + simm13, readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -1287,8 +1287,8 @@ void ac_behavior( st_imm )
 void ac_behavior( std_imm )
 {
   dbg_printf("std_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  DC_port.write(readReg(rs1) + simm13,     readReg(rd  ));
-  DC_port.write(readReg(rs1) + simm13 + 4, readReg(rd+1));
+  MEM.write(readReg(rs1) + simm13,     readReg(rd  ));
+  MEM.write(readReg(rs1) + simm13 + 4, readReg(rd+1));
   dbg_printf("Result = 0x%x\n", readReg(rd));
   dbg_printf("Result = 0x%x\n", readReg(rd+1));
   update_pc(0,0,0,0,0, ac_pc, npc);
@@ -1298,8 +1298,8 @@ void ac_behavior( std_imm )
 void ac_behavior( ldstub_imm )
 {
   dbg_printf("atomic ldstub_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  writeReg(rd, DC_port.read_byte(readReg(rs1) + simm13));
-  DC_port.write_byte(readReg(rs1) + simm13, 0xFF);
+  writeReg(rd, MEM.read_byte(readReg(rs1) + simm13));
+  MEM.write_byte(readReg(rs1) + simm13, 0xFF);
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
 
@@ -1307,8 +1307,8 @@ void ac_behavior( ldstub_imm )
 void ac_behavior( swap_imm )
 {
   dbg_printf("swap_imm r%d, [r%d + %d]\n", rd, rs1, simm13);
-  int swap_temp = DC_port.read(readReg(rs1) + simm13);
-  DC_port.write(readReg(rs1) + simm13, readReg(rd));
+  int swap_temp = MEM.read(readReg(rs1) + simm13);
+  MEM.write(readReg(rs1) + simm13, readReg(rd));
   writeReg(rd, swap_temp);
   update_pc(0,0,0,0,0, ac_pc, npc);
 };
@@ -1474,7 +1474,7 @@ void ac_behavior( save_imm )
 
   //realy change reg window
   CWP = (CWP-0x10);
-  if (CWP == WIM) trap_reg_window_overflow(DC_port, RB, WIM);
+  if (CWP == WIM) trap_reg_window_overflow(MEM, RB, WIM);
 
   //copy local and out from buffer
   for (int i=8; i<24; i++) {
@@ -1505,7 +1505,7 @@ void ac_behavior( restore_imm )
 
   //realy change reg window
   CWP = (CWP+0x10);
-  if (CWP == WIM) trap_reg_window_underflow(DC_port, RB, WIM);
+  if (CWP == WIM) trap_reg_window_underflow(MEM, RB, WIM);
 
   //copy in and local from buffer
   for (int i=16; i<32; i++) {

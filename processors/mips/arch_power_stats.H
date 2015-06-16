@@ -8,7 +8,6 @@
 
 // This group should be parameters, not defines
 
-
 #define NUM_INSTR 59
 
 /**** Power Tables using FPGAs *****/
@@ -31,7 +30,7 @@
 /**** Useful for DVFS control *****/
 // #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_cycloneV_25Mhz_100Mhz.csv"
 #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_50_125_250_400Mhz.csv"
-                                                      
+//#define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_125_250_400Mhz.csv"
 
 #define WINDOW_REPORT
 #define WINDOW_REPORT_FILE "window_power_report"
@@ -49,8 +48,9 @@
 #define TYPE_LINE_STALL       2
 #define TYPE_LINE_OP          3
 
-#define CYCLES_PER_FREQUENCY_EXCHANGE 100
+#define CYCLES_PER_FREQUENCY_EXCHANGE 20000 // nanoseconds = or 20 micro seconds
 #define CYCLES_TO_RESTART 300
+
 
 //#define DEBUG
 
@@ -94,11 +94,17 @@ class power_stats {
 
 			/*****/
 			double edp;
+			double energy_per_core;
+
 			int delta_instr;
+			int last_delta_instr;
+
 			double delta_t;
 
 			unsigned int actual_profile;
 			unsigned int num_profiles;
+
+			bool freq_changed;
 		};
 
 		dynamic_data dyn;
@@ -114,6 +120,7 @@ class power_stats {
 		FILE* debug_file;
 		int contador_debug;
 		#endif
+
 
 
 
@@ -134,9 +141,15 @@ class power_stats {
 
 			/******/
 			dyn.edp = 0;
+			dyn.energy_per_core = 0;
 			dyn.delta_instr = 0;
 			dyn.delta_t = 0;
+			dyn.last_delta_instr = 0;
 				
+			dyn.freq_changed = false;
+
+
+
 			#ifdef WINDOW_REPORT
 			dyn.window_size = START_WINDOW_SIZE;
 			dyn.window_num_instr = 0;
@@ -217,8 +230,6 @@ class power_stats {
       		// [J] * [1/s] = [W]
 
 			double power = psc_data.p[profile].power[id] * psc_data.p[profile].power_scale * psc_data.p[profile].freq_scale * psc_data.p[profile].freq;
-			
-			dyn.edp = dyn.edp + psc_data.p[profile].power[id] * psc_data.p[profile].power_scale;
 
 			#ifdef DEBUG
 			fprintf(debug_file,"\nGetting power instruction.");
@@ -230,6 +241,30 @@ class power_stats {
 			return power;
 		}
 
+		double update_energy (int id, int profile)
+		{
+
+			//printf("\nupdate_energy id=%d  profile=%d", id, profile);
+
+			double energy_per_instruction = psc_data.p[profile].power[id]; // * psc_data.p[profile].power_scale;
+			
+			set_edp(dyn.edp + energy_per_instruction);
+			dyn.energy_per_core = dyn.energy_per_core + energy_per_instruction;
+		}
+
+		double get_newEnergy_stamp (int prof)
+		{
+			double total_instr = get_total_num_instr();
+			dyn.delta_instr = total_instr - dyn.last_delta_instr;  // total de instr executadas no delta_T atual
+			dyn.last_delta_instr = total_instr;
+
+			double edp = get_edp();
+			double energyStampUsingInstr = edp / dyn.delta_instr;
+
+			double t = sc_time_stamp().to_seconds();
+
+			return energyStampUsingInstr; // em nanojoules 
+		}
 
 		double get_energy_stamp (int prof)
 		{
@@ -240,51 +275,17 @@ class power_stats {
 			double edp = get_edp();
 
 			double energyStampUsingFreq = (double) edp*dyn.delta_instr*cycle_time_ns;
-
-
-			
+		
 			dyn.delta_t = sc_time_stamp().to_seconds() - dyn.delta_t;
 
 
 			double t = dyn.delta_t*1000000000;    // em nanossegundos
 
-			//printf("\nsystem time (ns):%.5lf", t);
-
+			
 			double energyStampUsingTime = edp*t;
 
-			//printf("\nCalculando energy stamp (freq): \nedp= %.2lf, instr=%d, freq=%d, \ncycle_time_ns=%.2lf, energyStamp=%.20lf", edp,dyn.delta_instr,freq,cycle_time_ns,energyStampUsingFreq);
-			//printf("\nCalculando energy stamp (time): \nedp= %.2lf, system_time=%.5lf,  energyStamp=%.20lf", edp, t,energyStampUsingTime);
-
 			return energyStampUsingTime;
 		}	
-
-
-		/*double get_energy_stamp_squared (int prof)
-		{
-
-			//dyn.delta_instr = get_total_num_instr() - dyn.delta_instr;  // total de instr executadas no delta_T atual
-			//int freq = psc_data.p[prof].freq; // freq em MegaHz
-			//double cycle_time_ns = 1000/freq;  // tempo de um ciclo em nanossegundos
-			double edp = get_edp();
-
-			//double energyStampUsingFreq = (double) edp*dyn.delta_instr*cycle_time_ns;
-			
-			double delta_t = sc_time_stamp().to_seconds() - delta_t;
-
-
-			double t = delta_t*1000000;    // em nanossegundos
-
-			printf("\nsystem time (ns):%.5lf", t);
-
-			double energyStampUsingTime = edp*t*t;
-
-			//printf("\nCalculando energy stamp (freq): \nedp= %.2lf, instr=%d, freq=%d, \ncycle_time_ns=%.2lf, energyStamp=%.20lf", edp,dyn.delta_instr,freq,cycle_time_ns,energyStampUsingFreq);
-			printf("\nCalculando energy stamp squared (time): \nedp= %.2lf, system_time=%.5lf,  energyStamp=%.20lf", edp, t,energyStampUsingTime);
-
-			return energyStampUsingTime;
-		}	
-		*/
-
 
 		void initialize_energy_stamp()
 		{
@@ -325,11 +326,6 @@ class power_stats {
 			dyn.window_energy += v;
 		}
 
-		// double estimate_execution_time() {
-		//	dyn.execution_time += dyn.window_count / (psc_data.p[dyn.actual_profile].freq * psc_data.p[dyn.actual_profile].freq_scale);
-		//	return dyn.execution_time;
-		// }
-
 		void reset_window_data()
 		{
 			dyn.window_num_instr = 0;
@@ -361,11 +357,7 @@ class power_stats {
     		dyn.system_time = sc_time_stamp ();
 
 			dyn.execution_time += num_instr / (psc_data.p[dyn.actual_profile].freq * psc_data.p[dyn.actual_profile].freq_scale);
-
-			//printf("\nPOWER_STATS: Updating execution time: %f    %f", dyn.execution_time, dyn.system_time.to_seconds());
-			//#ifdef DEBUG 
-			//printf("\nPOWER_STATS: Updating execution time: %f", dyn.execution_time);
-			//#endif
+		
     	}
 
 		void update_stat_power(int instr_id, int n = 1)
@@ -384,11 +376,14 @@ class power_stats {
 
 			incr_total_energy(n * get_power_instruction(instr_id, dyn.actual_profile));
      		
+
+     		update_energy(instr_id, dyn.actual_profile);
+
 			#ifdef WINDOW_REPORT
 			dyn.window_num_instr = dyn.window_num_instr + n;
 			incr_window_energy(n* get_power_instruction(instr_id, dyn.actual_profile));
 
-			
+		
 			if (dyn.window_num_instr == dyn.window_size)
 			{
 				dyn.window_count++;
@@ -397,6 +392,7 @@ class power_stats {
 				reset_window_data();
 			}
 			#endif
+
 		}
 
 
@@ -438,10 +434,13 @@ class power_stats {
 		{
 			PSC_REPORT_POWER;
 			dyn.system_time = sc_time_stamp();
-
-			printf("\nAverage Energy per Core: %.10lf J", dyn.total_power * dyn.system_time.to_seconds());
+			
 		}
 
+		double getEnergyPerCore()
+		{
+			return dyn.energy_per_core;
+		}
 		char* next_strtok(const char* param, FILE* f, int pos_line)
 		{
 			char* pch = NULL;
@@ -631,11 +630,25 @@ class power_stats {
 				dyn.actual_profile = state;
 
 				update_stat_power (psc_data.index_nop, CYCLES_PER_FREQUENCY_EXCHANGE);
+				
+				dyn.freq_changed = true;
 
 				#ifdef DEBUG 
 				printf("\nPOWER_STATS: updating the power state to %d ",state);
 				#endif
 			}
+		}
+
+		bool needToWait()
+		{
+			if (dyn.freq_changed)
+			{	
+				dyn.freq_changed = false;
+				return (true);
+			}
+			else return (false);
+			
+
 		}
 
 		int getNumberOfStates()

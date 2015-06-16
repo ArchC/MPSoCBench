@@ -26,7 +26,7 @@ public:
    void initializePowerStates();
    int  getPowerState ();
    void setPowerState (int);
-   
+   void setInitialPowerState (int state);
 
    #ifdef  DFS_AUTO_SELECTION_CPU_RATE
    void noteFwTime();
@@ -43,6 +43,7 @@ public:
    #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
    void autoSelectionEnergyStamp();
    int  getBestFrequency (); 
+
    #endif
 
 private:
@@ -70,7 +71,9 @@ private:
   #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
   double  lastTimeES;
   double  *energyStamp;
+  double  *newEnergyStamp;
   bool    end_of_elab_phase;
+  bool    end_of_init_phase;
   #endif
   
 

@@ -35,16 +35,18 @@ const char *archc_options="";
 #include  "tlm_dfs.h"
 #include  "tlm_intr_ctrl.h"
 #include  "tlm_dir.h"
-#include  "wrapper.h"
-#include  "network_if.h"
+//#include  "wrapper.h"
+//#include  "network_if.h"
 
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
 using user::tlm_dir;
-using user::wrapper;
-using user::network_if;
+//using user::wrapper;
+//using user::network_if;
+
+
 #ifdef POWER_SIM
 using user::tlm_dfs;
 #endif
@@ -216,10 +218,6 @@ int sc_main(int ac, char *av[])
   		 //processors[i]->DC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
-	
-	//processors[N_WORKERS-1]->ps.energy_report();
-	//processors[N_WORKERS-1]->IC.powersc_energy_report();
-	//processors[N_WORKERS-1]->DC.powersc_energy_report();
 	#endif
 
 

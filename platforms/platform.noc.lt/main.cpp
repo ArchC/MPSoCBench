@@ -330,7 +330,7 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 processors[i]->DC.powersc_connect();
+		 //processors[i]->DC.powersc_connect();
 		 processors[i]->IC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();

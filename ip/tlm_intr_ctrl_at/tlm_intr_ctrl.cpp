@@ -122,6 +122,10 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
           else if (intr == OFF)
               turnOffProcessors (procId);
 
+          /*else if (intr == SLEEP)
+              send (procId,OFF);
+          else if (intr == AWAKE)
+              send (procId, ON);*/
           else 
               printf("\nTLM_INTR_CTRL: Interruption code %d not recognized...Ignored.", intr);
           

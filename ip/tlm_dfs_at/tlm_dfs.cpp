@@ -49,7 +49,7 @@
  * 
  */
 
-
+#ifdef POWER_SIM
 
 #include "tlm_dfs.h"
 
@@ -77,6 +77,8 @@ tlm_dfs::tlm_dfs( sc_module_name module_name, int N_WORKERS, PROCESSOR_NAME **pr
     workers = N_WORKERS;
     powerStates = new tPowerStates [workers];
     initializePowerStates((PROCESSOR_NAME**)processors);
+    
+
   }
 
 
@@ -116,7 +118,7 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
-    printf("\ntml_dfs_at transport: procId=%d", procId);
+    
 
     if (measures) count_dfs ++;
 
@@ -196,7 +198,6 @@ void tlm_dfs::initializePowerStates(PROCESSOR_NAME** processors)
 
 }
 
-
 int tlm_dfs::getPowerState (int id)
 {
     if (DFS_DEBUG) printf("\nDFS: getPowerState is returning the power state of processor %d", id);
@@ -232,3 +233,4 @@ void tlm_dfs::setPowerState (int id, int state)
    ((powerStates[id].procPointer)->ps).setPowerState(state);
 }
 
+#endif
