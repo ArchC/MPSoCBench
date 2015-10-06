@@ -39,16 +39,8 @@ void ac_behavior(intr_port, value, addr)
 
 		/* ac_release update a signal to re-start the processor simulator  */
 		/* See mips_isa::ac_behavior (instruction)  (mips_isa.cpp)         */
-		//ac_release();
-		
+		//ac_release();		
 	}	
-	else if (value == INTR_CACHE_INVALIDATE)
-    {
-		//uint32_t x = DC.get_size();
-		//printf("\nMIPS_INSTR_HANDLER: Processor %d recebeu intr %d - endereço %ld." , id.read(), INTR_CACHE_INVALIDATE, addr);
-		//printf("\nacessei a cache %d", x);
-	
-    }
 	else
 	{	
 		printf("\nMIPS_INSTR_HANDLER: Unrecognized interuption code...%d Ignoring.",value);

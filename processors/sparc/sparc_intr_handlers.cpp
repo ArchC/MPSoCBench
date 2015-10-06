@@ -23,14 +23,14 @@
 using namespace sparc_parms;
 
 // Interrupt handler behavior for interrupt port intr_port.
-void ac_behavior(intr_port, value) {
+void ac_behavior(intr_port, value, addr) {
 
-	if (value == OFF) 
+	if (value == INTR_PROC_OFF) 
 	{	
 		if  (INTR_CTRL_DEBUG) printf("\nsparc_INSTR_HANDLER: Processor %d is sleeping." , id.read());
 		intr_reg.write(value);
 	}	
-	else if (value == ON)
+	else if (value == INTR_PROC_ON)
 	{
 		if  (INTR_CTRL_DEBUG) printf("\nsparc_INSTR_HANDLER: Processor %d is waking up." , id.read());
 		intr_reg.write(value);

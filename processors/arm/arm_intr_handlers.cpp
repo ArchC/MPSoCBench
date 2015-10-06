@@ -23,23 +23,27 @@
 using namespace arm_parms;
 
 // Interrupt handler behavior for interrupt port intr_port.
-void ac_behavior(intr_port, value) {
+void ac_behavior(intr_port, value, addr)
+{
 
-	if (value == OFF) 
+	if (value == INTR_PROC_OFF) 
 	{	
-		if  (INTR_CTRL_DEBUG) printf("\nARM_INSTR_HANDLER: Processor %d is sleeping." , id.read());
+		if  (INTR_CTRL_DEBUG) printf("\nMIPS_INSTR_HANDLER: Processor %d is sleeping." , id.read());
 		intr_reg.write(value);
 	}	
-	else if (value == ON)
+	else if (value == INTR_PROC_ON)
 	{
-		if  (INTR_CTRL_DEBUG) printf("\nARM_INSTR_HANDLER: Processor %d is waking up." , id.read());
+		if  (INTR_CTRL_DEBUG) printf("\nMIPS_INSTR_HANDLER: Processor %d is waking up." , id.read());
 		intr_reg.write(value);
 		wake->notify(sc_core::SC_ZERO_TIME);
 
-		
+		/* ac_release update a signal to re-start the processor simulator  */
+		/* See mips_isa::ac_behavior (instruction)  (mips_isa.cpp)         */
+		//ac_release();		
 	}	
 	else
 	{	
-		printf("\narm_INSTR_HANDLER: Unrecognized interuption code...%d Ignoring.",value);
+		printf("\nMIPS_INSTR_HANDLER: Unrecognized interuption code...%d Ignoring.",value);
 	}
+
 }

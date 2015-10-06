@@ -34,10 +34,9 @@ void arm_syscall::get_buffer(int argn, unsigned char* buf, unsigned int size) {
 void arm_syscall::set_buffer(int argn, unsigned char* buf, unsigned int size) {
   unsigned int addr = RB.read(argn);
 
-  printf("ac_syscall set_buffer size=%d  addr inicial=%d", size, addr);
   for (unsigned int i = 0; i<size; i++, addr++) {
      MEM.write_byte(addr, buf[i]);
-      printf("\ni=%d addr=%d", i,addr);
+     //printf("\nMEM[%d]=%d", addr, buf[i]);
   }
 }
 
@@ -81,6 +80,8 @@ void arm_syscall::set_prog_args(int argc, char **argv) {
   char ac_argstr[512];
 
   base = AC_RAM_END - 512;
+
+  
   for (i=0, j=0; i<argc; i++) {
     int len = strlen(argv[i]) + 1;
     ac_argv[i] = base + j;
@@ -103,7 +104,7 @@ void arm_syscall::set_prog_args(int argc, char **argv) {
   if (ref.ac_dyn_loader.is_glibc()) {
     //Put argc into stack (required by glibc)
     RB.write(13, AC_RAM_END-512-124);
-    DC_port.write(AC_RAM_END-512-124, argc);
+    MEM.write(AC_RAM_END-512-124, argc);
   }
 
   if (ref.ac_dyn_loader.get_init_arraysz() != 0) {

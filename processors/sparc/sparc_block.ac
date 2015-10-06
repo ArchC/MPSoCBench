@@ -26,7 +26,7 @@ AC_ARCH(sparc){
   ac_tlm2_port  MEM:512M;
  
   ac_icache   IC("2w", 128, 32, "wb", "fifo");
- // ac_dcache   DC("2w", 512, 32, "wt", "fifo");
+  ac_dcache   DC("2w", 512, 32, "wt", "fifo");
   
 
 
@@ -58,6 +58,6 @@ AC_ARCH(sparc){
     ac_isa("sparc_isa.ac");
     set_endian("big");
     IC.bindTo(MEM);
-   // DC.bindTo(MEM);
+    DC.bindTo(MEM);
   };
 };

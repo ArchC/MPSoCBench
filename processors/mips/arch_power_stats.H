@@ -32,11 +32,10 @@
 #define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_50_125_250_400Mhz.csv"
 //#define POWER_TABLE_FILE "../../processors/mips/powersc/acpower_table_mips_ASIC_freepdk45_125_250_400Mhz.csv"
 
-#define WINDOW_REPORT
+//#define WINDOW_REPORT
 #define WINDOW_REPORT_FILE "window_power_report"
-#define WINDOW_REPORT_FILE_SYSTEM "window_power_report_system"
 #define START_WINDOW_SIZE 1000
-//#define START_WINDOW_SIZE 1000000
+
 
 #define MAX_LINESIZE_CSV_FILE 10240 // Inefficient and non-scalable
 #define MAX_INSTR_NAME_SIZE 30
@@ -84,10 +83,11 @@ class power_stats {
 			double window_power;
 			long long window_count;
 			unsigned int window_size;
-		  	double execution_time;
-		  	sc_core::sc_time system_time;
-			#endif
+		  	#endif
 
+
+			double execution_time;
+			sc_core::sc_time system_time;
 			long long total_num_instr; 
 			double total_energy;
 			double total_power;
@@ -113,7 +113,7 @@ class power_stats {
 		
 		#ifdef WINDOW_REPORT
 		FILE* out_window_power_report;
-		FILE* out_window_power_report_system;
+		
 		#endif
 
 		#ifdef DEBUG 
@@ -148,7 +148,8 @@ class power_stats {
 				
 			dyn.freq_changed = false;
 
-
+			
+			char filename[512];
 
 			#ifdef WINDOW_REPORT
 			dyn.window_size = START_WINDOW_SIZE;
@@ -160,7 +161,7 @@ class power_stats {
 			dyn.system_time = sc_time(0,SC_NS);
 
 			/****/
-			char filename[512];
+			
 			strcpy(filename, WINDOW_REPORT_FILE);
 			strcat(filename, "_");
 			strcat(filename, proc_name);
@@ -170,24 +171,9 @@ class power_stats {
 				perror("Couldn't open specified out_window_power_report file");
 				exit(1);
 			}
-
-
-			strcpy(filename, WINDOW_REPORT_FILE_SYSTEM);
-			strcat(filename, "_");
-			strcat(filename, proc_name);
-			strcat(filename, ".csv");
-
-			out_window_power_report_system = fopen(filename, "w");
-			if (out_window_power_report_system == NULL) {
-				perror("Couldn't open specified out_window_power_report_system file");
-				exit(1);
-			}
-
-
 			/****/
 			#endif
 			
-
 			#ifdef DEBUG 
 			strcpy (filename, "debug_power");
 			strcat(filename, "_");
@@ -213,7 +199,6 @@ class power_stats {
 
 			#ifdef WINDOW_REPORT
 			fclose(out_window_power_report);
-			fclose(out_window_power_report_system);
 			#endif
 
 			#ifdef DEBUG
@@ -252,7 +237,7 @@ class power_stats {
 			dyn.energy_per_core = dyn.energy_per_core + energy_per_instruction;
 		}
 
-		double get_newEnergy_stamp (int prof)
+		/*double get_newEnergy_stamp (int prof)
 		{
 			double total_instr = get_total_num_instr();
 			dyn.delta_instr = total_instr - dyn.last_delta_instr;  // total de instr executadas no delta_T atual
@@ -264,7 +249,7 @@ class power_stats {
 			double t = sc_time_stamp().to_seconds();
 
 			return energyStampUsingInstr; // em nanojoules 
-		}
+		}*/
 
 		double get_energy_stamp (int prof)
 		{
@@ -380,11 +365,14 @@ class power_stats {
      		update_energy(instr_id, dyn.actual_profile);
 
 			#ifdef WINDOW_REPORT
+
 			dyn.window_num_instr = dyn.window_num_instr + n;
+
+			
 			incr_window_energy(n* get_power_instruction(instr_id, dyn.actual_profile));
 
 		
-			if (dyn.window_num_instr == dyn.window_size)
+			if (dyn.window_num_instr >= dyn.window_size)
 			{
 				dyn.window_count++;
 				calc_window_power();
@@ -501,7 +489,7 @@ class power_stats {
           			{
             			case TYPE_LINE_NUM_PROFILE:
               				dyn.num_profiles = atoi(pch);
-
+              				
 					  		psc_data.p = (profile *)malloc(sizeof(profile) * dyn.num_profiles);
              				// Cleaning table
              				for(int j = 0; j <= NUM_INSTR; j++) {
@@ -513,7 +501,7 @@ class power_stats {
             			break;
 
             			case TYPE_LINE_PROFILE:
-					  		//profile_id = atoi(pch);
+					  		
             				profile_id = state_id++;
 
             				if (profile_id >= dyn.num_profiles) {
@@ -550,19 +538,19 @@ class power_stats {
     						if (index <= NUM_INSTR) {
     					  		pch = next_strtok(",\"", f, pos_line);
     					  		strcpy(psc_data.instr_name[index], pch);
-    					  		if (!strcmp(pch,"nop")) psc_data.index_nop = index;
+    					  		if (!strcmp(pch,"nop")) psc_data.index_nop = index;  // capture the  NOP index
 
     					  		for(int i = 0; i < dyn.num_profiles;i++)
     					  		{
     					  			pch = next_strtok(",\"", f, pos_line);
     					  			psc_data.p[i].power[index] = atof(pch);
-
     					  		}
               				}
             			break;
           			}
 				}
 			} while(!feof(f));
+
 			fclose(f);
 
 			

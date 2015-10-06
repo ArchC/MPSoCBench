@@ -37,10 +37,12 @@ AC_ARCH(powerpc) {
 	ac_wordsize 32;
 	ac_fetchsize 32;
     ac_tlm2_nb_port MEM:512M;
-    ac_icache   IC("2w", 128, 32, "wb", "fifo");
+    //ac_icache   IC("2w", 128, 32, "wb", "fifo");
     //ac_dcache   DC("2w", 512, 32, "wt", "fifo");
-  
-		
+
+    ac_icache   IC("dm", 64, 8, "wt", "none");
+    ac_dcache   DC("dm", 64, 8, "wt", "none");
+
 	ac_regbank GPR:32;
 
 	ac_reg SPRG4;
@@ -53,7 +55,10 @@ AC_ARCH(powerpc) {
 
 	ac_reg MSR;
     ac_reg id;
-// sc instruction not tested/used
+
+	ac_tlm2_intr_port intr_port;
+
+    // sc instruction not tested/used
 	ac_reg EVPR;
 	ac_reg SRR0;
 	ac_reg SRR1;
@@ -66,7 +71,7 @@ AC_ARCH(powerpc) {
 		ac_isa("powerpc_isa.ac");
 		set_endian("big");
 		IC.bindTo(MEM);
-		//DC.bindTo(MEM);
+		DC.bindTo(MEM);
 	};
 
 };

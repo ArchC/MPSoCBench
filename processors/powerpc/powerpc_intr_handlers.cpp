@@ -23,14 +23,15 @@
 using namespace powerpc_parms;
 
 // Interrupt handler behavior for interrupt port intr_port.
-void ac_behavior(intr_port, value) {
+void ac_behavior(intr_port, value, addr) {
 
-	if (value == OFF) 
+
+	if (value == INTR_PROC_OFF) 
 	{	
 		if  (INTR_CTRL_DEBUG) printf("\nPOWERPC_INSTR_HANDLER: Processor %d is sleeping." , id.read());
 		intr_reg.write(value);
 	}	
-	else if (value == ON)
+	else if (value == INTR_PROC_ON)
 	{
 		if  (INTR_CTRL_DEBUG) printf("\nPOWERPC_INSTR_HANDLER: Processor %d is waking up." , id.read());
 		intr_reg.write(value);
@@ -38,12 +39,12 @@ void ac_behavior(intr_port, value) {
 
 		/* ac_release update a signal to re-start the processor simulator  */
 		/* See powerpc_isa::ac_behavior (instruction)  (powerpc_isa.cpp)         */
-		//ac_release();
-		
+		//ac_release();		
 	}	
 	else
 	{	
-		printf("\npowerpc_INSTR_HANDLER: Unrecognized interuption code...%d Ignoring.",value);
+		printf("\nMIPS_INSTR_HANDLER: Unrecognized interuption code...%d Ignoring.",value);
 	}
+
 }
 

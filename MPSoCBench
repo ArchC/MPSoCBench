@@ -16,7 +16,7 @@
 # MPSoCBench frontend script 
 # by Matheus Boy and Liana Duenha - Unicamp - Campinas State University
 
-import os, sys
+import os, sys, subprocess
 
 # === AUXILIARY FUNCTIONS ==
 
@@ -351,13 +351,15 @@ def run(tracker, nobuild, power, condor):
                                 # creates rundir
                                 build([[i],[j],[k],[l]], power, condor)
                                 os.chdir(rundir_path)
-                                os.system("make run > saida.txt")
+                                os.system("make run")
                                 os.system("make -f Makefile.check check")
                                 os.chdir("../../")
                         else:
                             os.chdir(rundir_path)
-                            os.system("make run > saida.txt")
+                            os.system("make run")
                             os.system("make -f Makefile.check check")
+                            #a = subprocess.popen("echo \"xxx\"", stdout=PIPE, stderr=PIPE, shell=True)
+                            #print a.communicate()
                             os.chdir("../../")
     except:
         #print "Error! Exiting...2"
