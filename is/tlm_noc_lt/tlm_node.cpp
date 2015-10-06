@@ -73,18 +73,15 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 
 	time_info = time_info + sc_core::sc_time(TIME_NODE+TIME_NODE,SC_NS);
 	
-	//wait(1,SC_NS);
-
-
     user::tlm_payload_extension *ex;
-  	tlm::tlm_extension_base* base;
-	base = payload.get_extension(1);
-
-   	ex = reinterpret_cast<user::tlm_payload_extension*>(base);
+  	
+  	//tlm::tlm_extension_base* base;
+	//base = payload.get_extension(1);
+ 	//ex = reinterpret_cast<user::tlm_payload_extension*>(base);
 
 
 	//user::tlm_payload_extension *ex;
-	//payload.get_extension(ex);
+	payload.get_extension(ex);
 
 	if (getStatus() == OFF)
 	{

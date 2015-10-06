@@ -33,9 +33,6 @@
 
 using user::wrapper_master_slave_to_noc;
 using user::tlm_payload_extension;
-using tlm::tlm_extension_base;
-
-
 //using user::wrapper_master_to_noc;
 //using user::wrapper_slave_to_noc;
 
@@ -107,22 +104,14 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
  	
 	
     tlm_payload_extension *ex;
-  	tlm::tlm_extension_base* base;
-   	base = payload.get_extension(1);
-
-   	ex = reinterpret_cast<tlm_payload_extension*>(base);
-
- 	//tlm::tlm_extension_base* teste = payload.get_extension(0);
- 	//if (teste == 0) printf("\nwrapper nao deu certo a extensao 0 ");
-    //else   printf("\nwrapper - deu certo a extensao 0 (de dir)");
-
-	// payload.get_extension(ex);
+  	payload.get_extension(ex);
 	
 
 	if (ex==NULL)
 	{
 		
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW-->Wrapper %d,%d is creating payload extension",getX(),getY());
+		
 		ex = new tlm_payload_extension();
 
 		uint64_t addr = payload.get_address();
@@ -144,8 +133,8 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW --> Wrapper %d,%d is setting firstForward with false into the payload extension",getX(),getY());
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW-->Wrapper %d,%d is processing transaction from InitX-> %d InitY-> %d to TargetX-> %d TargetY-> %d", getX(), getY(), ex->getInitX(), ex->getInitY(), ex->getTargetX(), ex->getTargetY());				
 
-		//payload.set_extension(ex);
-		payload.set_extension(1,ex);
+		payload.set_extension(ex);
+		
 	}
 
 	if (ex->isFirstForward())
@@ -166,8 +155,7 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload&
 		#endif
 		#endif
 	
-
-		//payload.release_extension(1);
+				
 	}
 	else
 	{
@@ -206,12 +194,7 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 	tlm::tlm_sync_enum status;
 
 	tlm_payload_extension *ex;
-  	tlm::tlm_extension_base* base;
-   	base = payload.get_extension(1);
-
-   	ex = reinterpret_cast<tlm_payload_extension*>(base);
-
-	//payload.get_extension(ex);
+  	payload.get_extension(ex);
 	
 	
 	if (ex == NULL)  {
@@ -233,13 +216,9 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 		if (NOC_DEBUG) printf("\n\nNB_TRANSPORT_BW --> Wrapper %d,%d is returning\n",getX(), getY());
 		phase = tlm::END_RESP;
 		return status;
-
-
-
 	}
 	else
 	{
-
 
 		//printf("\ncpu_wait_time: %.10lf", cpu_wait_time);
 
@@ -250,9 +229,6 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_FW --> Wrapper %d,%d is updating the number of hops (%ld)",getX(), getY(),this->getNumberOfHops());
 		/*NUMBER OF HOPS*/
 
-		// TESTE
-		//payload.release_extension(ex);
-		//payload.release_extension(1);
 
 		if (NOC_DEBUG) printf("\nNB_TRANSPORT_BW--> Wrapper %d,%d is trasporting package OUT of NOC using non-blocking-backward transport trought LOCAL-target-socket", getX(), getY());
 		status = LOCAL_target_socket->nb_transport_bw(payload,phase,time_info); 

@@ -38,6 +38,7 @@
 #include "tlm_node.h"
 #include "wrappers_noc.h"
 
+#include "../../defines.h"
 
 #define measures 1
 
@@ -53,6 +54,9 @@ using user::wrapper_master_slave_to_noc;
 
 /// Constructor
 tlm_noc::tlm_noc( sc_module_name module_name, int n, int m, int lines, int columns) :
+#ifdef POWER_SIM
+  ps((const char*)module_name, lines*columns),
+#endif
 sc_module( module_name )
 {
 	setNumberOfMasters(n);
@@ -88,7 +92,6 @@ void tlm_noc::create ()
 void tlm_noc::destroyComponents ()
 {
 
- 	
 
 	if (measures) 
 	{
@@ -130,14 +133,42 @@ void tlm_noc::destroyComponents ()
  		printf("\nTotal Number of Hops:\t%ld", totalNumberOfHops);
 		printf("\nAverage Number of Hops per package:\t%d", (int) (totalNumberOfHops / totalNumberOfPackages));
 
+		fprintf(local_noc_file, "\nNetwork Traffic Data per Node:");
+		fprintf(global_noc_file, "\nNetwork Traffic Data per Node:");
+
+		for (unsigned int i=0; i<numberOfLines; i++)
+		{
+			for (unsigned int j=0; j<numberOfColumns; j++)
+			{
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, mesh[i][j].counterN);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, mesh[i][j].counterS);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, mesh[i][j].counterE);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, mesh[i][j].counterW);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, mesh[i][j].counterL);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, mesh[i][j].counterN);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, mesh[i][j].counterS);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, mesh[i][j].counterE);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, mesh[i][j].counterW);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, mesh[i][j].counterL);
+			
+			}	
+		}
+
+
+
 	    fclose (local_noc_file);
 	    fclose (global_noc_file);
+
+
+
+
 	}
 	
-	for (unsigned int i=0; i<numberOfLines; i++)
-		delete [] mesh[i];
+	//for (unsigned int i=0; i<numberOfLines; i++)
+		//delete [] mesh[i];
 
 	delete [] mesh;
+	
     delete [] masterEmptyNodes;
 	delete [] slaveEmptyNodes;
 	delete [] wrapper;
@@ -154,9 +185,16 @@ void tlm_noc::init()
 
 	// Nodes
 	for (unsigned int i=0; i<numberOfLines; i++)
+	{
 		for (unsigned int j=0; j<numberOfColumns; j++)
+		{
 			mesh[i][j].setStatus(OFF);
-		
+			#ifdef POWER_SIM
+      		mesh[i][j].ps = &ps;
+			#endif
+		}
+	}
+
 	// EmptyNodes
 	for (unsigned int i=0; i<getNumberOfSlaveEmptyNodes(); i++)
 	{

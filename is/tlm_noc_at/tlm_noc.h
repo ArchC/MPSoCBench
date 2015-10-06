@@ -106,7 +106,9 @@ public:
   tlm_master_node *masterEmptyNodes;
  
   wrapper_master_slave_to_noc *wrapper;
- 
+  #ifdef POWER_SIM
+  is_power_stats ps;
+  #endif
 
 private:
 

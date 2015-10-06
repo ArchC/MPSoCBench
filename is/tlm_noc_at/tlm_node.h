@@ -49,6 +49,7 @@
 #include "tlm_utils/simple_initiator_socket.h"
 #include "tlm_utils/simple_target_socket.h"
 #include "../../defines.h"
+#include "powersc_power_stats.H"
 
 using tlm::tlm_dmi;
 
@@ -63,7 +64,7 @@ namespace user
 	{
 		public:
 			packageType(ac_tlm2_payload &p, tlm::tlm_phase& ph, sc_core::sc_time &t);
-	
+	    ~packageType();
 			ac_tlm2_payload payload;
 		  sc_core::sc_time time;
 			tlm::tlm_phase phase;
@@ -98,6 +99,10 @@ public:
 
   sc_event wake_up;
 
+  #ifdef POWER_SIM
+  is_power_stats *ps;
+  #endif
+
   //pthread_mutex_t listPackageMutex;
   
   SC_HAS_PROCESS( tlm_node );
@@ -108,6 +113,7 @@ public:
   
   ~tlm_node();
   
+
 
   inline void setStatus(int st){
 	this->status = st;
@@ -143,6 +149,13 @@ public:
   void removeFromBuffer (ac_tlm2_payload &, tlm::tlm_phase &, sc_core::sc_time &);
   int getNumberOfPackagesInBuffer() {return numberOfPackagesInBuffer; }
 
+
+   int counterS;   // south
+  int counterN;   // north
+  int counterW;   // west
+  int counterE;   // east
+  int counterL;   // local
+
 private:
 
 
@@ -157,6 +170,10 @@ private:
   packageType *endListPackage;
   int numberOfPackagesInBuffer;
   /*********/
+
+
+ 
+
 
 
 };

@@ -1,0 +1,9 @@
+# Data from RTL simulation
+# Number of profiles
+1
+# Characterization Frequency,Frequency Scale,Power Scale,Characterization Name,Characterization Description
+400,1E6,1E-6,"hermes noc 400MHz", "Node Characterization Hermes NoC at 400MHz and 5 ports"
+# Idle power consumption
+119.53
+# Active power consumption
+131.09

@@ -44,7 +44,7 @@ using user::tlm_node;
 using user::tlm_payload_extension;
 using user::tlm_slave_node;
 using user::tlm_master_node;
-using tlm::tlm_extension_base;
+
 using user::packageType;
 
 unsigned int tlm_node::numberOfNodes = 0;
@@ -84,7 +84,10 @@ tlm_node::tlm_node() :
 	numberOfPackagesInBuffer = 0;
 	SC_THREAD( thread_node );
 	sensitive<<wake_up;
-	
+
+
+    counterS = counterN = counterW = counterE = counterL = 0; 
+
 }
 
 tlm_node::tlm_node( sc_module_name module_name) :
@@ -118,6 +121,9 @@ tlm_node::tlm_node( sc_module_name module_name) :
 		
 	numberOfPackagesInBuffer = 0;
 	SC_THREAD(thread_node);
+
+
+	counterS = counterN = counterW = counterE = counterL = 0; 
 	
   }
 
@@ -146,7 +152,6 @@ tlm_node::~tlm_node()
 tlm::tlm_sync_enum tlm_node::nb_transport_fw(ac_tlm2_payload& payload, tlm::tlm_phase& phase, sc_core::sc_time& time_info)
 {
 	
-
 	if (NOC_DEBUG) printf("\n\nNB_TRANSPORT_FW-->Node %d,%d with status %d is receiving a package",getX(), getY(), getStatus());
  	
 	addToBuffer (payload, phase, time_info);
@@ -197,12 +202,7 @@ void tlm_node::thread_node ()
 		
 
 			tlm_payload_extension *ex;
-  			tlm::tlm_extension_base* base;
-   			base = payload.get_extension(1);
-
-   			ex = reinterpret_cast<tlm_payload_extension*>(base);
-
-			//payload.get_extension(ex);
+  			payload.get_extension(ex);
 			
 
 			if (ex == NULL)
@@ -226,6 +226,9 @@ void tlm_node::thread_node ()
 						printf("ERROR: Target node %d,%d has status OFF ",getX(), getY());
 						exit(1);
 					}
+
+					counterL ++;
+
 
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> The transaction is in the target node %d,%d transporting using LOCAL port.",getX(),getY());	
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());										
@@ -270,6 +273,8 @@ void tlm_node::thread_node ()
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using west port.",getX(), getY());	
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());		
 
+					counterW++;
+
 					if (ex->getDirection() == FORWARD) {
 						
 						status = W_init_socket->nb_transport_fw(payload,phase,time_info); 
@@ -301,6 +306,8 @@ void tlm_node::thread_node ()
 
 					if (NOC_DEBUG)	printf("\nTHREAD NODE--> Node %d,%d transporting using east port.",getX(),getY());
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
+
+					counterE++;
 
 					if (ex->getDirection() == FORWARD){
 
@@ -336,6 +343,8 @@ void tlm_node::thread_node ()
 				if (NOC_DEBUG) printf ("\nTHREAD NODE--> Node %d,%d transporting using north port.",getX(), getY());
 				if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
 
+				counterN++;
+
 				if (ex->getDirection() == FORWARD) {
 					
 					
@@ -364,6 +373,8 @@ void tlm_node::thread_node ()
 
 				if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using south port.",getX(), getY());
 				if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
+
+				counterS++; 
 
 				if (ex->getDirection() == FORWARD) {
 					
@@ -415,7 +426,7 @@ void tlm_node::addToBuffer (ac_tlm2_payload &p, tlm::tlm_phase& phase, sc_core::
 	}
 	else
 	{
-		//pthread_mutex_lock(&listPackageMutex);
+	
 
 		packageType *pack = new packageType(p,phase,t);
 
@@ -427,8 +438,12 @@ void tlm_node::addToBuffer (ac_tlm2_payload &p, tlm::tlm_phase& phase, sc_core::
 		endListPackage = pack;
 		numberOfPackagesInBuffer++;
 
-		//pthread_mutex_unlock(&listPackageMutex);
+		#ifdef POWER_SIM
+    	ps->update_stat_power(1);
+		#endif
 
+
+		
 		if (NOC_DEBUG)
  		{	
 			printf("\nADD INTO BUFFER--> Node %d,%d is adding package into - the buffer has %d packages",getX(), getY(), getNumberOfPackagesInBuffer());
@@ -451,8 +466,7 @@ void tlm_node::removeFromBuffer (ac_tlm2_payload &p, tlm::tlm_phase& phase, sc_c
 	else
 	{
 		
-		//pthread_mutex_lock(&listPackageMutex);
-
+		
 		unsigned char* data_pointer = beginListPackage->payload.get_data_ptr();		
 		p.set_data_ptr(data_pointer);
 
@@ -473,7 +487,7 @@ void tlm_node::removeFromBuffer (ac_tlm2_payload &p, tlm::tlm_phase& phase, sc_c
 		}
 		if (NOC_DEBUG) printf("\nREMOVE FROM BUFFER--> Node %d,%d is removing package - the buffer has %d packages",getX(), getY(),getNumberOfPackagesInBuffer());
 
-		//pthread_mutex_unlock(&listPackageMutex);
+		
 	}
 }
 
@@ -490,14 +504,7 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 
 
 	tlm_payload_extension *ex;	
-  	tlm::tlm_extension_base* base;
-   	base = payload.get_extension(1);
-
-   	ex = reinterpret_cast<tlm_payload_extension*>(base);
-
-
-	
-	//payload.get_extension(ex);
+  	payload.get_extension(ex);
 	
 
 	
@@ -507,8 +514,6 @@ void tlm_node::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info
 		{
 
 			if (NOC_DEBUG) printf("\nTransporting to the wrapper using LOCAL port. \n");
-			
-			//payload.clear_extension(1);	
 			payload.clear_extension(ex); // we can not use clear_extension (1) because is private
 
 			LOCAL_init_socket->b_transport(payload,time_info);
@@ -594,4 +599,10 @@ packageType::packageType(ac_tlm2_payload &p, tlm::tlm_phase& ph, sc_core::sc_tim
 				phase = ph;
 				next = NULL;
 				prev = NULL;
+}
+
+
+packageType::~packageType()
+{
+		payload.free_all_extensions();
 }
