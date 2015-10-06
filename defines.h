@@ -46,12 +46,11 @@
 #define BASE_MEMORY_ADDRESS 536870912 // 0x20000000 -  last memory byte address is 536870911
 #define LOCK_ADDRESS        0x20000000
 #define INTR_CTRL_ADDRESS   0X21000000
-#define DIR_ADDRESS		    0x22000000
-#define DFS_ADDRESS	        0x23000000
+#define DFS_ADDRESS	        0x22000000
 #define DELTA_IP_ADDRESS    0x00000100
 #define DELTA               16777216  // 16^6 = 0x1000000
 
-
+//#define DRAMSIM2	1
 
 // DEBUG FLAGS
 #define NOC_DEBUG       0
@@ -59,7 +58,7 @@
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
 #define DFS_DEBUG       0
-#define INTR_CTRL_DEBUG 0
+#define INTR_CTRL_DEBUG 1
 
 // ROUTER STATIC PARAMETERS
 
@@ -69,7 +68,7 @@
 #define BACKWARD 1
 
 // TIMING STATIC PARAMETERS
-#define TIME_MEMORY    50
+#define TIME_MEMORY    100
 #define TIME_DIR       2
 #define TIME_NODE      2
 #define TIME_ROUTER    2
@@ -90,11 +89,13 @@
 //#define OFF // already defined for NoCs
 #define HIGH 3
 #define LOW 0
+#define INITIAL_PW_STATE 3
 
 //#define DFS_AUTO_SELECTION_CPU_RATE
 //#define DFS_AUTO_SELECTION_ENERGY_STAMP
-
 //#define FIRST_DELTA_T 0.025   // 50*0,0005
+
+
 #define DELTA_T 0.00025     
 #define N_DELTA_T 50
 
@@ -131,6 +132,11 @@
 
 #define INTR_PROC_OFF  0
 #define INTR_PROC_ON   1
-#define INTR_CACHE_INVALIDATE  2
+
+#define ON_ALL   100
+#define OFF_ALL  101
+#define OFF_ME   102
+
+
 
 #endif

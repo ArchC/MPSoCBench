@@ -69,18 +69,22 @@
 #include <tlm.h>
 #include "tlm_utils/simple_target_socket.h"
 
+#include "../../defines.h"
 
-//////////////////////////////////////////////////////////////////////////////
+#include "IniReader.h"
 
-// using statements
-// using tlm::tlm_transport_if;
+#ifdef DRAMSIM2
+#include "DRAMSim.h"
+using namespace DRAMSim;
+#endif
 
-//using tlm::tlm_blocking_transport_if;
 
 
-//////////////////////////////////////////////////////////////////////////////
 
 /// Namespace to isolate memory from ArchC
+
+
+
 namespace user
 {
 
@@ -102,16 +106,33 @@ public:
 	unsigned int end_address() const;
 
   /* memory direct access functions  - useful to load the application in memory */
+	
 	ac_tlm_rsp_status read(unsigned int address, unsigned int size, unsigned char *data);
 	ac_tlm_rsp_status write(unsigned int address, unsigned int size, const unsigned char *data);
 
+	#ifdef DRAMSIM2
+	void printStatus(FILE*, bool = false, bool = false) const;
+	#endif
+	
+
 private:
+  
   uint8_t *memory;
   unsigned int m_start_address;
   unsigned int m_end_address;
 
+  
   ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * , unsigned int);
   ac_tlm_rsp_status readm( const uint32_t & , unsigned char*, unsigned int);
+
+  vector<unsigned int> processorsReads;
+  vector<unsigned int> processorsWrites;
+  
+  #ifdef DRAMSIM2
+  MultiChannelMemorySystem *DRAMSim_mem;
+  void alignTransactionAddress(uint64_t&);
+  #endif
+  
 
 };
 
