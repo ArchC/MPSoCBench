@@ -34,14 +34,14 @@ const char *archc_options="";
 #include  "tlm_dfs.h"
 #include  "tlm_noc.h"
 #include  "tlm_intr_ctrl.h"
-#include  "tlm_dir.h"
+//#include  "tlm_dir.h"
 
 
 using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
-using user::tlm_dir;
+//using user::tlm_dir;
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -115,20 +115,16 @@ int sc_main(int ac, char *av[])
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir ("dir", N_WORKERS);
+
 	#ifdef POWER_SIM
-	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
+ 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
 
 	// Binding processors and interruption controller
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
-       dir.CPU_port[i](processors[i]->intr_port);
     }
-
-
-
 
 	// Creates the NoC with N_WORKERS+2 active nodes 
     // The NoC is defined with a bidimensional array, then some inactive nodes will be also 
@@ -141,7 +137,11 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 5; // mem, lock , intr_ctrl, dir
+	int slaves = 3; // mem, lock , intr_ctrl
+
+    #ifdef POWER_SIM
+    slaves++; // dfs
+    #endif
 	
 
 	int peripherals = masters + slaves;
@@ -167,8 +167,16 @@ int sc_main(int ac, char *av[])
 	wr++;
 
 
-		line = 0;
-		column = 2;
+	line = 0;
+	column = 2;
+
+    if (r==2) 
+    {
+    	line = 1;
+    	column = 0;
+    }
+    
+
 		// Connecting the interrupt controler (intr_ctrl) with the noc node [1][0] (noc 2x2) or [0][2] (other cases)
 		// third peripheral address space: 0x21000000...0x22000000-1
 		noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
@@ -183,24 +191,15 @@ int sc_main(int ac, char *av[])
 		}
 
 
-		noc.wrapper[wr].LOCAL_port(dir.target_export);
-		noc.tableOfRouts.newEntry(line,column);	
-		wr++;
-		column++;
-		
-		if (r==4)
-		{
-			line = 1;
-			column = 0;	
-		}	
+	
 
-		// if POWER_SIM is defined, the next peripheral is the DFS IP
+	
 		#ifdef POWER_SIM 
 		noc.wrapper[wr].LOCAL_port(dfs.target_export);
 		wr++;	
 		noc.tableOfRouts.newEntry(line,column);
 		column++;
-		if (r==5)
+		if (r==4)
 		{
 			line = 1;
 			column = 0;
@@ -302,8 +301,7 @@ int sc_main(int ac, char *av[])
     
     sc_start();
 
-	// Endding the time measurement
-	report_end();
+
 
 
 	// ******************************************************************************************
@@ -313,9 +311,12 @@ int sc_main(int ac, char *av[])
 	// Printing statistics 
 	for (int i=0; i<N_WORKERS; i++) {
 		processors[i]->PrintStat(); 
+		processors[i]->FilePrintStat(global_time_measures); 
+		processors[i]->FilePrintStat(local_time_measures); 
 	}
 
-	
+	// Endding the time measurement
+	report_end();
 	cerr << endl;
 
 	// Printing statistics
@@ -330,11 +331,23 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 //processors[i]->DC.powersc_connect();
+		 processors[i]->DC.powersc_connect();
 		 processors[i]->IC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
 	#endif
+
+	#ifdef POWER_SIM
+	double d = 0;
+	for (int i=0; i<N_WORKERS; i++){
+   		 // Connect Power Information from ArchC with PowerSC
+		 d += processors[i]->ps.getEnergyPerCore();
+ 	}
+	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	#endif
+
+
+
 
 	// Checking the status 
 	bool status = 0;
@@ -370,16 +383,16 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	//fclose(local_time_measures);
+	//fclose(global_time_measures);
 
 
 }
     
 void report_end()
 {
-	global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
-	local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
+	//global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
+	//local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
 
 
 	gettimeofday(&endTime, NULL);

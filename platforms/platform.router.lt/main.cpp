@@ -34,23 +34,18 @@ const char *archc_options="";
 #include  "tlm_lock.h"
 #include  "tlm_dfs.h"
 #include  "tlm_intr_ctrl.h"
-#include  "tlm_dir.h"
-//#include  "wrapper.h"
-//#include  "network_if.h"
+//#include  "tlm_dir.h"
 
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
-using user::tlm_dir;
-//using user::wrapper;
-//using user::network_if;
+//using user::tlm_dir;
 
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
 #endif
-
 
 
 // Global variables
@@ -106,8 +101,8 @@ int sc_main(int ac, char *av[])
   	tlm_router router("router");			// router
 	tlm_lock locker("locker");			// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir("dir", N_WORKERS);
-   //network_if ni ("ni", N_WORKERS);
+	//tlm_dir dir("dir", N_WORKERS);
+   
 
     #ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
@@ -117,7 +112,7 @@ int sc_main(int ac, char *av[])
 	router.MEM_port  (mem.target_export);  
     router.LOCK_port (locker.target_export);
     router.INTR_CTRL_port (intr_ctrl.target_export);
- 	router.DIR_port (dir.target_export);
+ 	//router.DIR_port (dir.target_export);
 
     #ifdef POWER_SIM
     router.DFS_port(dfs.target_export);
@@ -129,18 +124,12 @@ int sc_main(int ac, char *av[])
 	{
 		processors[i]->MEM_port(router.target_export);
 		(processors[i]->MEM).setProcId(processors[i]->getId());
-		//processors[i]->MEM_port(ni.wr[i].LOCAL_export);
-		//ni.wr[i].ROUTER_port(router.target_export);
-		//ni.wr[i].initDFS(processors[i]);
-	
 	}
-
     
 	// Binding processors and interruption controller
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
-       dir.CPU_port[i](processors[i]->intr_port);
     }
 
 
@@ -148,7 +137,7 @@ int sc_main(int ac, char *av[])
 	// Processor 0 starts simulatino in ON-mode while the other processors are in OFF-mode
 	for (int i=1; i<N_WORKERS; i++)
     {
-        intr_ctrl.send(i,OFF); // turn off processors 1,..,N_WORKERS-1
+        intr_ctrl.send(i,ON); // turn off processors 1,..,N_WORKERS-1
     }
     intr_ctrl.send(0,ON);    // turn on processor 0 (master)
 
@@ -192,14 +181,18 @@ int sc_main(int ac, char *av[])
         
 	sc_start();
 
-	// Endding the time measurement
-	report_end();
+	
 
 	// Printing statistics 
 	for (int i=0; i<N_WORKERS; i++) {
 		processors[i]->PrintStat(); 
+		processors[i]->FilePrintStat(global_time_measures); 
+		processors[i]->FilePrintStat(local_time_measures); 
 	}
 
+
+	// Endding the time measurement
+	report_end();
 
 	// Printing statistics
 	#ifdef AC_STATS
@@ -215,11 +208,21 @@ int sc_main(int ac, char *av[])
    		 // Connect Power Information from ArchC with PowerSC
   		 processors[i]->ps.powersc_connect();
   		 processors[i]->IC.powersc_connect();
-  		 //processors[i]->DC.powersc_connect();
+  		 processors[i]->DC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
 	#endif
 
+
+
+	#ifdef POWER_SIM
+	double d = 0;
+	for (int i=0; i<N_WORKERS; i++){
+   		 // Connect Power Information from ArchC with PowerSC
+		 d += processors[i]->ps.getEnergyPerCore();
+ 	}
+	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	#endif
 
 	// Checking the status 
 	bool status = 0;
@@ -232,7 +235,7 @@ int sc_main(int ac, char *av[])
 		delete processors[i];
 	}
 	delete [] processors;
-	//delete [] wr;
+	
 	return status; 
 
 
@@ -254,16 +257,16 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	//fclose(local_time_measures);
+	//fclose(global_time_measures);
 
 
 }
     
 void report_end()
 {
-	global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
-	local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
+	//global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
+	//local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
 
 
 	gettimeofday(&endTime, NULL);

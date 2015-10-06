@@ -1,4 +1,4 @@
-IP := tlm_memory_at tlm_lock_at tlm_dfs_at tlm_intr_ctrl_at tlm_dir_at
+IP := tlm_memory_at tlm_lock_at tlm_dfs_at tlm_intr_ctrl_at
 IS := tlm_noc_at
 PROCESSOR := $(PROCESSOR)
 SW := $(SOFTWARE)

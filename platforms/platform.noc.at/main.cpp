@@ -40,7 +40,7 @@ const char *archc_options="";
 #include "ac_utils.H"
 #include "ac_tlm_protocol.H"
 #include "tlm_intr_ctrl.h"
-#include "tlm_dir.h"
+//#include "tlm_dir.h"
 
 //#define AC_DEBUG
 
@@ -49,7 +49,7 @@ using user::tlm_noc;
 using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
 using user::tlm_intr_ctrl;
-using user::tlm_dir;
+//using user::tlm_dir;
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -121,7 +121,7 @@ int sc_main(int ac, char *av[])
 	tlm_memory mem("mem",0, MEM_SIZE-1);	// memory 
 	tlm_lock locker("lock");		// locker
 	tlm_intr_ctrl intr_ctrl ("intr_ctrl",N_WORKERS);
-	tlm_dir dir ("dir", N_WORKERS);
+	
     #ifdef POWER_SIM
 	tlm_dfs dfs ("dfs", N_WORKERS, processors);				// dfs
 	#endif
@@ -131,7 +131,6 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++)
     {
        intr_ctrl.CPU_port[i](processors[i]->intr_port);
-       dir.CPU_port[i](processors[i]->intr_port);
     }
 
 
@@ -153,7 +152,7 @@ int sc_main(int ac, char *av[])
 	// NumberOfLines and numberOfColumns define the mesh topology
 	
 	int masters = N_WORKERS;
-	int slaves = 4; // mem, lock, intr_ctrl, dir 
+	int slaves = 3; // mem, lock, intr_ctrl
 
 	#ifdef POWER_SIM
 	slaves++; // dfs
@@ -194,10 +193,17 @@ int sc_main(int ac, char *av[])
 	emptyMasters++;
     noc.tableOfRouts.newEntry(0,1);	
 
-
-		line = 0;
+    if (r==2) 
+    {
+    	line = 1;
+    	column = 0;
+    }
+    else
+    {
+    	line = 0;
 		column = 2;
-		
+    }
+
 		//NoC [0][2]-> INTR_CTRL
 		noc.wrapper[wrMS].LOCAL_init_socket.bind(intr_ctrl.LOCAL_target_socket);
 		noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
@@ -213,54 +219,39 @@ int sc_main(int ac, char *av[])
 			column = 0;
 		}
 
-		//NoC [0][3]-> DIR
-		noc.wrapper[wrMS].LOCAL_init_socket.bind(dir.LOCAL_target_socket);
-		noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
-		wrMS++;
-		emptyMasters++;
-		noc.tableOfRouts.newEntry(line,column);		// the third argument is the last address of the range address of LOCK device
-
-		column++;
-
-		if (r==4)
-		{
-			line = 1;
-			column = 0;	
-		}	
-
+	
 		#ifdef POWER_SIM
-		// DFS will be binded with NoC[1]0] in case of NoC 3x3, or NoC[0][4] in other NoCs
+		// DFS will be binded with NoC[1][0] in case of NoC 3x3, or NoC[0][4] in other NoCs
 		noc.wrapper[wrMS].LOCAL_init_socket.bind(dfs.LOCAL_target_socket);
     	noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 		wrMS++;
 		emptyMasters++;
 		noc.tableOfRouts.newEntry(line,column);	
 		column++;
-		#endif
-
-
-
-		if (r==5)
+		
+		if (r==4)
 		{
 			// in case of NoC 5x5, the next peripheral must be on node [1][0]
 			line = 1;
 			column = 0;
 		} 
+		#endif		
 		
-	//}
+	
 
 	// Connecting processors and noc-mesh 
 	int proc = 0;
 
 	while (line< noc.getNumberOfLines() )
-        {
+    {
 		while(column < noc.getNumberOfColumns())
-                {
+        {
 			if (proc < N_WORKERS)
 			{
 				
 				processors[proc]->MEM_port.LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.slaveEmptyNodes[emptySlaves].LOCAL_slave_target_socket);
+
 				#ifdef POWER_SIM
 				noc.wrapper[wrMS].initDFS(processors[proc]);
 				#endif
@@ -335,9 +326,7 @@ int sc_main(int ac, char *av[])
 	// Beggining of simulation
     sc_start();
 
-	// Endding the time measurement
-	report_end();
-
+	
 	// ******************************************************************************************
 	// Printing Simulation Statistics and Finishing
     // ******************************************************************************************
@@ -345,7 +334,13 @@ int sc_main(int ac, char *av[])
 	// Printing statistics 
 	for (int i=0; i<N_WORKERS; i++) {
 		processors[i]->PrintStat(); 
+		processors[i]->FilePrintStat(global_time_measures); 
+		processors[i]->FilePrintStat(local_time_measures); 
 	}
+
+    // Endding the time measurement
+	report_end();
+
 
 
 	// Printing statistics
@@ -362,9 +357,12 @@ int sc_main(int ac, char *av[])
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
 		 processors[i]->IC.powersc_connect();
-		 //processors[i]->DC.powersc_connect();
+		 processors[i]->DC.powersc_connect();
 	}
+	
+	noc.ps.powersc_connect();
 	processors[N_WORKERS-1]->ps.report();
+
 	#endif
 
 	// RETIRAR ISSO DEPOIS -= SOMENTE PAR AEXPERIMENTOS
@@ -377,8 +375,7 @@ int sc_main(int ac, char *av[])
 	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	#endif
 
-
-
+	
 	// Checking the status 
 	bool status = 0;
 	for (int i=0; i<N_WORKERS; i++)
@@ -411,16 +408,16 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	//fclose(local_time_measures);
+	//fclose(global_time_measures);
 
 
 }
     
 void report_end()
 {
-	global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
-	local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
+	//global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
+	//local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
 
 
 	gettimeofday(&endTime, NULL);
