@@ -2760,7 +2760,7 @@ int main0(argc, argv) int argc; char* argv[];{
 				}
 				int_to_uchar(r,in,x_size*y_size);
       		}else{
-				mid = (uchar *)malloc(x_size*y_size);
+  				mid = (uchar *)malloc(x_size*y_size);
 				memset (mid,100,x_size * y_size); /* note not set to zero */
 				if (three_by_three){
 					susan_edges_small(in,r,mid,bp,max_no_edges,x_size,y_size);			
@@ -2804,9 +2804,7 @@ int main(int argc, char *argv[])
 {
 
 
-  #ifdef POWER_SIM
-  pthread_changePowerState(HIGH);
-  #endif
+  
 	/* NUMBER OF WORKER THREADS */
 	
 	register int procNumber;
@@ -2817,7 +2815,10 @@ int main(int argc, char *argv[])
   
 	if (procNumber == 0){	
 
-
+    #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+    
 		pthread_n_workers = NPROC;
 		PROCESSORS = pthread_n_workers;
 	
@@ -2835,13 +2836,13 @@ int main(int argc, char *argv[])
 		pthread_mutex_init(&mutex_print, NULL);
 		pthread_mutex_lock(&mutex_print);	
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	  printf("\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("--------------------- Running: susanedges --------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("--------------------- the output.pgm file --------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+    printf("--------------------- Running: susanedges --------------------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("--------------------- the output.pgm file --------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print);
 

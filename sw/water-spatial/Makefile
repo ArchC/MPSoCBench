@@ -15,14 +15,17 @@ LDFLAGS = -lm
 
 INC_DIR := -I.
 
-OBJS := barrier.o bndry.o cnstnt.o cshift.o initia.o interf.o intraf.o kineti.o mdmain.o poteng.o predcor.o syscons.o water.o
+SRCS := barrier.c bndry.c cnstnt.c cshift.c initia.c interf.c intraf.c kineti.c mdmain.c poteng.c predcor.c syscons.c water.c ../acPthread.c
+OBJS := $(SRCS:.c=.o)
+
+OBJS_AUX := barrier.o bndry.o cnstnt.o cshift.o initia.o interf.o intraf.o kineti.o mdmain.o poteng.o predcor.o syscons.o water.o acPthread.o
 MACROS := c.m4.null
 M4 := m4 -s -Ulen -Uindex
 
 x = *
 #------------------------------------------------------
 (TARGET): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
+	$(CC) $(OBJS_AUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 
 clean:
 	rm -rf *.c *.h *.o *.x 

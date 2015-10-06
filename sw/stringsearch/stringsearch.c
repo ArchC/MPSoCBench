@@ -125,9 +125,7 @@ char *m_argv[5];
 
 int main(int argc, char *argv[])
 {
- 	#ifdef POWER_SIM
- 	pthread_changePowerState(HIGH);
-  	#endif
+
 	register int procNumber;
 	
 	AcquireGlobalLock();
@@ -136,9 +134,13 @@ int main(int argc, char *argv[])
 
 	if (procNumber == 0)
 	{
-		
+	
+		#ifdef POWER_SIM
+ 		pthread_changePowerState(HIGH);
+  		#endif
+  	
 		pthread_n_workers = NPROC;
-                no_workers = pthread_n_workers;
+        no_workers = pthread_n_workers;
 
 		/* ARGUMENTS */
 		m_argc = 5;
@@ -147,6 +149,8 @@ int main(int argc, char *argv[])
 		m_argv[3] = "SearchString01.txt";
 		m_argv[4] = "testpattern5.txt";
 	
+		
+
 		pthread_init();
 
 		/* OUTPUT FILE */
@@ -161,13 +165,13 @@ int main(int argc, char *argv[])
 		pthread_mutex_init(&mutex_print, NULL);
 		pthread_mutex_lock(&mutex_print);  
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	    printf("\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("-------------------- Running: stringsearch -------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("--------------------- the output.dat file --------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+        printf("-------------------- Running: stringsearch -------------------------\n");
+        printf("--------------- The results will be available in -------------------\n");
+        printf("--------------------- the output.dat file --------------------------\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print);  
 
@@ -326,7 +330,7 @@ void *searchStrings(void* param) {
 	   
 	    
 	    pthread_mutex_lock(&mutex_print);
-	    printf("The %s %d start searching.\n",tempParam->name,tempParam->no);
+	    printf("%s %d is searching.\n",tempParam->name,tempParam->no);
  	    pthread_mutex_unlock(&mutex_print);
 	    
 	    

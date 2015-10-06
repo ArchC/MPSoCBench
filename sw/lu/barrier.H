@@ -1,9 +1,18 @@
+#include "../acPthread.h"
+
+
+extern unsigned volatile int *lock;
+
+extern unsigned volatile int *dvfs;
+
+
+
 
 
 //================================ Global Locker ========================================
-void AGlobalLock(void);
+//void AGlobalLock(void);
 
-void RGlobalLock(void);
+//void RGlobalLock(void);
 
 //================================== Barrier ============================================
 #define BARRIER_VALID  0xdbcafe
@@ -14,7 +23,7 @@ void RGlobalLock(void);
 
 //Structures to describe a barrier
 
-typedef struct barrier_tag {
+typedef struct barrier_tag_ {
 	int valid;
 	int threshold;
         int counter;

@@ -40,7 +40,8 @@ FILE* fileout_adpcmencoder;
 FILE* fileout_adpcmdecoder;
 FILE *fileout_basicmath_cubic;
 FILE *fileout_basicmath_conversion;
-FILE *fileout_qsort;
+FILE *fileout_basicmath_sqrt;
+//FILE *fileout_qsort;
 FILE *fileout_susancorners;
 FILE *fileout_dijkstra;
 FILE *fileout_bitcount;
@@ -73,29 +74,28 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
-
-  #ifdef POWER_SIM
-  pthread_changePowerState(HIGH);
-  #endif
-
   register int procNumber;
+
+
   AcquireGlobalLock();
   procNumber = procCounter++;
-  // printf("\nProcessor %d started.\n", procNumber);
   ReleaseGlobalLock();
 
  
-
   if (procNumber == 0){	
-	 
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif 
+
 	printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-       	printf("----------------------Running: multi-16 ----------------------------\n");
-       	printf("--------ADPCM-encoder, ADPCM-decoder, Basicmath-conversion, --------\n");
-        printf("---Basicmath-cubic, Bitcount, Blowfish-encoder, Blowfish-decoder ---\n"); 
-	printf("--- BMH-Stringsearch, Dijkstra, FFT, PBM_stringsearch, QSort -------\n");
-        printf("------ Rijndael-encoder, Rijndael-decoder, SHA, Susan-corners ------\n");
+    printf("--------------------- Running: multi-16 ----------------------------\n");
+    printf("-------- ADPCM-enc, ADPCM-dec, Basicmath-conversion, FFT, ----------\n");
+    printf("---- Basicmath-cubic, Basicmath-sqrt, Bitcount, Blowfish-enc, ------\n"); 
+	printf("--- Blowfish-dec, BMH-Stringsearch, Dijkstra, PBM_stringsearch,-----\n");
+    printf("--------- Rijndael-enc, Rijndael-dec, SHA, Susan-corners -----------\n");
 	printf("--------------------------------------------------------------------\n");
 	printf("\n");
 
@@ -104,30 +104,40 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&mutex_print,NULL);
 	pthread_mutex_init(&mutex_malloc,NULL);
 
-        AcquireGlobalLock();
+    AcquireGlobalLock();
 	barrier_in = 1;
 	ReleaseGlobalLock();
      	
-	
+	pthread_turnOnProcessors(); 
+
 	main_sha();
-	
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nSha finished.\n");
+	printf("\nSha has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 	
-
-
   }
   else if (procNumber == 1)
   {
-       
+    while(barrier_in == 0);
+
 	
-        while(barrier_in == 0);
+    #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
 
 	main_rijndael_enc();
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nRijndael Encoder finished.\n");
+	printf("\nRijndael Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -139,10 +149,19 @@ int main(int argc, char *argv[])
 	while(barrier_in == 0);
 	
 
+ 	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
+
 	main_rijndael_dec();
 	
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nRijndael Decoder finished.\n");
+	printf("\nRijndael Decoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -153,10 +172,18 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 
-        main_blowfish("E");
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
+    main_blowfish("E");
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBlowfish Encoder finished.\n");
+	printf("\nBlowfish Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -168,10 +195,19 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
-        main_blowfish("D");
+    
+    #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
+    main_blowfish("D");
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBlowfish Decoder finished.\n");
+	printf("\nBlowfish Decoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -181,12 +217,22 @@ int main(int argc, char *argv[])
   else if (procNumber == 5)
   {
      
-        while(barrier_in == 0);
+    while(barrier_in == 0);
+
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
 
 	main_pbm_stringsearch();
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nStringsearch Pratt-Boyer-Moore finished.\n");
+	printf("\nStringsearch Pratt-Boyer-Moore has finished.\n");
 	pthread_mutex_unlock(&mutex_print);	 
 	
 	
@@ -195,10 +241,19 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_bmh_stringsearch();
 	
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nStringsearch Boyer-Moore-Horspool finished.\n");
+	printf("\nStringsearch Boyer-Moore-Horspool has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -209,9 +264,18 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 	
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_adpcmencoder();
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nAdpcm Encoder finished.\n");
+	printf("\nAdpcm Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -222,10 +286,20 @@ int main(int argc, char *argv[])
 	
 	while(barrier_in == 0);
 	
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_basicmath_cubic();
 
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBasicmath_cubic finished.\n");
+	printf("\nBasicmath_cubic has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -238,10 +312,19 @@ else if (procNumber == 9)
 	
 	while(barrier_in == 0);
 	
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_dijkstra();
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nDijkstra finished.\n");
+	printf("\nDijkstra has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -251,10 +334,21 @@ else if (procNumber == 9)
   {
 	while(barrier_in == 0);
 	
-	main_qsort();
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
+	
+	main_basicmath_sqrt();
+
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nQsort finished.\n");
+	printf("\nQsort has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -265,10 +359,18 @@ else if (procNumber == 9)
 
 	while(barrier_in == 0);
 
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_susancorners();
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nSusan-corners finished.\n");
+	printf("\nSusan-corners has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -278,10 +380,19 @@ else if (procNumber == 9)
   {
 	while(barrier_in == 0);
 	
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_fft();
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nFFT finished.\n");
+	printf("\nFFT has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -292,10 +403,20 @@ else if (procNumber == 9)
   {
 	while(barrier_in == 0);
 	
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_adpcmdecoder();
 
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nAdpcm Decoder finished.\n");
+	printf("\nAdpcm Decoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -305,10 +426,19 @@ else if (procNumber == 9)
   {
 	while(barrier_in == 0);
 	
+
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_basicmath_conversion();
 
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBasicmath_conversion finished.\n");
+	printf("\nBasicmath_conversion has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -317,10 +447,18 @@ else if (procNumber == 9)
   {
 	while(barrier_in == 0);
 	
+	#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 	main_bitcount();
 
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif 
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBitcount finished.\n");
+	printf("\nBitcount has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
   }
@@ -336,8 +474,6 @@ else if (procNumber == 9)
 	close_files();
   }
   ReleaseGlobalLock();
-
-
 
   _exit(0);
   return 0;
@@ -358,8 +494,9 @@ void close_files ()
 	fclose(fileout_adpcmdecoder);
 	fclose(fileout_basicmath_cubic);
 	fclose(fileout_basicmath_conversion);
+	fclose(fileout_basicmath_sqrt);
 	fclose(fileout_susancorners);
-	fclose(fileout_qsort);
+	//fclose(fileout_qsort);
 	fclose(fileout_dijkstra);
 	fclose(fileout_bitcount);
 }
@@ -412,7 +549,7 @@ void open_files ()
 		    exit(1);
  	 }
 
-         fileout_adpcmencoder = fopen("output_encoder_adpcm","w");
+     fileout_adpcmencoder = fopen("output_encoder_adpcm","w");
 	 if (fileout_adpcmencoder == NULL){
 	     printf("Error: fopen() output_encoder_adpcm\n");
 	     exit(1);
@@ -429,6 +566,13 @@ void open_files ()
 		    exit(1);
 	 }
 	
+
+	 fileout_basicmath_sqrt = fopen("output_basicmath_sqrt","w");
+	 if (fileout_basicmath_sqrt == NULL){
+		    printf("Error: fopen() output_basicmath_sqrt\n");
+		    exit(1);
+	 }
+
 	 fileout_basicmath_conversion = fopen("output_basicmath_conversion","w");
 	 if (fileout_basicmath_conversion == NULL){
 		    printf("Error: fopen() fileout_basicmath_conversion\n");
@@ -443,12 +587,12 @@ void open_files ()
 	 if (fileout_susanedges == NULL){
 		    printf("Error: fopen() fileout_susanedges\n");
 		    exit(1);
- 	 }*/
+ 	 }
 	 fileout_qsort = fopen("output_qsort","w");
 	 if (fileout_qsort == NULL){
 		    printf("Error: fopen() output_qsort\n");
 		    exit(1);
- 	 }
+ 	 }*/
  	 fileout_dijkstra = fopen("output_dijkstra","w");
 	 if (fileout_dijkstra == NULL){
 		    printf("Error: fopen() output_dijkstra\n");
@@ -461,13 +605,13 @@ void open_files ()
  	 }
 
 
-	 filein_qsort = fopen("input_small.dat","r");
+	 /*filein_qsort = fopen("input_small.dat","r");
 	 if (filein_qsort == NULL){
 		    printf("Error: fopen() filein_qsort\n");
 		    exit(1);
- 	 }
+ 	 }*/
 
-         filein_susancorners = fopen("input_large2.pgm","r");
+     filein_susancorners = fopen("input_small.pgm","r");
 	 if (filein_susancorners == NULL){
 		    printf("Error: fopen() filein_susancorners\n");
 		    exit(1);

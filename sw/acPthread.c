@@ -229,14 +229,22 @@ void pthread_join_control (pthread_join_t *m_join)
 	if (m_join->num_proc ==0)
 	{
 		join_out = 1;
+		pthread_turnOnProcessors();
 	}
 	
 	ReleaseGlobalLock();
 	
 	
-	while (join_out == 0);
+	//while (join_out == 0);
+	//pthread_busywait(500);
 
-	pthread_busywait(500);
+    /*****
+    if (join_out == 0)
+    {
+    	pthread_turnMeOff ();
+    }
+    *****/
+
 	
 	if(DEBUG)
 	{
@@ -388,8 +396,6 @@ void pthread_executeThread ()
         pthread_mutex_unlock(&mutex_print);
 	}
 
-	
-
 	pthread_join_control(&join);
 
 	AcquireGlobalLock();
@@ -404,9 +410,7 @@ void pthread_executeThread ()
 		join.num_proc = pthread_n_workers;
 		pthread_free_for_start = 0;
 	    join_out = 0;
-		//pthread_numberOfActiveThreads = 0;
-		pthread_ended = pthread_n_workers;
-		//flag2 = 1;
+	    pthread_ended = pthread_n_workers;
 		ReleaseGlobalLock();
 	}
 }
@@ -431,7 +435,9 @@ int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void (*start_r
 
 		pthread_executeThread();
 
-		
+		#ifdef POWER_SIM 
+		pthread_changePowerState(HIGH);  
+		#endif 
 
 	}
 
@@ -552,19 +558,25 @@ void acPthread_free(void *ptr)
 
 void pthread_changePowerState(int state)
 {
-	//pthread_mutex_lock(&mutex_print);
-	//printf("\nem pthread_changePowerState , state %d",state);
-	//pthread_mutex_unlock(&mutex_print);
 	*dfs = state;
 }
 
 
 void pthread_turnOnProcessors()
 {
-	*intr_ctrl = ON;
+
+	//printf("Acordando processadores");
+	*intr_ctrl = ON_ALL;
 }
 
 void pthread_turnOffProcessors()
 {
-	*intr_ctrl = OFF;
+	*intr_ctrl = OFF_ALL;
+}
+
+void pthread_turnMeOff()
+{
+
+	*intr_ctrl = OFF_ME;
+
 }

@@ -16,15 +16,18 @@ LDFLAGS = -lm
 
 INC_DIR := -I.
 
-SRCS := fft.c
+SRCS := fft.c ../acPthread.c
 OBJS := $(SRCS:.c=.o)
+
+OBJS_AUX := fft.o acPthread.o 
+
 MACROS := c.m4.null
 M4 := m4 -s -Ulen -Uindex
 
 x = *
 #------------------------------------------------------
 (TARGET): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
+	$(CC) $(OBJS_AUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 
 clean:
 	rm -rf *.c *.h *.o *.x 
@@ -55,8 +58,9 @@ copy:
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
 
 check:
-	echo "\n\nTESTING RESULTS"
+	echo "\n\nTESTING RESULTS:"
 	sort output > output.sorted 
-	if diff output.sorted output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
+	if diff output.sorted output.base > diff.txt ; then echo "Test Passed."; else echo "Test Failed."; fi
+
 
 

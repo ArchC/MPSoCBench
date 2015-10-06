@@ -63,6 +63,8 @@
 #include <math.h>
 //#include <stdlib.h>
 #include "barrier.H"
+
+
 MAIN_ENV
 
 #define MAXRAND                         32767.0
@@ -140,31 +142,28 @@ int main0(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
 
-
-  #ifdef POWER_SIM
-  pthread_changePowerState(HIGH);
-  #endif
-
-  
   register int procNumber;
   // P = atoi(argv[1]);
 
-  AGlobalLock();
+  AcquireGlobalLock();
   procNumber = procCounter++;
   P = NPROC;
-  RGlobalLock();
+  ReleaseGlobalLock();
   
   if (procNumber == 0){	
 
-		
+		#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	  printf("\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("------------------------- Running: LU ------------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("----------------------- the output file ----------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+    printf("------------------------- Running: LU ------------------------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("----------------------- the output file ----------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("\n");
 
 		/* OUTPUT FILE */
@@ -378,6 +377,8 @@ int main0(int argc, char *argv[])
   }
 
   //CREATE(SlaveStart, P);
+
+  pthread_turnOnProcessors(); 
   printf("...\n");
   SlaveStart();
   printf("...\n");

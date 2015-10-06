@@ -8,26 +8,12 @@
 #include <stdlib.h>
 #include "barrier.H"
 
-unsigned volatile int *LOCKER = (unsigned int *)0x20000000;
 
 
+#include "../acPthread.h"
 
-//Locker
-//unsigned int *LOCKER = (unsigned int *)0x20000000;
+//unsigned volatile int *LOCKER = (unsigned int *)0x20000000;
 
-//#define AcquireGlobalLock	while ((*LOCKER ))
-
-//#define ReleaseGlobalLock	((*LOCKER ) = 0)
-
-/*void AGlobalLock(void)
-{
-	while ((*LOCKER ));
-}
-
-void RGlobalLock(void)
-{
-	((*LOCKER ) = 0);
-}*/
 
 //================================== Barrier ============================================
 
@@ -35,12 +21,12 @@ void RGlobalLock(void)
 
 int barrier_init (barrier_t *barrier, int count)
 {
-	AGlobalLock();
+	AcquireGlobalLock();
 	//barrier = (barrier_t*) malloc(sizeof(barrier_t));
 	barrier->threshold = barrier->counter = count;
 	barrier->cycle = 0;
 	barrier->valid = BARRIER_VALID;
-	RGlobalLock();
+	ReleaseGlobalLock();
 	return 0;
 }
 
@@ -51,7 +37,7 @@ int barrier_wait (barrier_t *barrier)
 	if (barrier->valid != BARRIER_VALID)
 		return 1;
 
-	AGlobalLock();	
+	AcquireGlobalLock();	
 	
 	cycle = barrier->cycle;
 
@@ -60,9 +46,9 @@ int barrier_wait (barrier_t *barrier)
 		barrier->counter = barrier->threshold;		
 		status = -1;
 		//printf("Changed %x ==> Counter: %d  Threshold: %d  Cycle: %d\n", barrier, barrier->counter, barrier->threshold, cycle);
-		RGlobalLock();
+		ReleaseGlobalLock();
 	} else {
-		RGlobalLock();
+		ReleaseGlobalLock();
 		status = 0;
 		//printf("DEC %x ==> Counter: %d  Threshold: %d  Cycle: %d\n", barrier, barrier->counter, barrier->threshold, cycle);
 		while (cycle == barrier->cycle);
@@ -77,10 +63,10 @@ int barrier_wait (barrier_t *barrier)
 
 int mutex_init(mutex_t *m_lock)
 {
-	AGlobalLock();
+	AcquireGlobalLock();
 	m_lock->counter = 0;
 	m_lock->valid = LOCK_VALID;
-	RGlobalLock();
+	ReleaseGlobalLock();
 	return 0;
 }
 
@@ -91,19 +77,19 @@ int mutex_lock(mutex_t *m_lock)
 	if ( m_lock->valid != LOCK_VALID )
 		status = 1;
 	
-	AGlobalLock();
+	AcquireGlobalLock();
 
 	//Trying to acquire the lock state
 	while (m_lock->counter == 1){
-		RGlobalLock();
+		ReleaseGlobalLock();
 		for (i = 0; i < 5; i++);
-		AGlobalLock();
+		AcquireGlobalLock();
 	}
 
 	//Acquiring the lock state
 	m_lock->counter = 1;
 
-	RGlobalLock();
+	ReleaseGlobalLock();
 
 	status = 0;
 
@@ -112,9 +98,9 @@ int mutex_lock(mutex_t *m_lock)
 
 int mutex_unlock(mutex_t *m_lock)
 {
-	AGlobalLock();
+	AcquireGlobalLock();
 	m_lock->counter = 0;
-	RGlobalLock();
+	ReleaseGlobalLock();
 }
 
 
@@ -130,9 +116,9 @@ int join_init(join_t *m_join, int n_proc)
 void join_point(join_t *m_join)
 {	
 	while(m_join->valid != JOIN_VALID);
-	AGlobalLock();
+	AcquireGlobalLock();
 	m_join->num_proc--;
-	RGlobalLock();
+	ReleaseGlobalLock();
 	//printf("JOIN: %d\n",m_join->num_proc);
 }
 
@@ -145,10 +131,10 @@ int wait_for_end(join_t *m_join)
 //================================ Our Malloc ========================================
 void *our_malloc(size_t size) { 
 	void *ret;	
-	AGlobalLock();
+	AcquireGlobalLock();
 	ret = (void *) malloc(size); 
 	//ret = (void *) valloc(size);
-	RGlobalLock();
+	ReleaseGlobalLock();
 	return ret;
 }	
 

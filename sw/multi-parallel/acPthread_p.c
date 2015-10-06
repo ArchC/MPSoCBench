@@ -339,7 +339,7 @@ void pthread_executeThread ()
 	(*fp)(arg);
 
 	#ifdef POWER_SIM
-	pthread_changePowerState(LOW);
+	//pthread_changePowerState(LOW);
 	#endif 
 
 
@@ -510,10 +510,19 @@ void pthread_changePowerState(int state)
 
 void pthread_turnOnProcessors()
 {
-	*intr_ctrl = ON;
+
+	//printf("Acordando processadores");
+	*intr_ctrl = ON_ALL;
 }
 
 void pthread_turnOffProcessors()
 {
-	*intr_ctrl = OFF;
+	*intr_ctrl = OFF_ALL;
+}
+
+void pthread_turnMeOff()
+{
+
+	*intr_ctrl = OFF_ME;
+
 }

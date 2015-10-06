@@ -155,26 +155,21 @@ int main(int argc, char *argv[])
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
     printf("----------------Running: multisoftware platform --------------------\n");
     printf("--------------sha, stringsearch, dijkstra, basicmath ---------------\n");
-    printf("--------------- The results will be available in -------------------\n");
     printf("--------------------------------------------------------------------\n");
-    printf("-----------  sw/multi_parallel/sha_multi/output.dat ----------------\n");
-    printf("-----  sw/multi_parallel/stringsearch_multi/testdata/output.dat ----\n");
-    printf("--------  sw/multi_parallel/dijkstra_multi/output.dat --------------\n");
-    printf("---------- sw/multi_parallel/basicmath_multi/output.dat ------------\n");
     printf("--------------------------------------------------------------------\n");
 	printf("---------------------- %d processadores ----------------------------\n", pthread_n_workers);
 	printf("------------------------ %d softwares ------------------------------\n", pthread_n_softwares);
-	printf("------------ ------- %d threads per software -----------------------\n", pthread_threads_per_software);
+	printf("-------------------- %d threads per software -----------------------\n", pthread_threads_per_software);
     printf("--------------------------------------------------------------------\n");
     pthread_mutex_unlock(&mutex_print);
 
 	open_files ();
 
-	pthread_mutex_lock(&mutex_print);  
+    pthread_turnOnProcessors();	
+
+    pthread_mutex_lock(&mutex_print);  
 	printf("---------------- Start running: stringsearch -----------------------\n");
 	pthread_mutex_unlock(&mutex_print);  
-
-    pthread_turnOnProcessors();	
 
 	AcquireGlobalLock();
 	barrier_in = 1;
@@ -182,6 +177,9 @@ int main(int argc, char *argv[])
 
 	
 	main_stringsearch();
+
+	
+
 		
      
   }
@@ -199,6 +197,10 @@ int main(int argc, char *argv[])
 	pthread_mutex_unlock(&mutex_print);  
 
 	main_dijkstra();
+
+
+	
+
   }
   else if (procNumber == 2)
   {
@@ -216,6 +218,9 @@ int main(int argc, char *argv[])
 
 	main_basicmath ();		
 
+	
+
+
   }
   else if (procNumber == 3)
   {
@@ -225,10 +230,15 @@ int main(int argc, char *argv[])
  	#ifdef POWER_SIM
  	pthread_changePowerState(HIGH);
   	#endif
+
 	pthread_mutex_lock(&mutex_print);  
     printf("--------------------- Start running: sha --------------------------\n");
 	pthread_mutex_unlock(&mutex_print); 
+
 	main_sha();  
+
+	
+
   }
   else
   {

@@ -134,5 +134,6 @@ void acPthread_free(void *);
 void pthread_changePowerState(int);
 void pthread_turnOnProcessors();
 void pthread_turnOffProcessors();
+void pthread_turnMeOff();
 
 #endif

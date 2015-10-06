@@ -71,10 +71,10 @@ int main(int argc, char *argv[])
   	#endif
    
 	printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-       	printf("-----------------Running: multi_office_telecomm --------------------\n");
-       	printf("---------PBM_stringsearch, BMH_stringsearch, FFT, ADPCM-------------\n");
+    printf("-----------------Running: multi_office_telecomm --------------------\n");
+    printf("---------PBM_stringsearch, BMH_stringsearch, FFT, ADPCM-------------\n");
 	printf("--------------------------------------------------------------------\n");
 	printf("\n");
 
@@ -83,12 +83,18 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&mutex_print,NULL);
 	pthread_mutex_init(&mutex_malloc,NULL);
 
-        AcquireGlobalLock();
+    AcquireGlobalLock();
 	barrier_in = 1;
 	ReleaseGlobalLock();
      	
+	pthread_turnOnProcessors(); 
 	
 	main_bmh_stringsearch();
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nStringsearch Boyer-Moore-Horspool finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -107,6 +113,11 @@ int main(int argc, char *argv[])
 	
 	main_pbm_stringsearch();
 	
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nStringsearch Pratt-Boyer-Moore finished.\n");
 	pthread_mutex_unlock(&mutex_print);	 
@@ -123,6 +134,10 @@ int main(int argc, char *argv[])
 
 	main_fft();
 	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nFFT finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -138,6 +153,11 @@ int main(int argc, char *argv[])
   		#endif
     
 	main_adpcmencoder();
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nAdpcm Encoder finished.\n");
 	pthread_mutex_unlock(&mutex_print);

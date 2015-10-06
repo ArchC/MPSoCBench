@@ -78,6 +78,9 @@ MAIN_ENV
 #include "frcnst.h"
 #include "global.h"
 
+#include "../acPthread.h"
+
+
 #define PROC 1
 
 long NMOL,NORDER,NATMO,NATMO3,NMOL1;
@@ -121,7 +124,7 @@ double XTT;
 unsigned volatile int procCounter = 0;
 FILE *six;
 
-extern unsigned volatile int *LOCKER; // = (unsigned int *)0x20000000;
+//extern unsigned volatile int *LOCKER; // = (unsigned int *)0x20000000;
 
 
 int main0(int argc, char *argv[]);
@@ -129,26 +132,29 @@ int main0(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
 
-        #ifdef POWER_SIM
-         pthread_changePowerState(HIGH);
-        #endif
+        
   register int procNumber;
 
-  AGlobalLock();
+  AcquireGlobalLock();
       procNumber = procCounter++;
-  RGlobalLock();
+  ReleaseGlobalLock();
   
   if (procNumber == 0)
   {	
   
-	printf("\n");
-        printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+
+    #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+	
+    printf("\n");
+    printf("\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("--------------------------  MPSoCBench  ----------------------------\n");
-       	printf("------------------------- Running: water ---------------------------\n");
-       	printf("--------------- The results will be available in -------------------\n");
-       	printf("------------------------ the output file ---------------------------\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("------------------------- Running: water ---------------------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("------------------------ the output file ---------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("\n");
 
 	/* OUTPUT FILE */
@@ -340,6 +346,8 @@ int main0(int argc, char **argv)
     
     CLOCK(gl->computestart);
     
+
+    pthread_turnOnProcessors(); 
     printf("...\n");
     WorkStart();
 
@@ -356,7 +364,7 @@ int main0(int argc, char **argv)
     //fprintf(six,"Intermolecular time only (2nd timestep onward) = %lu\n",gl->intertime);
     //fprintf(six,"Other time (2nd timestep onward) = %lu\n",gl->tracktime - gl->intratime - gl->intertime);
 
-    fprintf(six,"\nExited Happily with XTT = %g (note: XTT value is garbage if NPRINT > NSTEP)\n", XTT);
+    //fprintf(six,"\nExited Happily with XTT = %g (note: XTT value is garbage if NPRINT > NSTEP)\n", XTT);
 
     
 } /* main.c */

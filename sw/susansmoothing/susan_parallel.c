@@ -2807,9 +2807,7 @@ int main(int argc, char *argv[])
 {
 
 
-  #ifdef POWER_SIM
-  pthread_changePowerState(HIGH);
-  #endif
+  
   
 	/* NUMBER OF WORKER THREADS */
 	
@@ -2822,7 +2820,10 @@ int main(int argc, char *argv[])
 	if (procNumber == 0){	
 
 
-		
+		#ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+    
 		pthread_n_workers = NPROC;
 		PROCESSORS = pthread_n_workers;
 	
@@ -2844,13 +2845,13 @@ int main(int argc, char *argv[])
 		pthread_mutex_init(&mutex_print, NULL);
 		pthread_mutex_lock(&mutex_print);	
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	  printf("\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("--------------------------  MPSoCBench------------------------------\n");
-        	printf("------------------- Running: susansmoothing ------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("--------------------  the output.pgm file---------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+    printf("------------------- Running: susansmoothing ------------------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("--------------------  the output.pgm file---------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		pthread_mutex_unlock(&mutex_print);
 

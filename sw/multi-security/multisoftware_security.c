@@ -82,13 +82,18 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&mutex_print,NULL);
 	pthread_mutex_init(&mutex_malloc,NULL);
 
-        AcquireGlobalLock();
+    AcquireGlobalLock();
 	barrier_in = 1;
 	ReleaseGlobalLock();
      	
-	
+	pthread_turnOnProcessors(); 
+
 	main_sha();
 	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	
 	printf("\nSha finished.\n");
@@ -98,15 +103,18 @@ int main(int argc, char *argv[])
   else if (procNumber == 1)
   {
        
-       
-	
-        while(barrier_in == 0);
+    while(barrier_in == 0);
 
  	#ifdef POWER_SIM
  	pthread_changePowerState(HIGH);
   	#endif
   	
 	main_rijndael_enc();
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	
 	pthread_mutex_lock(&mutex_print);
 	printf("\nRijndael Encoder finished.\n");
@@ -119,11 +127,16 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 	
- 		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
-  		#endif
+ 	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+
 	main_rijndael_dec();
 	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nRijndael Decoder finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -136,11 +149,16 @@ int main(int argc, char *argv[])
   	
 	while(barrier_in == 0);
 
- 		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
-  		#endif
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
+
     main_blowfish("E");
 	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nBlowfish Encoder finished.\n");
 	pthread_mutex_unlock(&mutex_print);

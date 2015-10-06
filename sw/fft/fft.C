@@ -83,6 +83,8 @@
 //#define DEFAULT_P                  4 //power of 2
 
 
+#include "../acPthread.h"
+
 MAIN_ENV
 
 #define SWAP_VALS(a,b) {double tmp; tmp=a; a=b; b=tmp;}
@@ -163,9 +165,7 @@ int main(int argc, char *argv[])
   register int procNumber;
 
 
-  #ifdef POWER_SIM
-  pthread_changePowerState(HIGH);
-  #endif
+  
   
   AcquireGlobalLock();
   P = NPROC; 
@@ -175,15 +175,18 @@ int main(int argc, char *argv[])
   if (procNumber == 0)
   {
 
-		
+		#ifdef POWER_SIM
+    //pthread_changePowerState(HIGH);
+    #endif
+
 		printf("\n");
-	        printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+	  printf("\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("-------------------------  MPSoCBench  -----------------------------\n");
-        	printf("------------------------- Running: fft -----------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-        	printf("---------------------- the output.dat file -------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+    printf("------------------------- Running: fft -----------------------------\n");
+    printf("--------------- The results will be available in -------------------\n");
+    printf("---------------------- the output.dat file -------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 		printf("\n");
 
 		/* OUTPUT FILE */
@@ -444,7 +447,7 @@ int main0(int argc, char *argv[])
   InitU2(N,umain2,rootN);
 
   
-
+  pthread_turnOnProcessors(); 
   printf("...\n"); 
   SlaveStart();      
   printf("...\n");
@@ -563,6 +566,8 @@ void SlaveStart()
   long MyFirst; 
   long MyLast;
 
+
+    
   BARRIER(Global->start, P);
 
   LOCK(Global->idlock);

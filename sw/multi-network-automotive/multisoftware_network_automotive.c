@@ -54,8 +54,6 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
-  
-
   register int procNumber;
   AcquireGlobalLock();
   procNumber = procCounter++;
@@ -63,8 +61,6 @@ int main(int argc, char *argv[])
 
   if (procNumber == 0){	
 	 
-
-
 	#ifdef POWER_SIM
  	pthread_changePowerState(HIGH);
   	#endif
@@ -82,12 +78,18 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&mutex_print,NULL);
 	pthread_mutex_init(&mutex_malloc,NULL);
 
-        AcquireGlobalLock();
+    AcquireGlobalLock();
 	barrier_in = 1;
 	ReleaseGlobalLock();
 
+	pthread_turnOnProcessors(); 
 
 	main_basicmath();
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nBasicmath finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -98,9 +100,6 @@ int main(int argc, char *argv[])
   else if (procNumber == 1)
   {
 	
-
-	
-
 	while(barrier_in == 0);
 	
 	#ifdef POWER_SIM
@@ -109,7 +108,10 @@ int main(int argc, char *argv[])
 
 	main_dijkstra();
 
-	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nDijkstra finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -125,10 +127,16 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 	
-	if (DVFS) pthread_changePowerState(HIGH);
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
    
 	main_qsort();
 	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nQsort finished.\n");
 	pthread_mutex_unlock(&mutex_print);
@@ -143,11 +151,16 @@ int main(int argc, char *argv[])
 
 	while(barrier_in == 0);
 
-	if (DVFS) pthread_changePowerState(HIGH);
-
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(HIGH);
+  	#endif
        
 	main_susancorners();
-	
+
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif	
+
 	pthread_mutex_lock(&mutex_print);
 	printf("\nSusan corners finished.\n");
 	pthread_mutex_unlock(&mutex_print);

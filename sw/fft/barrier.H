@@ -5,14 +5,22 @@
 /*====================================================================
 */
 
+
+#include "../acPthread.h"
+extern unsigned volatile int *lock;
+extern unsigned volatile int *dvfs;
+
+
 //Locker
-unsigned volatile int *LOCKER  = (unsigned volatile int *) 0x20000000;
+//unsigned volatile int *LOCKER  = (unsigned volatile int *) 0x20000000;
 //Startup
-unsigned volatile int *STARTUP = (unsigned volatile int *) 0x21000000;
+//unsigned volatile int *STARTUP = (unsigned volatile int *) 0x21000000;
 
 //================================ Global Locker ========================================
-#define AcquireGlobalLock()	while ((*LOCKER))
-#define ReleaseGlobalLock()	((*LOCKER ) = 0)
+
+
+//#define AcquireGlobalLock()	while ((*LOCKER))
+//#define ReleaseGlobalLock()	((*LOCKER ) = 0)
 
 //================================== Barrier ============================================
 #define BARRIER_VALID  0xdbcafe
@@ -23,7 +31,7 @@ unsigned volatile int *STARTUP = (unsigned volatile int *) 0x21000000;
 
 //Structures to describe a barrier
 
-typedef struct barrier_tag {
+typedef struct barrier_tag_ {
 	int valid;
 	int threshold;
         int counter;

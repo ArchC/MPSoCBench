@@ -8,22 +8,20 @@
 #include <stdlib.h>
 #include "barrier.H"
 
-//Locker
-unsigned int *LOCKER = (unsigned int *)0x20000000;
+#include "../acPthread.h"
 
-#define AcquireGlobalLock	while ((*LOCKER ))
-
-#define ReleaseGlobalLock	((*LOCKER ) = 0)
-
-void AGlobalLock(void)
-{
-	AcquireGlobalLock;
-}
-
-void RGlobalLock(void)
-{
-	ReleaseGlobalLock;
-}
+//Deprecated code //
+//unsigned int *LOCKER = (unsigned int *)0x20000000;
+//#define AcquireGlobalLock	while ((*LOCKER ))
+//#define ReleaseGlobalLock	((*LOCKER ) = 0)
+//void AGlobalLock(void)
+//{
+//	AcquireGlobalLock();
+//}
+//void RGlobalLock(void)
+//{
+//	ReleaseGlobalLock();
+//}
 
 //================================== Barrier ============================================
 
@@ -31,12 +29,12 @@ void RGlobalLock(void)
 
 int barrier_init (barrier_t *barrier, int count)
 {
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 	//barrier = (barrier_t*) malloc(sizeof(barrier_t));
 	barrier->threshold = barrier->counter = count;
 	barrier->cycle = 0;
 	barrier->valid = BARRIER_VALID;
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 	return 0;
 }
 
@@ -47,7 +45,7 @@ int barrier_wait (barrier_t *barrier)
 	if (barrier->valid != BARRIER_VALID)
 		return 1;
 
-	AcquireGlobalLock;	
+	AcquireGlobalLock();	
 	
 	cycle = barrier->cycle;
 
@@ -56,9 +54,9 @@ int barrier_wait (barrier_t *barrier)
 		barrier->counter = barrier->threshold;		
 		status = -1;
 		//printf("Changed %x ==> Counter: %d  Threshold: %d  Cycle: %d\n", barrier, barrier->counter, barrier->threshold, cycle);
-		ReleaseGlobalLock;
+		ReleaseGlobalLock();
 	} else {
-		ReleaseGlobalLock;
+		ReleaseGlobalLock();
 		status = 0;
 		//printf("DEC %x ==> Counter: %d  Threshold: %d  Cycle: %d\n", barrier, barrier->counter, barrier->threshold, cycle);
 		while (cycle == barrier->cycle);
@@ -73,10 +71,10 @@ int barrier_wait (barrier_t *barrier)
 
 int mutex_init(mutex_t *m_lock)
 {
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 	m_lock->counter = 0;
 	m_lock->valid = LOCK_VALID;
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 	return 0;
 }
 
@@ -87,19 +85,19 @@ int mutex_lock(mutex_t *m_lock)
 	if ( m_lock->valid != LOCK_VALID )
 		status = 1;
 	
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 
 	//Trying to acquire the lock state
 	while (m_lock->counter == 1){
-		ReleaseGlobalLock;
+		ReleaseGlobalLock();
 		for (i = 0; i < 5; i++);
-		AcquireGlobalLock;
+		AcquireGlobalLock();
 	}
 
 	//Acquiring the lock state
 	m_lock->counter = 1;
 
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 
 	status = 0;
 
@@ -108,9 +106,9 @@ int mutex_lock(mutex_t *m_lock)
 
 int mutex_unlock(mutex_t *m_lock)
 {
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 	m_lock->counter = 0;
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 }
 
 
@@ -126,16 +124,16 @@ int join_init(join_t *m_join, int n_proc)
 void join_point(join_t *m_join)
 {	
 	while(m_join->valid != JOIN_VALID);
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 	m_join->num_proc--;
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 	//printf("JOIN: %d\n",m_join->num_proc);
 }
 
 int wait_for_end(join_t *m_join)
 {
 
-        printf("\nentrando no while em wait_for_end\n");
+    printf("\nentrando no while em wait_for_end\n");
 	while (m_join->num_proc != 0);
 	return 0;
 }
@@ -143,10 +141,10 @@ int wait_for_end(join_t *m_join)
 //================================ Our Malloc ========================================
 void *our_malloc(size_t size) { 
 	void *ret;	
-	AcquireGlobalLock;
+	AcquireGlobalLock();
 	ret = (void *) malloc(size); 
 	//ret = (void *) valloc(size);
-	ReleaseGlobalLock;
+	ReleaseGlobalLock();
 	return ret;
 }	
 

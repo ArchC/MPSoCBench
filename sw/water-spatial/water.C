@@ -82,6 +82,9 @@ MAIN_ENV
 #include "mddata.h"
 #include "global.h"
 
+
+#include "../acPthread.h"
+
 #define NUM_PROC 1
 
 long NATOMS;
@@ -132,27 +135,30 @@ int main0(int argc, char *argv[]);
 int main(int argc, char *argv[])
 {
 
-        #ifdef POWER_SIM
-         pthread_changePowerState(HIGH);
-        #endif
+        
   register int procNumber;
 
   NumProcs = NPROC;
 
-  AGlobalLock();
+  AcquireGlobalLock();
       procNumber = procCounter++;
-  RGlobalLock();
+  ReleaseGlobalLock();
   
   if (procNumber == 0)
   {	
+
+        #ifdef POWER_SIM
+        pthread_changePowerState(HIGH);
+        #endif
+
 		printf("\n");
 		printf("\n");
-        	printf("--------------------------------------------------------------------\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("--------------------------  MPSoCBench  ----------------------------\n");
-        	printf("-------------------- Running: water-spatial ------------------------\n");
-        	printf("--------------- The results will be available in -------------------\n");
-	      	printf("------------------------- the output file --------------------------\n");
-        	printf("--------------------------------------------------------------------\n");
+        printf("-------------------- Running: water-spatial ------------------------\n");
+        printf("--------------- The results will be available in -------------------\n");
+	    printf("------------------------- the output file --------------------------\n");
+        printf("--------------------------------------------------------------------\n");
 		printf("\n");
 		
 		/* OUTPUT FILE */
@@ -423,11 +429,14 @@ int main0(int argc, char **argv)
     /* spawn helper processes */
     CLOCK(gl->computestart);
     
+    pthread_turnOnProcessors(); 
     printf("...\n");
     WorkStart();
     printf("...\n");
     /* macro to make main process wait for all others to finish */
+
     WAIT_FOR_END(myJoinPoint, NumProcs);
+    
     CLOCK(gl->computeend);
 
     //fprintf(six,"COMPUTESTART (after initialization) = %lu\n",gl->computestart);
@@ -449,7 +458,10 @@ void WorkStart() /* routine that each created process starts at;
     long ProcID;
     double LocalXTT;
 
-    BARRIER(gl->start, NumProcs);
+
+    BARRIER(gl->start, NumProcs); 
+
+
 
     LOCK(gl->IndexLock);
     ProcID = gl->Index++;
@@ -470,8 +482,7 @@ void WorkStart() /* routine that each created process starts at;
 	    XTT = LocalXTT;
     }
 
-
     join_point(&myJoinPoint);
-
+    
 }
 

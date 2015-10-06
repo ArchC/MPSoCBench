@@ -143,8 +143,8 @@ int main(int argc, char *argv[])
 		{
 			if (pthread_created == 1)
 			{
+
 				pthread_executeThread();
-				
 			}
 
 		}

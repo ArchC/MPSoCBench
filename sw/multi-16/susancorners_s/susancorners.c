@@ -2135,7 +2135,7 @@ printf("\nmalloc r\n");
         r = (int *) R_C;
         if (!r) 
         {
-   	  printf("\nmalloc r2 retornou 0\n");
+   	  printf("\nmalloc r2\n");
 	  exit(0);
         }
         setup_brightness_lut_c(&bp,bt,6);

@@ -49,6 +49,8 @@ int invfft=0;
 	}
  
 
+
+
 for(i=0;i<MAXSIZE;i++) 
  {
    /*   RealIn[i]=rand();*/
@@ -67,6 +69,8 @@ for(i=0;i<MAXSIZE;i++)
   	 ImagIn[i]=0;
 	 }
  }
+
+
 
  /* regular*/
  fft_float (MAXSIZE,invfft,(float*)RealIn,(float*)ImagIn,(float*)RealOut,(float*)ImagOut);

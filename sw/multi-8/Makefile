@@ -51,7 +51,7 @@ copy:
 	cp blowfish_s/output_blowfishenc.base ../../rundir/$(RUNDIRNAME)
 	cp pbm_stringsearch_s/output_pbm_stringsearch.base ../../rundir/$(RUNDIRNAME)
 	cp bmh_stringsearch_s/output_bmh_stringsearch.base ../../rundir/$(RUNDIRNAME)
-	cp fft_s/output_fft.base ../../rundir/$(RUNDIRNAME)
+	#cp fft_s/output_fft.base ../../rundir/$(RUNDIRNAME)
 	cp adpcm_s/output_encoder_adpcm.base ../../rundir/$(RUNDIRNAME)
 	
 check:

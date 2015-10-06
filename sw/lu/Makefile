@@ -15,14 +15,18 @@ LDFLAGS = -lm
 INC_DIR := -I.
 
 #SRCS := lu.c
-OBJS := barrier.o lu.o
+SRCS := lu.c barrier.c ../acPthread.c
+
+OBJS := $(SRCS:.c=.o)
+OBJS_AUX := barrier.o lu.o acPthread.o
+
 MACROS := c.m4.null
 M4 := m4 -s -Ulen -Uindex
 
 x = *
 #------------------------------------------------------
 (TARGET): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
+	$(CC) $(OBJS_AUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 
 clean:
 	rm -rf *.c *.h *.o *.x 

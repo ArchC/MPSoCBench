@@ -2424,10 +2424,7 @@ acPthread
 int main(int argc, char *argv[])
 {
 	
- 	#ifdef POWER_SIM
- 	pthread_changePowerState(HIGH);
-  	#endif
-  	
+ 	
 	/* NUMBER OF WORKER THREADS */
 	
 	register int procNumber;
@@ -2438,6 +2435,10 @@ int main(int argc, char *argv[])
   
 	if (procNumber == 0){	
 
+		#ifdef POWER_SIM
+ 		pthread_changePowerState(HIGH);
+  		#endif
+  	
 		pthread_n_workers = NPROC;
 		PROCESSORS = pthread_n_workers;
 	

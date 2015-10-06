@@ -1,6 +1,4 @@
 CC = $(CROSS)
-TARGET := $(SOFTWARE).$(PROCESSOR) 
-
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 
 ifeq ($(PROCESSOR),arm)
@@ -8,13 +6,15 @@ CFLAGS = -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 endif
 LDFLAGS = -lm
 
-TARGET := $(SOFTWARE).$(PROCESSOR) 
+TARGET = $(SOFTWARE).$(PROCESSOR)
 
 INC_DIR := -I.
 
-SRCS := multisoftware_16.c ../acPthread.c sha_s/sha_driver.c sha_s/sha.c rijndael_s/aesxam.c rijndael_s/aes.c  blowfish_s/bf.c blowfish_s/bf_cfb64.c blowfish_s/bf_skey.c blowfish_s/bf_enc.c pbm_stringsearch_s/pbmsrch_large.c bmh_stringsearch_s/bmhsrch.c fft_s/fft.c fft_s/fftmisc.c fft_s/fourierf.c adpcm_s/rawcaudio.c adpcm_s/adpcm.c adpcm_s/rawdaudio.c basicmath_cubic/basicmath_cubic.c basicmath_cubic/cubic.c basicmath_conversion/rad2deg.c basicmath_conversion/basicmath_conversion.c susancorners_s/susancorners.c qsort_s/qsort_small.c dijkstra_s/dijkstra_static.c bitcount_s/bitcnt_1.c bitcount_s/bitcnt_2.c bitcount_s/bitcnt_3.c bitcount_s/bitcnt_4.c bitcount_s/bitcnts.c  bitcount_s/bitstrng.c bitcount_s/bstr_i.c
+SRCS := multisoftware_16.c ../acPthread.c sha_s/sha_driver.c sha_s/sha.c rijndael_s/aesxam.c rijndael_s/aes.c  blowfish_s/bf.c blowfish_s/bf_cfb64.c blowfish_s/bf_skey.c blowfish_s/bf_enc.c pbm_stringsearch_s/pbmsrch_large.c bmh_stringsearch_s/bmhsrch.c fft_s/fft.c fft_s/fftmisc.c fft_s/fourierf.c adpcm_s/rawcaudio.c adpcm_s/adpcm.c adpcm_s/rawdaudio.c basicmath_sqrt/basicmath_sqrt.c basicmath_sqrt/isqrt.c basicmath_cubic/basicmath_cubic.c basicmath_cubic/cubic.c basicmath_conversion/rad2deg.c basicmath_conversion/basicmath_conversion.c susancorners_s/susancorners.c  dijkstra_s/dijkstra_static.c bitcount_s/bitcnt_1.c bitcount_s/bitcnt_2.c bitcount_s/bitcnt_3.c bitcount_s/bitcnt_4.c bitcount_s/bitcnts.c  bitcount_s/bitstrng.c bitcount_s/bstr_i.c
+#qsort_s/qsort_small.c
+OBJSAUX :=  multisoftware_16.o acPthread.o sha_driver.o sha.o aesxam.o aes.o  bf.o bf_skey.o bf_cfb64.o bf_enc.o pbmsrch_large.o   bmhsrch.o fft.o fftmisc.o  fourierf.o rawcaudio.o adpcm.o rawdaudio.o basicmath_cubic.o cubic.o rad2deg.o basicmath_conversion.o susancorners.o  dijkstra_static.o bitcnt_1.o bitcnt_2.o bitcnt_3.o bitcnt_4.o bitcnts.o bitstrng.o bstr_i.o isqrt.o basicmath_sqrt.o
 
-OBJSAUX :=  multisoftware_16.o acPthread.o sha_driver.o sha.o aesxam.o aes.o  bf.o bf_skey.o bf_cfb64.o bf_enc.o pbmsrch_large.o   bmhsrch.o fft.o fftmisc.o  fourierf.o rawcaudio.o adpcm.o rawdaudio.o basicmath_cubic.o cubic.o rad2deg.o basicmath_conversion.o susancorners.o qsort_small.o dijkstra_static.o bitcnt_1.o bitcnt_2.o bitcnt_3.o bitcnt_4.o bitcnts.o bitstrng.o bstr_i.o
+#qsort_small.o
 
 OBJS := $(SRCS:.c=.o)
 
@@ -26,7 +26,6 @@ OBJS := $(SRCS:.c=.o)
 
 #------------------------------------------------------
 all: $(OBJS)
-	echo $(CC) $(OBJSAUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 	$(CC) $(OBJSAUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 #------------------------------------------------------
 clean:
@@ -50,8 +49,9 @@ copy:
 	cp adpcm_s/inputencoder.pcm ../../rundir/$(RUNDIRNAME)	
 	cp adpcm_s/inputdecoder.adpcm ../../rundir/$(RUNDIRNAME)
 	cp susancorners_s/input_large2.pgm ../../rundir/$(RUNDIRNAME)
+	cp susancorners_s/input_small.pgm ../../rundir/$(RUNDIRNAME)
 	cp dijkstra_s/input.dat ../../rundir/$(RUNDIRNAME)
-	cp qsort_s/input_small.dat ../../rundir/$(RUNDIRNAME)
+	#cp qsort_s/input_small.dat ../../rundir/$(RUNDIRNAME)
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
 	cp sha_s/output_sha.base  ../../rundir/$(RUNDIRNAME)	
 	cp rijndael_s/output_encoder_rijndael.base ../../rundir/$(RUNDIRNAME)
@@ -66,7 +66,7 @@ copy:
 	cp basicmath_cubic/output_basicmath_cubic.base ../../rundir/$(RUNDIRNAME)
 	cp basicmath_conversion/output_basicmath_conversion.base ../../rundir/$(RUNDIRNAME)
 	cp susancorners_s/output_susancorners.base ../../rundir/$(RUNDIRNAME)
-	cp qsort_s/output_qsort.base ../../rundir/$(RUNDIRNAME)
+	#cp qsort_s/output_qsort.base ../../rundir/$(RUNDIRNAME)
 	cp dijkstra_s/output_dijkstra.base ../../rundir/$(RUNDIRNAME)
 	#cp bitcount_s/output_bitcount.base ../../rundir/$(RUNDIRNAME)
 
@@ -90,4 +90,6 @@ check:
 	#if diff output_qsort output_qsort.base > diff_qsort.txt ; then echo "\n Qsort Passed."; else echo "\n Qsort Failed."; fi
 	#if diff output_dijkstra output_dijkstra.base > diff_dijkstra.txt ; then echo "\n Dijkstra Passed."; else echo "\n Dijkstra Failed."; fi
 	#if diff output_bitcount output_bitcount.base > diff_bitcount.txt ; then echo "\n Bitcount Passed."; else echo "\n Bitcount Failed."; fi
+
+
 

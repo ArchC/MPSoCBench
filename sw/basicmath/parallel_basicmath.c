@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
  	{	
 
  		#ifdef POWER_SIM
- 		 pthread_changePowerState(HIGH);
+ 		pthread_changePowerState(HIGH);
   		#endif
 		/* NUMBER OF WORKER THREADS */
 		pthread_n_workers = NPROC;
@@ -273,7 +273,7 @@ void solveCubicEquations(int workerID){
 		      for(d1=-_ddlim._start;d1>_ddlim._end;d1-=_ddlim._offset)
                       {
 				SolveCubic(a1, b1, c1, d1, &solutions, x);  
-				//printf("\nantes de entrar no mutex pritn\n");
+				
 				if (PRINT){
 					 
 					 pthread_mutex_lock(&mutex_print);

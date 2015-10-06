@@ -139,7 +139,7 @@ int pthread_barrier_wait (pthread_barrier_t *);
 void pthread_changePowerState(int);
 void pthread_turnOnProcessors();
 void pthread_turnOffProcessors();
-
+void pthread_turnMeOff();
 
 
 /* join auxiliar functions */

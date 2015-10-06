@@ -65,9 +65,7 @@ void close_files();
 int main(int argc, char *argv[])
 {
 
- 	#ifdef POWER_SIM
-  	pthread_changePowerState(HIGH);
-  	#endif
+ 	
   
   	register int procNumber;
   	AcquireGlobalLock();
@@ -79,14 +77,17 @@ int main(int argc, char *argv[])
 
   if (procNumber == 0){	
 	 
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
+  	 
 	printf("\n");
-       	printf("--------------------------------------------------------------------\n");
+    printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-       	printf("-----------------------Running: multi-8 ----------------------------\n");
-       	printf("---------SHA, Rijndael Encoder, Rijndael Decoder, Blowfish----------\n");
-       	printf("---------PBM_stringsearch, BMH_stringsearch, FFT, ADPCM-------------\n");
-
-
+    printf("-----------------------Running: multi-8 ----------------------------\n");
+    printf("---------SHA, Rijndael Encoder, Rijndael Decoder, Blowfish----------\n");
+    printf("---------PBM_stringsearch, BMH_stringsearch, FFT, ADPCM-------------\n");
 	printf("--------------------------------------------------------------------\n");
 	printf("\n");
 
@@ -95,15 +96,25 @@ int main(int argc, char *argv[])
 	pthread_mutex_init(&mutex_print,NULL);
 	pthread_mutex_init(&mutex_malloc,NULL);
 
-        AcquireGlobalLock();
+
+
+
+    AcquireGlobalLock();
 	barrier_in = 1;
 	ReleaseGlobalLock();
-     	
+
+
+	pthread_turnOnProcessors();      	
 	
 	main_sha();
 	
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nSha finished.\n");
+	printf("\nSha has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
   }
@@ -113,11 +124,18 @@ int main(int argc, char *argv[])
 	
         while(barrier_in == 0);
 
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_rijndael_enc();
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nRijndael Encoder finished.\n");
+	printf("\nRijndael Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 	 
   }
@@ -126,11 +144,18 @@ int main(int argc, char *argv[])
 	
 	while(barrier_in == 0);
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_rijndael_dec();
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nRijndael Decoder finished.\n");
+	printf("\nRijndael Decoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 
@@ -139,10 +164,19 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 
-        main_blowfish("E");
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
+    
+    main_blowfish("E");
+
+    #ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif
 	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nBlowfish Encoder finished.\n");
+	printf("\nBlowfish Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 
@@ -150,12 +184,21 @@ int main(int argc, char *argv[])
   else if (procNumber == 4)
   {
 
-        while(barrier_in == 0);
+    while(barrier_in == 0);
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_bmh_stringsearch();
 	
+
+	#ifdef POWER_SIM
+  	pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nStringsearch Boyer-Moore-Horspool finished.\n");
+	printf("\nStringsearch Boyer-Moore-Horspool has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -164,12 +207,21 @@ int main(int argc, char *argv[])
   else if (procNumber == 5)
   {
      
-        while(barrier_in == 0);
+    while(barrier_in == 0);
+
+    #ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_pbm_stringsearch();
 	
+
+	#ifdef POWER_SIM
+  	//pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nStringsearch Pratt-Boyer-Moore finished.\n");
+	printf("\nStringsearch Pratt-Boyer-Moore has finished.\n");
 	pthread_mutex_unlock(&mutex_print);	 
 	
   }
@@ -178,11 +230,18 @@ int main(int argc, char *argv[])
 	
 	while(barrier_in == 0);
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
 
 	main_fft();
 	
+	#ifdef POWER_SIM
+  	//pthread_changePowerState(LOW);
+  	#endif
+
 	pthread_mutex_lock(&mutex_print);
-	printf("\nFFT finished.\n");
+	printf("\nFFT has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
@@ -191,10 +250,18 @@ int main(int argc, char *argv[])
   {
 	while(barrier_in == 0);
 	
+	#ifdef POWER_SIM
+  	pthread_changePowerState(HIGH);
+  	#endif
+
 	main_adpcmencoder();
 
+	#ifdef POWER_SIM
+  	//pthread_changePowerState(LOW);
+  	#endif
+  	
 	pthread_mutex_lock(&mutex_print);
-	printf("\nAdpcm Encoder finished.\n");
+	printf("\nAdpcm Encoder has finished.\n");
 	pthread_mutex_unlock(&mutex_print);
 
 	
