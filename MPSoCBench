@@ -183,12 +183,15 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
     
     # for older compilers
     #make = make + "\nexport CROSS := " + proc + "-elf-gcc\n"
-
-    make = make + "export ACSIM_FLAGS := " + acsim_flags + "\n"  
     if power:
+        pw_flag = " -pw"
         make = make + "export POWER_SIM_FLAG := -DPOWER_SIM=\\\"\\\"\n"
     else:
-        make = make + "export POWER_SIM_FLAG := \n"
+        pw_flag = ""
+        make = make + "export POWER_SIM_FLAG := \n" 
+
+    make = make + "export ACSIM_FLAGS := -abi -ndc " + pw_flag + "\n"; 
+    
     if intercon == 'noc.at':
         make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
     else:
@@ -303,7 +306,7 @@ def build(tracker, power, condor):
                                 plat_rundir = i + "." + l + "." + j + "." + k
                             f = open("Makefile", "w")
                             if i == 'arm' or i == 'powerpc' and power:
-                                #print "WARNING! The selected processor does not support PowerSC!"
+                                print "WARNING! The selected processor does not support PowerSC!"
                                 plat_rundir = i + "." + l + "." + j + "." + k
                                 f.write(makefile(i, j, k, False, l, plat_rundir))
                             else:
@@ -495,15 +498,11 @@ condor = 0
 hetero = False
 # controlled by --output, True if --output/-out
 
-# Join all acsim flags to use in Makefile.rules
-acsim_flags = "-abi -ndc" 
-
 opts, args = arg_parse(cmdline)
 
 if '-nb' in opts:
     nobuild = True
 if '-pw' in opts: 
-    acsim_flags = acsim_flags + " -pw" 
     power = True
 if '-r' in opts:
     prep = False
