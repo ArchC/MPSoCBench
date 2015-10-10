@@ -185,8 +185,10 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
     #make = make + "\nexport CROSS := " + proc + "-elf-gcc\n"
 
     if power:
+        make = make + "export POWER_SIM_ACFLAG := -pw\n"
         make = make + "export POWER_SIM_FLAG := -DPOWER_SIM\n"
     else:
+        make = make + "export POWER_SIM_ACFLAG := \n"
         make = make + "export POWER_SIM_FLAG := \n"
     if intercon == 'noc.at':
         make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"

@@ -130,8 +130,6 @@
 
 //#define CACHE_POWER_TABLE_FILE "table_cache_8k_2w_45nm.csv"
 
-#define INTR_PROC_OFF  0
-#define INTR_PROC_ON   1
 
 #define ON_ALL   100
 #define OFF_ALL  101

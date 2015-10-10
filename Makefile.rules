@@ -31,7 +31,11 @@ all:
 	cd $(ARP)
 	for processor in $(PROCESSOR); do \
             echo Making Processor $$processor ...;\
-            cd processors/$$processor ; $(MAKE) lib ; \
+            cd processors/$$processor ; \
+            if [ ! -a Makefile ]; then \
+                $(ARCHC_PATH)/bin/acsim $${processor}_$(TRANSPORT).ac -abi -ndc $(POWER_SIM_ACFLAG) ; \
+            fi; \
+            $(MAKE) lib; \
             cd $(ARP); done
 	for ip in $(IP); do echo Making IP $$ip ...; \
 	    cd ip/$$ip; $(MAKE) lib; cd $(ARP); done
