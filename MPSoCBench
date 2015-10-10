@@ -168,7 +168,6 @@ def distclean():
         os.chdir(bench_path + "/processors/" + i)
         os.system("make distclean")
     os.chdir(bench_path)
-    sys.exit(0)
 
 # general Makefile creator
 def makefile(proc, nproc, sw, power, intercon, plat_rundir):
@@ -187,7 +186,7 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
 
     make = make + "export ACSIM_FLAGS := " + acsim_flags + "\n"  
     if power:
-        make = make + "export POWER_SIM_FLAG := -DPOWER_SIM\n"
+        make = make + "export POWER_SIM_FLAG := -DPOWER_SIM=\\\"\\\"\n"
     else:
         make = make + "export POWER_SIM_FLAG := \n"
     if intercon == 'noc.at':

@@ -1,3 +1,12 @@
 [submodule "processors/mips"]
 	path = processors/mips
 	url = git@github.com:ArchC/mips.git
+[submodule "processors/sparc"]
+	path = processors/sparc
+	url = git@github.com:ArchC/sparc.git
+[submodule "processors/powerpc"]
+	path = processors/powerpc
+	url = git@github.com:ArchC/powerpc.git
+[submodule "processors/arm"]
+	path = processors/arm
+	url = git@github.com:ArchC/arm.git
