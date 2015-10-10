@@ -33,7 +33,7 @@ all:
             echo Making Processor $$processor ...;\
             cd processors/$$processor ; \
             if [ ! -a Makefile ]; then \
-                $(ARCHC_PATH)/bin/acsim $${processor}_$(TRANSPORT).ac -abi -ndc $(POWER_SIM_ACFLAG) ; \
+                $(ARCHC_PATH)/bin/acsim $${processor}_$(TRANSPORT).ac $(ACSIM_FLAGS) ; \
             fi; \
             $(MAKE) lib; \
             cd $(ARP); done
