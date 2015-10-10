@@ -1,0 +1,3 @@
+[submodule "processors/mips"]
+	path = processors/mips
+	url = git@github.com:ArchC/mips.git
