@@ -100,33 +100,41 @@
 #define N_DELTA_T 50
 
 #ifdef PROCMIPS 
-    #undef POWER_SIM
-    #define POWER_SIM "../../processors/mips/powersc" 
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/mips/powersc" 
+    #endif
     #include "../../processors/mips/mips.H"   
     #define PROCESSOR_NAME mips
 	#define PROCESSOR_NAME_parms mips_parms
 #endif 
 
 #ifdef PROCSPARC
-    #undef POWER_SIM
-    #define POWER_SIM "../../processors/sparc/powersc" 
-  	#include "../../processors/sparc/sparc.H"
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/sparc/powersc" 
+    #endif
+    #include "../../processors/sparc/sparc.H"
 	#define PROCESSOR_NAME sparc
 	#define PROCESSOR_NAME_parms sparc_parms
 #endif 
 
-#ifdef PROCPOWERPC 
-    #undef POWER_SIM
-    #define POWER_SIM "../../processors/powerpc/powersc" 
- 	#include "../../processors/powerpc/powerpc.H"
+#ifdef PROCPOWERPC
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/powerpc/powersc" 
+    #endif
+    #include "../../processors/powerpc/powerpc.H"
 	#define PROCESSOR_NAME powerpc
 	#define PROCESSOR_NAME_parms powerpc_parms
 #endif 
 
 #ifdef PROCARM
-    #undef POWER_SIM
-    #define POWER_SIM "../../processors/arm/powersc" 
- 	#include "../../processors/arm/arm.H"
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/arm/powersc" 
+    #endif
+    #include "../../processors/arm/arm.H"
 	#define PROCESSOR_NAME arm
 	#define PROCESSOR_NAME_parms arm_parms
 #endif 
