@@ -242,7 +242,8 @@ int sc_main(int ac, char *av[])
 
 	for (int i=1; i<N_WORKERS; i++)
     {
-       intr_ctrl.send(i,OFF); // turn off processors 0,..,N_WORKERS-1
+       //intr_ctrl.send(i,OFF); // turn off processors 0,..,N_WORKERS-1
+    	intr_ctrl.send(i,ON); // turn off processors 0,..,N_WORKERS-1
     }
 
 	intr_ctrl.send(0,ON);    // turn on processor 0 (master)
