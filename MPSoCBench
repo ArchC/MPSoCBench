@@ -472,7 +472,13 @@ valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True
                    'multi-office-telecomm':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False},
                    'multi-security':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False}}
 
+# =================================
+# Entry point
+# =================================
 
+if not os.path.isfile("./processors/mips/mips.ac"):
+    sys.exit( 'The code of the models does not exist; you probably forgot '
+              'to run:\n\tgit submodule update --init --recursive\n\n' )
 
 # gets the command line args
 cmdline = sys.argv[1:]
