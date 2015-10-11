@@ -3,7 +3,7 @@
 # ####################################################
 
 TARGET=tlm_dfs
-INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
+INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_dfs.cpp
 OBJS := $(SRCS:.cpp=.o)

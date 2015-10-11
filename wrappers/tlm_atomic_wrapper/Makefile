@@ -1,5 +1,5 @@
 TARGET=tlm_atomic_wrapper
-INC_DIR := -I. -I$(ARCHC_PATH)/include/archc -I$(SYSTEMC)/include -I$(TLM_PATH) 
+INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_atomic_wrapper.cpp
 OBJS := $(SRCS:.cpp=.o)
