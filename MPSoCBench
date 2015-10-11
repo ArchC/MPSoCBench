@@ -479,9 +479,13 @@ valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True
 # Entry point
 # =================================
 
+if not os.path.isfile("./env.sh"):
+    sys.exit('ERROR: The enviroment file does not exist; you propably forgot '
+             'to run:\n\t./setup.sh /path/where/archc/was/installed\n')
+
 if not os.path.isfile("./processors/mips/mips.ac"):
     sys.exit( 'The code of the models does not exist; you probably forgot '
-              'to run:\n\tgit submodule update --init --recursive\n\n' )
+              'to run:\n\tgit submodule update --init --recursive\n' )
 
 # gets the command line args
 cmdline = sys.argv[1:]
