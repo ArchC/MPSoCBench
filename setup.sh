@@ -9,7 +9,10 @@ if [ ! -d "$ARCHC_PREFIX" ]; then
 fi
 
 if [ ! -f "$ARCHC_PREFIX/etc/env.sh" ]; then
-    echo -ne "ERROR: ArchC not found or it's not installed properly.\n\n"
+    echo -ne "ERROR: Potential issues:\n"
+    echo -ne "\t- ArchC not found in $ARCHC_PREFIX\n"
+    echo -ne "\t- ArchC not installed properly\n"
+    echo -ne "\t- You are using a old version of ArchC\n"
     exit 1
 fi
 
