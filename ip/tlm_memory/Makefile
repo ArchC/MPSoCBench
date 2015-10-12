@@ -13,7 +13,6 @@ CXXFLAGS+=$(OPTFLAGS)
 # ####################################################
 
 TARGET=tlm_memory
-INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_memory.cpp $(wildcard *.cpp)
 OBJS := $(SRCS:.cpp=.o) $(addsuffix .o, $(basename $(SRC)))

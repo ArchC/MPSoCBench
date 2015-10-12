@@ -3,7 +3,6 @@
 # ####################################################
 
 TARGET=tlm_dir_at
-INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_dir.cpp 
 OBJS := $(SRCS:.cpp=.o)

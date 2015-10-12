@@ -4,7 +4,6 @@
 
 TARGET=tlm_dfs_at
 
-INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_dfs.cpp
 OBJS := $(SRCS:.cpp=.o)

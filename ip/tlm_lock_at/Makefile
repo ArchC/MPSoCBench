@@ -1,5 +1,4 @@
 TARGET=tlm_lock_at
-INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_lock.cpp
 OBJS := $(SRCS:.cpp=.o)

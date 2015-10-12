@@ -1,5 +1,4 @@
 TARGET=tlm_router
-INC_DIR := -I. `pkg-config --cflags systemc` `pkg-config --cflags archc` 
 
 SRCS := tlm_router.cpp 
 OBJS := $(SRCS:.cpp=.o)
