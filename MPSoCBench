@@ -20,6 +20,10 @@ import os, sys, subprocess
 
 # === AUXILIARY FUNCTIONS ==
 
+
+def cmd_exists(cmd):
+    return subprocess.call("type " + cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+
 # command line arg parsing
 def arg_parse(cmdline):
     # valid options
@@ -179,12 +183,20 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
             "\nexport NUMPROCESSORS := " + nproc + \
             "\nexport SOFTWARE := " + sw + \
             "\nexport PLATFORM := platform." + intercon + "\n"
-    
+   
     if proc=='arm':
-        make = make + "export CROSS := " + proc + "-newlib-eabi-gcc\n"
+        cross = proc + "-newlib-eabi-gcc"
+        if cmd_exists( cross ):
+            make = make + "export CROSS := " + cross + "\n"
+        else:
+            sys.exit('\nERROR: Cross-compiler ' + cross + ' is not in the PATH\n')
     else:
-        make = make + "export CROSS := " + proc + "-newlib-elf-gcc\n"
-    
+        cross = proc + "-newlib-elf-gcc"
+        if cmd_exists( cross ):
+            make = make + "export CROSS := " + proc + "-newlib-elf-gcc\n"
+        else:
+            sys.exit('\nERROR: Cross-compiler ' + cross + ' is not in the PATH\n')
+   
     # for older compilers
     #make = make + "\nexport CROSS := " + proc + "-elf-gcc\n"
     if power:
