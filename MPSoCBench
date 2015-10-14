@@ -173,8 +173,12 @@ def distclean():
 def makefile(proc, nproc, sw, power, intercon, plat_rundir):
 
     make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT"
-    make = make + "\nexport PROCESSOR := " + proc + "\nexport NUMPROCESSORS := " + nproc + \
-           "\nexport SOFTWARE := " + sw + "\nexport PLATFORM := platform." + intercon + "\n"
+    make = make + \
+            "\nexport SHELL := /bin/bash"  \
+            "\nexport PROCESSOR := " + proc +  \
+            "\nexport NUMPROCESSORS := " + nproc + \
+            "\nexport SOFTWARE := " + sw + \
+            "\nexport PLATFORM := platform." + intercon + "\n"
     
     if proc=='arm':
         make = make + "export CROSS := " + proc + "-newlib-eabi-gcc\n"
@@ -378,7 +382,9 @@ def hetero_run_make(path, nproc, intercon):
 
 
 def hetero_makefile(nproc, intercon, plat_rundir):
-    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT\nexport PROCESSOR := powerpc mips sparc arm" \
+    make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT" \
+           "\nexport SHELL := /bin/bash" \
+           "\nexport PROCESSOR := powerpc mips sparc arm" \
            "\nexport NUMPROCESSORS := " + nproc + \
            "\nexport SOFTWARE := multi-parallel-het\nexport CROSS := " + \
            "\nexport PLATFORM := platform.het." + intercon + "\n"

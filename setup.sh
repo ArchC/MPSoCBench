@@ -2,14 +2,6 @@
 
 ARCHC_PREFIX=$1
 
-BASH=`sh -help | head -n1 | cut -d, -f1`
-if [[ "$BASH" != *"bash"* ]]; then
-    echo -ne "ERROR: /bin/sh is not pointed to /bin/bash. Do it:\n"
-    echo -ne "\tsudo rm /bin/sh\n"
-    echo -ne "\tsudo ln -s /bin/bash /bin/sh\n"
-    exit 1
-fi
-
 if [ ! -d "$ARCHC_PREFIX" ]; then
     echo -ne "usage:\n"
     echo -ne "\t$0  /path/where/archc/was/installed/\n\n"
