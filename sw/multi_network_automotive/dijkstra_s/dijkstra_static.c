@@ -78,7 +78,8 @@ void enqueue_static (int iNode, int iDist, int iPrev)
   if (qBegin == qTail)
   {
    	fprintf(stderr, "The queue is full.\n");
-        _exit(0);
+        //_exit(0);
+        exti(0);
   }
     
   static_queue[qTail].iNode = iNode;
@@ -117,7 +118,8 @@ void dequeue_static (int *piNode, int *piDist, int *piPrev)
   if(qBegin == -1) 
   {
 	fprintf(stderr, "The queue is empty.\n");
-        _exit(0);
+        //_exit(0);
+        exit(0); // avoiding warning 
   }
 
   *piNode = static_queue[qBegin].iNode;

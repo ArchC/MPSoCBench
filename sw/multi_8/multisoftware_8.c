@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	printf("\n");
     printf("--------------------------------------------------------------------\n");
 	printf("-------------------------  MPSoCBench  -----------------------------\n");
-    printf("-----------------------Running: multi-8 ----------------------------\n");
+    printf("-----------------------Running: multi_8 ----------------------------\n");
     printf("---------SHA, Rijndael Encoder, Rijndael Decoder, Blowfish----------\n");
     printf("---------PBM_stringsearch, BMH_stringsearch, FFT, ADPCM-------------\n");
 	printf("--------------------------------------------------------------------\n");
@@ -280,7 +280,8 @@ int main(int argc, char *argv[])
   ReleaseGlobalLock();
 
 
-  _exit(0);
+  //_exit(0);
+  exit(0); // avoiding warning
   return 0;
    
 }
