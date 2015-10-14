@@ -66,7 +66,10 @@ clean:
             cd wrappers/$$wrapper; $(MAKE) clean; \
             cd $(ROOT); done
 	for processor in $(PROCESSOR) ; do \
-            cd processors/$$processor ; $(MAKE) clean; \
+            cd processors/$$processor ; \
+            if [ -a Makefile ]; then \
+                $(MAKE) clean; \
+            fi; \
             cd $(ROOT); done
 	for sw in $(SW) ; do cd sw/$$sw ; \
             $(MAKE) clean ; cd $(ROOT); done
@@ -85,7 +88,10 @@ distclean:
             cd wrappers/$$wrapper; $(MAKE) distclean; \
             cd $(ROOT); done
 	for processor in $(PROCESSOR) ; do \
-            cd processors/$$processor ; $(MAKE) distclean; \
+            cd processors/$$processor ; \
+            if [ -a Makefile ]; then \
+                $(MAKE) distclean; \
+            fi; \
             cd $(ROOT); done
 	for sw in $(SW) ; do cd sw/$$sw ; \
             $(MAKE) distclean ; cd $(ROOT); done

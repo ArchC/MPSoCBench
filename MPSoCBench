@@ -170,7 +170,8 @@ def distclean():
     bench_path = os.getcwd()
     for i in procs:
         os.chdir(bench_path + "/processors/" + i)
-        os.system("make distclean")
+        if os.path.isfile ( "Makefile" ):
+            os.system("make distclean")
     os.chdir(bench_path)
 
 # general Makefile creator
