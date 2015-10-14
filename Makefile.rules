@@ -1,16 +1,18 @@
 include platforms/$(PLATFORM)/defs.arp
 
-export LIB_DIR:=-L $(SYSTEMC)/lib-$(HOST_OS) -L $(ARCHC_PATH)/lib \
-  $(foreach ip, $(IP), -L $(ARP)/ip/$(ip)) \
-  $(foreach is, $(IS), -L $(ARP)/is/$(is)) \
-  $(foreach wrapper, $(WRAPPER), -L $(ARP)/wrappers/$(wrapper)) \
-  $(foreach processor, $(PROCESSOR), -L $(ARP)/processors/$(processor))
+ROOT=$(PWD)
 
-export INC_DIR:=-I $(SYSTEMC)/include -I $(ARCHC_PATH)/include/archc -I $(TLM_PATH) \
-  $(foreach ip, $(IP), -I $(ARP)/ip/$(ip)) \
-  $(foreach is, $(IS), -I $(ARP)/is/$(is)) \
-  $(foreach wrapper, $(WRAPPER), -I $(ARP)/wrappers/$(wrapper)) \
-  $(foreach processor, $(PROCESSOR), -I $(ARP)/processors/$(processor))
+export LIB_DIR:= `pkg-config --libs systemc archc` \
+  $(foreach ip, $(IP), -L $(ROOT)/ip/$(ip)) \
+  $(foreach is, $(IS), -L $(ROOT)/is/$(is)) \
+  $(foreach wrapper, $(WRAPPER), -L $(ROOT)/wrappers/$(wrapper)) \
+  $(foreach processor, $(PROCESSOR), -L $(ROOT)/processors/$(processor))
+
+export INC_DIR:= `pkg-config --cflags systemc archc` \
+  $(foreach ip, $(IP), -I $(ROOT)/ip/$(ip)) \
+  $(foreach is, $(IS), -I $(ROOT)/is/$(is)) \
+  $(foreach wrapper, $(WRAPPER), -I $(ROOT)/wrappers/$(wrapper)) \
+  $(foreach processor, $(PROCESSOR), -I $(ROOT)/processors/$(processor))
 
 export LIBS:= \
   $(foreach processor, $(PROCESSOR), -l$(processor))\
@@ -28,22 +30,26 @@ export CC:=g++
 
 #------------------------------------------------------
 all:
-	cd $(ARP)
+	cd $(ROOT)
 	for processor in $(PROCESSOR); do \
             echo Making Processor $$processor ...;\
-            cd processors/$$processor ; $(MAKE) lib ; \
-            cd $(ARP); done
+            cd processors/$$processor ; \
+            if [ ! -a Makefile ]; then \
+                $(ARCHC_PREFIX)/bin/acsim $${processor}_$(TRANSPORT).ac $(ACSIM_FLAGS) ; \
+            fi; \
+            $(MAKE) lib; \
+            cd $(ROOT); done
 	for ip in $(IP); do echo Making IP $$ip ...; \
-	    cd ip/$$ip; $(MAKE) lib; cd $(ARP); done
+	    cd ip/$$ip; $(MAKE) lib; cd $(ROOT); done
 	for is in $(IS); do echo Making IS $$is ...; \
-            cd is/$$is; $(MAKE) lib; cd $(ARP); done
+            cd is/$$is; $(MAKE) lib; cd $(ROOT); done
 	for wrapper in $(WRAPPER); do \
             echo Making Wrapper $$wrapper ...; \
             cd wrappers/$$wrapper; $(MAKE) lib; \
-            cd $(ARP); done
+            cd $(ROOT); done
 	for sw in $(SW); do \
             echo Making Software $$sw ...; cd sw/$$sw; \
-            $(MAKE); cd $(ARP); done
+            $(MAKE); cd $(ROOT); done
 	for sw in $(SW) ; do \
             cp sw/$$sw/*.x platforms/$(PLATFORM) ; done
 	echo Making Platform $(PLATFORM)
@@ -51,53 +57,53 @@ all:
 	
 #------------------------------------------------------
 clean:
-	cd $(ARP)
+	cd $(ROOT)
 	for ip in $(IP) ; do cd ip/$$ip ; \
-            $(MAKE) clean ; cd $(ARP); done
+            $(MAKE) clean ; cd $(ROOT); done
 	for is in $(IS) ; do cd is/$$is ; \
-            $(MAKE) clean ; cd $(ARP); done
+            $(MAKE) clean ; cd $(ROOT); done
 	for wrapper in $(WRAPPER); do \
             cd wrappers/$$wrapper; $(MAKE) clean; \
-            cd $(ARP); done
+            cd $(ROOT); done
 	for processor in $(PROCESSOR) ; do \
             cd processors/$$processor ; $(MAKE) clean; \
-            cd $(ARP); done
+            cd $(ROOT); done
 	for sw in $(SW) ; do cd sw/$$sw ; \
-            $(MAKE) clean ; cd $(ARP); done
+            $(MAKE) clean ; cd $(ROOT); done
 	for sw in $(SW) ; do \
-            rm -f platforms/$(PLATFORM)/*.x; cd $(ARP); done
+            rm -f platforms/$(PLATFORM)/*.x; cd $(ROOT); done
 	cd platforms/$(PLATFORM); $(MAKE) clean
 
 #------------------------------------------------------
 distclean:
-	cd $(ARP)
+	cd $(ROOT)
 	for ip in $(IP) ; do cd ip/$$ip ; \
-            $(MAKE) distclean ; cd $(ARP); done
+            $(MAKE) distclean ; cd $(ROOT); done
 	for is in $(IS) ; do cd is/$$is ; \
-            $(MAKE) distclean ; cd $(ARP); done
+            $(MAKE) distclean ; cd $(ROOT); done
 	for wrapper in $(WRAPPER); do \
             cd wrappers/$$wrapper; $(MAKE) distclean; \
-            cd $(ARP); done
+            cd $(ROOT); done
 	for processor in $(PROCESSOR) ; do \
             cd processors/$$processor ; $(MAKE) distclean; \
-            cd $(ARP); done
+            cd $(ROOT); done
 	for sw in $(SW) ; do cd sw/$$sw ; \
-            $(MAKE) distclean ; cd $(ARP); done
+            $(MAKE) distclean ; cd $(ROOT); done
 	for sw in $(SW) ; do \
-            rm -f platforms/$(PLATFORM)/*.x; cd $(ARP); done
+            rm -f platforms/$(PLATFORM)/*.x; cd $(ROOT); done
 	cd platforms/$(PLATFORM); $(MAKE) distclean
 	
 #------------------------------------------------------
 copy:
-	cd $(ARP)
+	cd $(ROOT)
 	cd platforms/$(PLATFORM); $(MAKE) copy;
-	cd $(ARP)
+	cd $(ROOT)
 	cd is/tlm_noc_at; $(MAKE) copy;
 	for sw in $(SW) ; do cd sw/$$sw ; \
         $(MAKE) copy; done
 #------------------------------------------------------
 
 run: all
-	cd $(ARP)
+	cd $(ROOT)
 	cd platforms/$(PLATFORM); $(MAKE) run
 

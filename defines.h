@@ -100,25 +100,41 @@
 #define N_DELTA_T 50
 
 #ifdef PROCMIPS 
-	#include "../../processors/mips/mips.H"
-	#define PROCESSOR_NAME mips
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/mips/powersc" 
+    #endif
+    #include "../../processors/mips/mips.H"   
+    #define PROCESSOR_NAME mips
 	#define PROCESSOR_NAME_parms mips_parms
 #endif 
 
-#ifdef PROCSPARC 
-  	#include "../../processors/sparc/sparc.H"
+#ifdef PROCSPARC
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/sparc/powersc" 
+    #endif
+    #include "../../processors/sparc/sparc.H"
 	#define PROCESSOR_NAME sparc
 	#define PROCESSOR_NAME_parms sparc_parms
 #endif 
 
-#ifdef PROCPOWERPC 
- 	#include "../../processors/powerpc/powerpc.H"
+#ifdef PROCPOWERPC
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/powerpc/powersc" 
+    #endif
+    #include "../../processors/powerpc/powerpc.H"
 	#define PROCESSOR_NAME powerpc
 	#define PROCESSOR_NAME_parms powerpc_parms
 #endif 
 
-#ifdef PROCARM 
- 	#include "../../processors/arm/arm.H"
+#ifdef PROCARM
+    #ifdef POWER_SIM
+        #undef POWER_SIM
+        #define POWER_SIM "../../processors/arm/powersc" 
+    #endif
+    #include "../../processors/arm/arm.H"
 	#define PROCESSOR_NAME arm
 	#define PROCESSOR_NAME_parms arm_parms
 #endif 
@@ -130,8 +146,6 @@
 
 //#define CACHE_POWER_TABLE_FILE "table_cache_8k_2w_45nm.csv"
 
-#define INTR_PROC_OFF  0
-#define INTR_PROC_ON   1
 
 #define ON_ALL   100
 #define OFF_ALL  101

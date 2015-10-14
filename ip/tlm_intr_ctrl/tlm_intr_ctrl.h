@@ -55,6 +55,7 @@
 #define TLM_INTR_CTRL_H_
 #include <systemc>
 #include "ac_module.H"
+#include "ac_intr_handler.H"
 #include "ac_tlm_protocol.H"
 #include "ac_tlm2_port.H"
 #include "ac_tlm2_payload.H"

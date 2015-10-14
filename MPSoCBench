@@ -171,7 +171,7 @@ def distclean():
 
 # general Makefile creator
 def makefile(proc, nproc, sw, power, intercon, plat_rundir):
-        
+
     make = "#FILE GENERATED AUTOMAGICALLY - DO NOT EDIT"
     make = make + "\nexport PROCESSOR := " + proc + "\nexport NUMPROCESSORS := " + nproc + \
            "\nexport SOFTWARE := " + sw + "\nexport PLATFORM := platform." + intercon + "\n"
@@ -183,11 +183,15 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
     
     # for older compilers
     #make = make + "\nexport CROSS := " + proc + "-elf-gcc\n"
-
     if power:
-        make = make + "export POWER_SIM_FLAG := -DPOWER_SIM\n"
+        pw_flag = " -pw"
+        make = make + "export POWER_SIM_FLAG := -DPOWER_SIM=\\\"\\\"\n"
     else:
-        make = make + "export POWER_SIM_FLAG := \n"
+        pw_flag = ""
+        make = make + "export POWER_SIM_FLAG := \n" 
+
+    make = make + "export ACSIM_FLAGS := -abi -ndc " + pw_flag + "\n"; 
+    
     if intercon == 'noc.at':
         make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
     else:
@@ -202,7 +206,7 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
     make = make + "ifeq ($(PROCESSOR),mips)\nexport CFLAGS_AUX := -DPROCMIPS\nendif\n"
     make = make + "ifeq ($(PROCESSOR),sparc)\nexport CFLAGS_AUX := -DPROCSPARC\nendif\n"
     make = make + "ifeq ($(PROCESSOR),powerpc)\nexport CFLAGS_AUX := -DPROCPOWERPC\nendif\n"
-    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
+    make = make + "include Makefile.rules\n"
     return make
 
 
@@ -261,7 +265,7 @@ def help():
 # rundir Makefile creator
 
 def run_make(path, proc, nproc, sw, intercon):
-    make = "include Makefile.conf\nrun:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n"
+    make = "run:\n\t./platform." + intercon + ".x " + sw + "." + proc + ".x " + nproc +"\n"
     f = open(path + "/Makefile", "w")
     f.write(make)
     f.close()
@@ -281,7 +285,7 @@ def condor_task(path, proc, nproc, sw, queue, intercon):
 # rundir creation
 def build(tracker, power, condor):
     # cleans up the processors
-    distclean() 
+    distclean()
     path = ""
     try:
         # walks the platform tracker make tree
@@ -301,8 +305,8 @@ def build(tracker, power, condor):
                             else:
                                 plat_rundir = i + "." + l + "." + j + "." + k
                             f = open("Makefile", "w")
-                            if i == 'arm' or i == 'powerpc' and power:
-                                #print "WARNING! The selected processor does not support PowerSC!"
+                            if (i == 'arm' or i == 'powerpc') and power:
+                                print "WARNING! The selected processor does not support PowerSC!"
                                 plat_rundir = i + "." + l + "." + j + "." + k
                                 f.write(makefile(i, j, k, False, l, plat_rundir))
                             else:
@@ -367,7 +371,7 @@ def run(tracker, nobuild, power, condor):
 
 
 def hetero_run_make(path, nproc, intercon):
-    make = "include Makefile.conf\nrun:\n\t./platform.het." + intercon + ".x " + nproc + " multi-parallel-het.sparc.x multi-parallel-het.powerpc.x multi-parallel-het.mips.x multi-parallel-het.arm.x \n"
+    make = "run:\n\t./platform.het." + intercon + ".x " + nproc + " multi-parallel-het.sparc.x multi-parallel-het.powerpc.x multi-parallel-het.mips.x multi-parallel-het.arm.x \n"
     f = open(path + "/Makefile", "w")
     f.write(make)
     f.close()
@@ -384,7 +388,7 @@ def hetero_makefile(nproc, intercon, plat_rundir):
         make = make + "export WAIT_TRANSPORT_FLAG := \nexport TRANSPORT := block\n"
     make = make + "export MEM_SIZE_DEFAULT := -DMEM_SIZE=536870912\n"
     make = make + "export RUNDIRNAME := " + plat_rundir + "\n"
-    make = make + "include Makefile.conf\ninclude Makefile.rules\n"
+    make = make + "include Makefile.rules\n"
     return make
     
 def hetero_build(nproc, intercon):
@@ -471,7 +475,21 @@ valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True
                    'multi-office-telecomm':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False},
                    'multi-security':{'1':False, '2':False, '4':True, '8':False, '16':False, '32':False, '64':False}}
 
+# =================================
+# Entry point
+# =================================
 
+# Asserts 
+if not os.path.isfile("./env.sh"):
+    sys.exit('ERROR: The environment file does not exist; you propably forgot '
+             'to run:\n\t./setup.sh /path/where/archc/was/installed\n')
+
+if not os.path.isfile("./processors/mips/mips.ac"):
+    sys.exit( 'The code of the models does not exist; you probably forgot '
+              'to run:\n\tgit submodule update --init --recursive\n' )
+
+if not os.environ.has_key('ARCHC_PREFIX'):
+    sys.exit( 'The environment was not sourced. Execute: \n\tsource env.sh\n' ) 
 
 # gets the command line args
 cmdline = sys.argv[1:]
@@ -492,7 +510,7 @@ opts, args = arg_parse(cmdline)
 
 if '-nb' in opts:
     nobuild = True
-if '-pw' in opts:
+if '-pw' in opts: 
     power = True
 if '-r' in opts:
     prep = False
