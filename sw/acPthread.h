@@ -139,15 +139,6 @@ int pthread_barrier_wait (pthread_barrier_t *);
 void pthread_changePowerState(int);
 void pthread_turnOnProcessors();
 void pthread_turnOffProcessors();
-void pthread_turnMeOff();
-
-
-/* join auxiliar functions */
-
-//void join_sha (pthread_t thread, const pthread_attr_t *attr);
-//void join_stringsearch(pthread_t thread, const pthread_attr_t *attr);
-//void join_basicmath(pthread_t thread, const pthread_attr_t *attr);
-//void join_dijkstra(pthread_t thread, const pthread_attr_t *attr);
 
 void *acPthread_malloc(size_t);
 void *acPthread_realloc(void *, size_t);

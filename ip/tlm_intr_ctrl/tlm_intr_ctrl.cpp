@@ -117,10 +117,10 @@ void tlm_intr_ctrl::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time
           intr = be32toh(intr);
           #endif  
 
-          if (intr == INTR_PROC_ON)
+          if (intr == ON)
               turnOnProcessors (procId);
           
-          else if (intr == INTR_PROC_OFF)
+          else if (intr == OFF)
               turnOffProcessors (procId);
 
           else 
@@ -144,7 +144,7 @@ void tlm_intr_ctrl::turnOnProcessors(int procId)
     if (INTR_CTRL_DEBUG) printf("\nTLM_INTR_CTRL: turninng on all processors \n");
     for (int i=0; i<workers; i++)
     {
-        if (i!=procId) send(i,INTR_PROC_ON);
+        if (i!=procId) send(i,ON);
     }
 }
 // procId is the processor that send the interruption to turning off all processors (except itself)
@@ -154,7 +154,7 @@ void tlm_intr_ctrl::turnOffProcessors(int procId)
     if (INTR_CTRL_DEBUG) printf("\nTLM_INTR_CTRL: turninng off all processors \n");
     for (int i=0; i<workers; i++)
     { 
-        if (i!=procId) send(i,INTR_PROC_OFF);
+        if (i!=procId) send(i,OFF);
     }
 }
 

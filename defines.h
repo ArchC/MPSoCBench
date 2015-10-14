@@ -143,14 +143,4 @@
 #define LOCAL_MEM_SIZE  67108864
 #define TEXTAREA	0x00d16f
  
-
-//#define CACHE_POWER_TABLE_FILE "table_cache_8k_2w_45nm.csv"
-
-
-#define ON_ALL   100
-#define OFF_ALL  101
-#define OFF_ME   102
-
-
-
 #endif

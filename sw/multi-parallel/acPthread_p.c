@@ -512,17 +512,11 @@ void pthread_turnOnProcessors()
 {
 
 	//printf("Acordando processadores");
-	*intr_ctrl = ON_ALL;
+	*intr_ctrl = ON;
 }
 
 void pthread_turnOffProcessors()
 {
-	*intr_ctrl = OFF_ALL;
+	*intr_ctrl = OFF;
 }
 
-void pthread_turnMeOff()
-{
-
-	*intr_ctrl = OFF_ME;
-
-}

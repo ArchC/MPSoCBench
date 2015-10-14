@@ -229,7 +229,7 @@ void pthread_join_control (pthread_join_t *m_join)
 	if (m_join->num_proc ==0)
 	{
 		join_out = 1;
-		pthread_turnOnProcessors();
+		//pthread_turnOnProcessors();
 	}
 	
 	ReleaseGlobalLock();
@@ -564,19 +564,10 @@ void pthread_changePowerState(int state)
 
 void pthread_turnOnProcessors()
 {
-
-	//printf("Acordando processadores");
-	*intr_ctrl = ON_ALL;
+	*intr_ctrl = ON;
 }
 
 void pthread_turnOffProcessors()
 {
-	*intr_ctrl = OFF_ALL;
-}
-
-void pthread_turnMeOff()
-{
-
-	*intr_ctrl = OFF_ME;
-
+	*intr_ctrl = OFF;
 }
