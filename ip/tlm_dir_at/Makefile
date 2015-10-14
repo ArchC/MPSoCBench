@@ -3,7 +3,6 @@
 # ####################################################
 
 TARGET=tlm_dir_at
-INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_dir.cpp 
 OBJS := $(SRCS:.cpp=.o)

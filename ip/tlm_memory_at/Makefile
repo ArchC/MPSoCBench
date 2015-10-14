@@ -17,7 +17,6 @@ CXXFLAGS+=$(OPTFLAGS)
 # ####################################################
 
 TARGET=tlm_memory_at
-INC_DIR :=  -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_memory.cpp $(wildcard *.cpp)
 OBJS := $(SRCS:.cpp=.o) $(addsuffix .o, $(basename $(SRC)))

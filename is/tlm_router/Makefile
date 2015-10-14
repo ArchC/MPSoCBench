@@ -1,5 +1,4 @@
 TARGET=tlm_router
-INC_DIR := -I. -I$(ARCHC_PATH)/include -I$(SYSTEMC)/include -I$(TLM_PATH) 
 
 SRCS := tlm_router.cpp 
 OBJS := $(SRCS:.cpp=.o)

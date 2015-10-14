@@ -1,5 +1,7 @@
-#ignore anything in rundir
 rundir/
 global_report.txt
-#Makefile is created each time the script is called
+# Makefile is created each time the script is called
 Makefile
+env.sh
+
+
