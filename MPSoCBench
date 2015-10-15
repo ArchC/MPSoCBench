@@ -185,6 +185,8 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
             "\nexport SOFTWARE := " + sw + \
             "\nexport PLATFORM := platform." + intercon + "\n"
    
+    
+
     if proc=='arm':
         cross = proc + "-newlib-eabi-gcc"
         if cmd_exists( cross ):

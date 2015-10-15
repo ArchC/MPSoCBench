@@ -235,7 +235,7 @@ void pthread_join_control (pthread_join_t *m_join)
 	ReleaseGlobalLock();
 	
 	
-	//while (join_out == 0);
+	while (join_out == 0);
 	//pthread_busywait(500);
 
     /*****
