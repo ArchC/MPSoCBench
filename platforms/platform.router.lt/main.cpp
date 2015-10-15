@@ -122,8 +122,8 @@ int sc_main(int ac, char *av[])
     // Initializing Memports
 	for (int i=0; i<N_WORKERS; i++)
 	{
-		processors[i]->MEM_port(router.target_export);
-		(processors[i]->MEM).setProcId(processors[i]->getId());
+		processors[i]->MEM(router.target_export);
+		(processors[i]->MEM_mport).setProcId(processors[i]->getId());
 	}
     
 	// Binding processors and interruption controller

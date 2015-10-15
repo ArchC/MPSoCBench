@@ -107,7 +107,7 @@ int sc_main(int ac, char *av[])
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
-		(processors[i]->MEM).setProcId(processors[i]->getId());
+		(processors[i]->MEM_mport).setProcId(processors[i]->getId());
 	}
 
 
@@ -216,7 +216,7 @@ int sc_main(int ac, char *av[])
 			if (proc < N_WORKERS)
 			{
 					// Connecting a processor with the node [i][j] of NoC //
-				processors[proc]->MEM_port(noc.wrapper[wr].LOCAL_export);
+				processors[proc]->MEM(noc.wrapper[wr].LOCAL_export);
 				noc.bindingEmptySlave(wr);
 				noc.tableOfRouts.newEntry(line,column);
 				wr++;

@@ -114,7 +114,7 @@ int sc_main(int ac, char *av[])
 		sprintf(number_str, "%d", i);
 		strcat(name, number_str);
 		processors[i] = (PROCESSOR_NAME *) new PROCESSOR_NAME(name);
-		(processors[i]->MEM).setProcId(processors[i]->getId());
+		(processors[i]->MEM_mport).setProcId(processors[i]->getId());
 	}
 
 	// Creates memory, lock and dfs devices 
@@ -250,7 +250,7 @@ int sc_main(int ac, char *av[])
 			if (proc < N_WORKERS)
 			{
 				
-				processors[proc]->MEM_port.LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
+				processors[proc]->MEM.LOCAL_init_socket.bind(noc.wrapper[wrMS].LOCAL_target_socket);
 				noc.wrapper[wrMS].LOCAL_init_socket.bind(noc.slaveEmptyNodes[emptySlaves].LOCAL_slave_target_socket);
 
 				#ifdef POWER_SIM
