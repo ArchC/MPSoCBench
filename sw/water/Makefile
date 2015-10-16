@@ -23,7 +23,7 @@ MACROS := c.m4.null
 M4 := m4 -s -Ulen -Uindex
 
 x = *
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 (TARGET): $(OBJS)
 	$(CC) $(OBJS_AUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
 
@@ -66,11 +66,11 @@ water.o: water.C parameters.h mdvar.h water.h wwpot.h cnst.h mddata.h fileio.h f
 
 
 copy:
-	echo ---copy $(TARGET).x to the appropriate rundir	
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"	
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
 check:
-	echo "\n\nTESTING RESULTS"
+	$(ECHO) "\n\nTESTING RESULTS"
 	sort output > output.sorted 
-	if diff output.sorted output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
+	if diff output.sorted output.base > diff.txt ; then $(ECHO) "\nTest Passed.\n"; else $(ECHO) "\nTest Failed.\n"; fi

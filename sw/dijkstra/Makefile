@@ -14,35 +14,35 @@ SRCS := dijkstra_allpair.c ../acPthread.c
 OBJS := $(SRCS:.c=.o)
 
 OBJS_AUX := dijkstra_allpair.o acPthread.o 
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 .SILENT:
 
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 .SUFFIXES: .o .c .h
 
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 all: $(OBJS)
 	$(CC) $(OBJS_AUX) $(CFLAGS) -o $(TARGET).x $(LDFLAGS)
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 clean:
 	rm -f *.o *~ *.x 
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 distclean: clean
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 bin:
 	
-#------------------------------------------------------
+#"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---"---
 .c.o:
 	$(CC) -c $(CFLAGS) $(INC_DIR) -c $<
 
 copy: 	
-	echo ---copy $(TARGET).x to the appropriate rundir
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp input_small.dat ../../rundir/$(RUNDIRNAME)/
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
 
 check:
-	echo "\n\nTESTING RESULTS"
+	$(ECHO) "\n\nTESTING RESULTS"
 	sort output > output.sorted 
-	if diff output.sorted output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
+	if diff output.sorted output.base > diff.txt ; then $(ECHO) "\nTest Passed.\n"; else $(ECHO) "\nTest Failed.\n"; fi
