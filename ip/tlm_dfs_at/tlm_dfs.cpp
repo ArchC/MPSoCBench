@@ -226,7 +226,7 @@ void tlm_dfs::setPowerState (int id, int state)
    }
    else
    { 
-        printf("\nDFS: The new frequency required is no availabe for this processors;");
+        printf("\nDFS: The new frequency required is not availabe for this processor model;");
         printf("\nDFS: Maintaining the current frequency.");
    }    
 
