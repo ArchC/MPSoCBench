@@ -1,3 +1,4 @@
+ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
 
@@ -35,7 +36,7 @@ bin:
 .c.o:
 	$(CC) -c $(CFLAGS) $(INC_DIR) -c $<
 copy:
-	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir"
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp *.txt ../../rundir/$(RUNDIRNAME)/
 	cp output.base ../../rundir/$(RUNDIRNAME)/output.base

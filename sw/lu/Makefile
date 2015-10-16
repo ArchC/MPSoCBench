@@ -2,6 +2,7 @@
 # LU for dual processor platform
 # ####################################################
 
+ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
 
@@ -53,7 +54,7 @@ bin:
 	$(CC) -c $(CFLAGS) $*.c
 
 copy: 	
-	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir"
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base

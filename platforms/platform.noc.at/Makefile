@@ -1,3 +1,4 @@
+ECHO := /bin/echo -e
 
 include defs.arp
 
@@ -53,7 +54,7 @@ distclean: clean
 	$(CC) $(LOCALCFLAGS) $(INC_DIR) -c $<
 
 copy: 
-	$(ECHO) "---copy $(EXE) to the appropriate rundir\n"
+	$(ECHO) "---copy $(EXE) to the appropriate rundir"
 	cp $(EXE) ../../rundir/$(RUNDIRNAME)/
 	
 

@@ -1,3 +1,4 @@
+ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
@@ -37,7 +38,7 @@ bin:
 	$(CC) -c $(CFLAGS) $(INC_DIR) -c $<
 
 copy:
-	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"	
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir"	
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp input_small.pgm ../../rundir/$(RUNDIRNAME)/
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base

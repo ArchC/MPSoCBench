@@ -2,6 +2,7 @@
 # Water for dual processor platform
 # ####################################################
 
+ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
@@ -66,7 +67,7 @@ water.o: water.C parameters.h mdvar.h water.h wwpot.h cnst.h mddata.h fileio.h f
 
 
 copy:
-	$(ECHO) "---copy $(TARGET).x to the appropriate rundir\n"	
+	$(ECHO) "---copy $(TARGET).x to the appropriate rundir"	
 	cp $(TARGET).x ../../rundir/$(RUNDIRNAME)/
 	cp base_output.$(SOFTWARE).$(NUMPROCESSORS) ../../rundir/$(RUNDIRNAME)/output.base
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
