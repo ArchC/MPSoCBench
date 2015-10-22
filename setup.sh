@@ -17,8 +17,10 @@ if [ ! -f "$ARCHC_PREFIX/etc/env.sh" ]; then
 fi
 
 echo -ne "--------------------------------------------------------------------------------------------\n"
-echo -ne "SETUP: Initiating the submodules...\n"
-git submodule update --init --recursive
+if [ ! -f "$PWD/processors/mips/mips.ac" ]; then
+    echo -ne "SETUP: Initiating the submodules...\n"
+    git submodule update --init --recursive
+fi
 
 echo -ne "SETUP: Copying the Environment file from ArchC to MPSoCBench... \n"
 cp $ARCHC_PREFIX/etc/env.sh .
