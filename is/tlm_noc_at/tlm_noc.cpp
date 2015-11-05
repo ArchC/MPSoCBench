@@ -153,19 +153,10 @@ void tlm_noc::destroyComponents ()
 			
 			}	
 		}
-
-
-
-	    fclose (local_noc_file);
-	    fclose (global_noc_file);
-
-
-
-
 	}
 	
-	//for (unsigned int i=0; i<numberOfLines; i++)
-		//delete [] mesh[i];
+	for (unsigned int i=0; i<numberOfLines; i++)
+		delete [] mesh[i];
 
 	delete [] mesh;
 	
@@ -424,3 +415,9 @@ void tlm_noc::print ()
 	
 }
 
+#ifdef POWER_SIM
+void tlm_noc::powersc_connect()
+{
+   		ps.powersc_connect();
+}
+#endif

@@ -357,16 +357,16 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 //processors[i]->IC.powersc_connect();
-		 //processors[i]->DC.powersc_connect();
+		 processors[i]->IC.powersc_connect();
+		 processors[i]->DC.powersc_connect();
 	}
 	
-	noc.ps.powersc_connect();
+	noc.powersc_connect();
 	processors[N_WORKERS-1]->ps.report();
 
 	#endif
 
-	// RETIRAR ISSO DEPOIS -= SOMENTE PAR AEXPERIMENTOS
+	
 	#ifdef POWER_SIM
 	double d = 0;
 	for (int i=0; i<N_WORKERS; i++){
@@ -383,6 +383,11 @@ int sc_main(int ac, char *av[])
 		status = status + processors[i]->ac_exit_status; 
 
 	noc.destroyComponents();
+
+
+	fclose(local_time_measures);
+	fclose(global_time_measures);
+
 
 	for (int i=0; i<N_WORKERS; i++){
 		delete processors[i];

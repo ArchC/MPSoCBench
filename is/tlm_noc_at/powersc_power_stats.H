@@ -25,6 +25,10 @@
 #define IS_TYPE_LINE_IDLE        2
 #define IS_TYPE_LINE_ACTIVE      3
 
+
+#define NOC_POWER_DEBUG
+
+
 class is_power_stats {
 	private:
 		struct profile {
@@ -68,6 +72,14 @@ class is_power_stats {
 #endif
     int total_nodes;
 
+	    #ifdef NOC_POWER_DEBUG 
+        FILE* debug_file;
+        
+        #endif
+
+
+
+
 	public:
 		psc_cell_power_info psc_info;
 
@@ -104,7 +116,18 @@ class is_power_stats {
 				exit(1);
 			}
 #endif
-			//print_psc_data();
+
+
+			#ifdef NOC_POWER_DEBUG 
+			strcpy(filename,"noc_debug.txt");
+            debug_file = fopen(filename, "w");
+            if (debug_file == NULL) {
+                perror("Couldn't open specified debug file");
+                exit(1);
+            }
+                                  
+            print_psc_data();
+            #endif
 		}
 
 		// Destructor
@@ -114,6 +137,11 @@ class is_power_stats {
 #ifdef IS_WINDOW_REPORT
 			fclose(out_window_power_report);
 #endif
+
+ 			#ifdef NOC_POWER_DEBUG
+            fclose(debug_file);
+            #endif
+
 		}
 
 		double get_power() {
@@ -122,9 +150,15 @@ class is_power_stats {
 
 		double get_energy_active(int flits, int profile) {
       // [J] = [W] / [1/s] = [W] * [s]
-			return (flits * psc_data.p[profile].active_power * psc_data.p[profile].power_scale / 
-        psc_data.p[profile].freq_scale * psc_data.p[profile].freq);
+			return (flits * psc_data.p[profile].active_power * psc_data.p[profile].power_scale) / (psc_data.p[profile].freq_scale * psc_data.p[profile].freq);
 		}
+
+
+     	double get_total_energy()
+        {
+            return dyn.total_energy;
+        }
+
 
     int type_line(int line, int num_profiles) {
       if (num_profiles == 0) {
@@ -155,7 +189,8 @@ class is_power_stats {
       double window_total_time = sc_time_stamp().to_seconds() - dyn.last_window_time;
       dyn.last_window_time = sc_time_stamp().to_seconds();
       double window_active_time = dyn.window_num_flits / psc_data.p[dyn.actual_profile].freq_scale * psc_data.p[dyn.actual_profile].freq;
-      dyn.window_power = (dyn.window_energy + (total_nodes*window_total_time - window_active_time) * psc_data.p[dyn.actual_profile].idle_power )/ window_total_time; 
+       dyn.window_power = (dyn.window_energy + (total_nodes*window_total_time - window_active_time) * psc_data.p[dyn.actual_profile].idle_power * psc_data.p[dyn.actual_profile].power_scale )/ window_total_time;
+
 		}
 
 		void window_power_report() {
@@ -188,11 +223,18 @@ class is_power_stats {
 		}
 
 		void calc_total_power() {
-      double total_time = sc_time_stamp().to_seconds();
-      double total_active_time = dyn.total_num_flits / (psc_data.p[dyn.actual_profile].freq_scale * psc_data.p[dyn.actual_profile].freq);
+	      double total_time = sc_time_stamp().to_seconds();
+    	  double total_active_time = dyn.total_num_flits / (psc_data.p[dyn.actual_profile].freq_scale * psc_data.p[dyn.actual_profile].freq);
       //printf("Total flits: %lld; Total time: %g; Total active time: %g;\n", dyn.total_num_flits, total_time, total_active_time);
       //##Total power = Sum[n_flits * P_active + (Ttotal-n_flits)*P_idle];
-			dyn.total_power = ( dyn.total_energy + (total_nodes*total_time - total_active_time) * psc_data.p[dyn.actual_profile].idle_power )/ total_time;
+		dyn.total_power = ( dyn.total_energy + (total_time - total_active_time) * psc_data.p[dyn.actual_profile].idle_power * psc_data.p[dyn.actual_profile].power_scale )/ total_time;
+
+		printf("Total time: %g; total active time: %g; total energy: %g\n", total_time, total_active_time, dyn.total_energy);
+		#ifdef NOC_POWER_DEBUG
+		fprintf(debug_file, "Total time: %g; total active time: %g; total energy:%g\n", total_time, total_active_time, dyn.total_energy);
+        #endif
+
+
 		}
 
 		void powersc_connect() {

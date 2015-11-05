@@ -108,6 +108,7 @@ public:
   wrapper_master_slave_to_noc *wrapper;
   #ifdef POWER_SIM
   is_power_stats ps;
+  void powersc_connect();
   #endif
 
 private:
