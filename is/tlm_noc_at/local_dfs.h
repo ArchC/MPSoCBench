@@ -47,8 +47,8 @@ public:
    #endif
 
 private:
-	
-	PROCESSOR_NAME *proc;
+  
+  PROCESSOR_NAME *proc;
   int     numberOfStates;
   int     *listOfStates;
   
@@ -71,7 +71,6 @@ private:
   #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
   double  lastTimeES;
   double  *energyStamp;
-  double  *newEnergyStamp;
   bool    end_of_elab_phase;
   bool    end_of_init_phase;
   #endif

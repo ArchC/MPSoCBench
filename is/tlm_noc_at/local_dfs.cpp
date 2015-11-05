@@ -33,7 +33,6 @@ sc_module( module_name )
   this->end_of_elab_phase = false;
   this->end_of_init_phase = false;
   energyStamp = NULL;
-  newEnergyStamp = NULL;
   #endif
 
   initializePowerStates();
@@ -50,7 +49,6 @@ local_dfs::~local_dfs()
 
   #ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
   delete [] energyStamp;
-  delete [] newEnergyStamp;
   #endif
 
   delete [] listOfStates;
@@ -81,11 +79,11 @@ void local_dfs::initializePowerStates()
 
   #ifdef DFS_AUTO_SELECTION_ENERGY_STAMP
   energyStamp  = new double [numberOfStates];
-  newEnergyStamp  = new double [numberOfStates];
+  
   for (int i=0; i<numberOfStates; i++)   energyStamp[i] = 0;
   #endif
 
-  setInitialPowerState (0);
+  setInitialPowerState (INITIAL_PW_STATE);
 
   //if (proc->getId() >= 0 && proc->getId() < 8)  setInitialPowerState (2);
   //else if (proc->getId() >= 8 && proc->getId() < 16) setInitialPowerState (0);  
@@ -130,7 +128,7 @@ void local_dfs::setPowerState (int state)
 
           double t = sc_time_stamp().to_seconds();
 
-          printf("\n%.8f,%d,%d,%d", t, proc->getId(), state_cur, state);
+          //printf("\n%.8f,%d,%d,%d", t, proc->getId(), state_cur, state);
           if (DFS_DEBUG)
           {
             //printf("\nLOCAL_DFS: cpu_usage_rate of processor %d is %0.4lf", proc->getId(),cpu_usage_rate*100);
@@ -173,9 +171,9 @@ void local_dfs::autoSelectionEnergyStamp ()
     {
       //printf("\nFase de elaboração: nova avaliação");
       int actualState = getPowerState();
-      //energyStamp[actualState] = (proc->ps).get_energy_stamp(actualState); 
-      newEnergyStamp[actualState] = (proc->ps).get_newEnergy_stamp(actualState);       
-      //printf("\nnewEnergyStamp[%d]: %.20lf", actualState, newEnergyStamp[actualState]);
+      
+      energyStamp[actualState] = (proc->ps).get_energy_stamp(actualState);       
+      //printf("\nenergyStamp[%d]: %.20lf", actualState, energyStamp[actualState]);
 
       if (DFS_DEBUG)
       {
@@ -184,8 +182,7 @@ void local_dfs::autoSelectionEnergyStamp ()
         printf("\nActual State: %d", actualState);
         printf("\nDelta: %0.5lf", DELTA_T);
         printf("\nLast time measured: %0.5lf", t);
-        //printf("\nEnergyStamp: %.10lf \n", energyStamp[actualState]);
-        printf("\nNewEnergyStamp:%.10lf \n", newEnergyStamp[actualState]);
+        printf("\nEnergyStamp:%.10lf \n", energyStamp[actualState]);
       }
      
       actualState++;
@@ -215,8 +212,8 @@ void local_dfs::autoSelectionEnergyStamp ()
       
         //double ES_cur = (proc->ps).get_energy_stamp(actualState);
 
-        double NewES_cur = (proc->ps).get_newEnergy_stamp(actualState);
-        newEnergyStamp[actualState] = NewES_cur;
+        double NewES_cur = (proc->ps).get_energy_stamp(actualState);
+        energyStamp[actualState] = NewES_cur;
 
        // printf("\nNewEScur: %.20lf", NewES_cur);
 
@@ -225,14 +222,13 @@ void local_dfs::autoSelectionEnergyStamp ()
         for (int i=0; i<numberOfStates; i++)
         {
             //if (ES_cur < energyStamp[i]) newState = i;
-            if (NewES_cur < newEnergyStamp[i]) newState = i;
+            if (NewES_cur < energyStamp[i]) newState = i;
 
         }
         if (newState != actualState)
         {
             setPowerState (newState);
-            //printf("\nFase de simulação...");
-            //printf("\nVai mudar o estado do processador %d para %d", proc->getId(),newState);
+ 
         } 
         (proc->ps).initialize_energy_stamp();
         lastTimeES = t;
@@ -244,14 +240,14 @@ void local_dfs::autoSelectionEnergyStamp ()
 int local_dfs::getBestFrequency ()
 {
     int bestState = 0;
-    //double minES = energyStamp[0];
-    double newMinES = newEnergyStamp[0];
+    
+    double newMinES = energyStamp[0];
     
     for (int i=0; i<numberOfStates; i++)
     {
-      ////  if (energyStamp[i] < minES)
-      printf("\nProcessor %d: newEnergyStamp[%d] = %.20lf", proc->getId(), i, newEnergyStamp[i]);
-      if (newEnergyStamp[i] < newMinES)
+      
+      printf("\nProcessor %d: energyStamp[%d] = %.20lf", proc->getId(), i, energyStamp[i]);
+      if (energyStamp[i] < newMinES)
       {
         bestState = i;
       }

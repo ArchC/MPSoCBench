@@ -439,8 +439,7 @@ void report_end()
         printf("\nSimulation advance (seconds):\t%lf",time.to_seconds());		
 
 	printf("\nMPSoCBench: Ending the time simulation measurement.\n");
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+
 }
 
 
