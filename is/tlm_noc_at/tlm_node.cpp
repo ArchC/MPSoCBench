@@ -200,10 +200,8 @@ void tlm_node::thread_node ()
 			if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d",getX(),getY());	
 			removeFromBuffer(payload,phase,time_info);
 		
-
 			tlm_payload_extension *ex;
   			payload.get_extension(ex);
-			
 
 			if (ex == NULL)
 			{
@@ -211,107 +209,126 @@ void tlm_node::thread_node ()
 				exit(1);
 
 			}
-
-			/*NUMBER OF HOPS*/
+		
 			ex->incNumberOfHops();
 			if (NOC_DEBUG) printf("\nTHREAD_NODE --> Node %d,%d is incrementing the number of hops in the extension (%d)",getX(), getY(), ex->getNumberOfHops()); 	   	
-			/*NUMBER OF HOPS*/
-
-			if (getX() == ex->getTargetX())
-			{
-				if (getY() == ex->getTargetY())
-				{
-					if (getStatus() == OFF)
-					{
-						printf("ERROR: Target node %d,%d has status OFF ",getX(), getY());
-						exit(1);
-					}
-
-					counterL ++;
-
-
-					if (NOC_DEBUG) printf("\nTHREAD NODE--> The transaction is in the target node %d,%d transporting using LOCAL port.",getX(),getY());	
-					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());										
-
-					if (ex->getDirection() == FORWARD) {
-						
-						if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d is calling nb_transport_fw",getX(), getY());
-
-						
-						status = LOCAL_init_socket->nb_transport_fw(payload,phase,time_info);
-						if (status != tlm::TLM_COMPLETED)
-						{
-							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
-							exit(1);
-						}
-						
-
-				
-					}
-					else {
-						
-						
-				       		
-						if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d is calling nb_transport_bw",getX(), getY());						
-												
-						status = LOCAL_target_socket->nb_transport_bw(payload,phase,time_info);
-						if (status != tlm::TLM_COMPLETED)
-						{
-							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
-							exit(1);
-						}	
-
-					}
-										
-				}
-
-				else if ( getY() > ex->getTargetY() )
-				{
-
-
-							
-					if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using west port.",getX(), getY());	
-					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());		
-
-					counterW++;
-
-					if (ex->getDirection() == FORWARD) {
-						
-						status = W_init_socket->nb_transport_fw(payload,phase,time_info); 
-						if (status != tlm::TLM_UPDATED)
-						{
-							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
-							exit(1);
-						}	
-							
-					}
-					else {
-				
-						
-						status =  W_target_socket->nb_transport_bw(payload,phase,time_info); 
-						if (status != tlm::TLM_COMPLETED)
-						{
-							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
-							exit(1);
-						}	
-
-
-					}
-
 			
-				}
-				else  {
 
+
+			if (getY() == ex->getTargetY())
+			{
+						if (getX() == ex->getTargetX())
+						{
+
+							// transport to the local port
+							if (getStatus() == OFF)
+							{
+								printf("ERROR: Target node %d,%d has status OFF ",getX(), getY());
+								exit(1);
+							}
+
+							counterL ++;
+							if (NOC_DEBUG) printf("\nTHREAD NODE--> The transaction is in the target node %d,%d transporting using LOCAL port.",getX(),getY());	
+							if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());										
+
+							if (ex->getDirection() == FORWARD)
+							{
+						
+								if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d is calling nb_transport_fw",getX(), getY());
+								//counterL_fw ++;
+								status = LOCAL_init_socket->nb_transport_fw(payload,phase,time_info);
+								if (status != tlm::TLM_COMPLETED)
+								{
+									printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
+									exit(1);
+								}
+							}
+							else 
+							{
+									
+				       			if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d is calling nb_transport_bw",getX(), getY());						
+								//counterL_bw ++;
+								status = LOCAL_target_socket->nb_transport_bw(payload,phase,time_info);
+								if (status != tlm::TLM_COMPLETED)
+								{
+									printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
+									exit(1);
+								}	
+
+							}		
+						}
+						else if (getX() < ex->getTargetX())
+						{
+							// south
+							if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using south port.",getX(), getY());
+							if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
+
+							counterS++; 
+
+							if (ex->getDirection() == FORWARD)
+							{
+								//counterS_fw++; 
+								status = S_init_socket->nb_transport_fw(payload,phase,time_info);
+								if (status != tlm::TLM_UPDATED)
+								{
+									printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
+									exit(1);
+								}	
+							}
+							else
+							{
+								//counterS_bw++; 
+								status = S_target_socket->nb_transport_bw(payload,phase,time_info);
+								if (status != tlm::TLM_COMPLETED)
+								{
+									printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
+									exit(1);
+								}						
+							}
+
+
+						}
+						else 
+						{	
+								//north
+								if (NOC_DEBUG) printf ("\nTHREAD NODE--> Node %d,%d transporting using north port.",getX(), getY());
+								if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
+
+								counterN++;
+								if (ex->getDirection() == FORWARD)
+								{
 					
-
+								//	counterN_fw++;	
+									status = N_init_socket->nb_transport_fw(payload,phase,time_info);
+									if (status != tlm::TLM_UPDATED)
+									{
+										printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
+										exit(1);
+									}	
+								}
+								else
+								{
+								//	counterN_bw++;
+									status = N_target_socket->nb_transport_bw(payload,phase,time_info);
+									if (status != tlm::TLM_COMPLETED)
+									{
+										printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
+										exit(1);
+									}	
+								}
+						}
+			}
+			else if (getY() < ex->getTargetY())
+			{
 					if (NOC_DEBUG)	printf("\nTHREAD NODE--> Node %d,%d transporting using east port.",getX(),getY());
 					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
 
 					counterE++;
 
-					if (ex->getDirection() == FORWARD){
+					if (ex->getDirection() == FORWARD)
+					{
 
-						
+					//	counterE_fw++;
 						status = E_init_socket->nb_transport_fw(payload,phase,time_info);
 						if (status != tlm::TLM_UPDATED)
 						{
@@ -320,9 +337,10 @@ void tlm_node::thread_node ()
 						}	
 
 					}
-					else {
+					else
+					{
 
-						
+					//	counterE_bw++;
 						status = E_target_socket->nb_transport_bw(payload,phase,time_info);
 						if (status != tlm::TLM_COMPLETED)
 						{
@@ -333,72 +351,41 @@ void tlm_node::thread_node ()
 
 					}
 
-					
-				}
 			}
-
-			else if (getX() > ex->getTargetX())
+			else 
 			{
+					if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using west port.",getX(), getY());	
+					if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());		
 
-				if (NOC_DEBUG) printf ("\nTHREAD NODE--> Node %d,%d transporting using north port.",getX(), getY());
-				if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
+					counterW++;
 
-				counterN++;
-
-				if (ex->getDirection() == FORWARD) {
-					
-					
-					status = N_init_socket->nb_transport_fw(payload,phase,time_info);
-					if (status != tlm::TLM_UPDATED)
+					if (ex->getDirection() == FORWARD)
 					{
-						printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
-						exit(1);
-					}	
-				}
-				else {
-
-					
-					status = N_target_socket->nb_transport_bw(payload,phase,time_info);
-					if (status != tlm::TLM_COMPLETED)
+						
+					//	counterW_fw++;
+						status = W_init_socket->nb_transport_fw(payload,phase,time_info); 
+						if (status != tlm::TLM_UPDATED)
+						{
+							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
+							exit(1);
+						}	
+							
+					}
+					else
 					{
-						printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
-						exit(1);
-					}	
-
-				}
+				
+					//	counterW_bw++;
+						status =  W_target_socket->nb_transport_bw(payload,phase,time_info); 
+						if (status != tlm::TLM_COMPLETED)
+						{
+							printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
+							exit(1);
+						}	
+					}
 
 			}
-			else {
 
 
-				if (NOC_DEBUG) printf("\nTHREAD NODE--> Node %d,%d transporting using south port.",getX(), getY());
-				if (NOC_DEBUG) printf("\nTHREAD NODE--> Direction:%d.",ex->getDirection());	
-
-				counterS++; 
-
-				if (ex->getDirection() == FORWARD) {
-					
-					
-					status = S_init_socket->nb_transport_fw(payload,phase,time_info);
-					if (status != tlm::TLM_UPDATED)
-					{
-						printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (1)", getX(), getY());
-						exit(1);
-					}	
-				}
-				else {
-					
-					status = S_target_socket->nb_transport_bw(payload,phase,time_info);
-					if (status != tlm::TLM_COMPLETED)
-					{
-						printf("\nTHREAD NODE--> Node %d,%d TRANSPORT ERROR (2)", getX(), getY());
-						exit(1);
-					}						
-
-
-				}
-
-			}
 			if (NOC_DEBUG) printf("\nTHREAD NODE--> Thread of node %d,%d is calling wait (1)\n",getX(), getY());
 			wait(1,SC_NS);
 		}
@@ -407,8 +394,7 @@ void tlm_node::thread_node ()
 		
 		wait(this->wake_up);
 		if (NOC_DEBUG) printf("\nTHREAD NODE--> Thread of node %d,%d is waking up\n",getX(), getY());
-		
-		
+	
 	}
 
 }
