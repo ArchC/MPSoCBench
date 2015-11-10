@@ -34,7 +34,8 @@ clean:
 
 distclean: clean
 
-.SUFFIXES:
+.SILENT:
+
 .SUFFIXES:	.o .c .C .h .H
 
 bin:
