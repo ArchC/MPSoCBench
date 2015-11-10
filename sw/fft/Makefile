@@ -1,3 +1,4 @@
+SHELL := /bin/bash 
 # ####################################################
 # FFT for dual processor platform
 # ####################################################
@@ -35,7 +36,8 @@ clean:
 
 distclean: clean
 
-.SUFFIXES:
+.SILENT:
+
 .SUFFIXES:	.o .c .C .h .H
 
 .H.h:
