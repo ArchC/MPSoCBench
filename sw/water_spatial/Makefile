@@ -1,10 +1,10 @@
 # ####################################################
 # Water Spatial for dual processor platform
 # ####################################################
-
+SHELL := /bin/bash 
+ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
-
 
 CFLAGS = -msoft-float -DNPROC=$(NUMPROCESSORS) $(POWER_SIM_FLAG) -specs=archc
 
@@ -32,7 +32,8 @@ clean:
 
 distclean: clean
 
-.SUFFIXES:
+.SILENT:
+	
 .SUFFIXES:	.o .c .C .h .H
 
 bin:
@@ -75,6 +76,6 @@ copy:
 	cp Makefile ../../rundir/$(RUNDIRNAME)/Makefile.check
 	
 check:
-	echo "\n\nTESTING RESULTS"
+	$(ECHO) "\n\nTESTING RESULTS"
 	sort output > output.sorted 
-	if diff output.sorted output.base > diff.txt ; then echo "\nTest Passed."; else echo "\nTest Failed."; fi
+	if diff output.sorted output.base > diff.txt ; then $(ECHO) "\nTest Passed."; else $(ECHO) "\nTest Failed."; fi

@@ -1,7 +1,7 @@
 # ####################################################
 # Water for dual processor platform
 # ####################################################
-
+SHELL := /bin/bash 
 ECHO := /bin/echo -e
 CC = $(CROSS)
 TARGET = $(SOFTWARE).$(PROCESSOR)
