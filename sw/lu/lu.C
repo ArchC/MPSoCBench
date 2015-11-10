@@ -180,7 +180,18 @@ int main(int argc, char *argv[])
 
   } else{
 
-      SlaveStart();
+
+  #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
+    SlaveStart();
+
+    #ifdef POWER_SIM
+    pthread_changePowerState(LOW);
+    #endif
+      
+     
   }
   _exit(0);  
   return 0; // Never executed, just for compatibility

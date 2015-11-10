@@ -58,7 +58,7 @@
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
 #define DFS_DEBUG       0
-#define INTR_CTRL_DEBUG 1
+#define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS
 

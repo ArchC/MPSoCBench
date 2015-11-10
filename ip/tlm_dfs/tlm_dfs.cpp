@@ -122,7 +122,7 @@ void tlm_dfs::b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info)
     tlm_command command = payload.get_command();
 
     unsigned int procId = payload.get_streaming_width();
-    printf("\ntml_dfs transport: procId=%d", procId);
+    //printf("\ntml_dfs transport: procId=%d", procId);
 
     if (measures) count_dfs ++;
 

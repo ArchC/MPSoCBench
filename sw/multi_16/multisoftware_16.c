@@ -475,8 +475,8 @@ else if (procNumber == 9)
   }
   ReleaseGlobalLock();
 
-  //_exit(0);
-  exit(0); //avoiding warning
+  _exit(0);
+  //exit(0); 
   return 0;
    
 }

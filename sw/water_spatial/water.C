@@ -172,7 +172,16 @@ int main(int argc, char *argv[])
 		fclose(six);
   }
   else{
-      WorkStart();
+       #ifdef POWER_SIM
+    pthread_changePowerState(HIGH);
+    #endif
+
+    WorkStart();
+
+    #ifdef POWER_SIM
+    pthread_changePowerState(LOW);
+    #endif
+      
   }
   MAIN_END;	
 

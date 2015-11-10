@@ -178,7 +178,9 @@ int main(int argc, char *argv[])
 	
 	main_stringsearch();
 
-	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif	
 
 		
      
@@ -198,7 +200,9 @@ int main(int argc, char *argv[])
 
 	main_dijkstra();
 
-
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif	
 	
 
   }
@@ -218,7 +222,9 @@ int main(int argc, char *argv[])
 
 	main_basicmath ();		
 
-	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif		
 
 
   }
@@ -237,7 +243,9 @@ int main(int argc, char *argv[])
 
 	main_sha();  
 
-	
+	#ifdef POWER_SIM
+ 	pthread_changePowerState(LOW);
+  	#endif	
 
   }
   else

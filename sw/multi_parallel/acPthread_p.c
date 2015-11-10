@@ -339,7 +339,7 @@ void pthread_executeThread ()
 	(*fp)(arg);
 
 	#ifdef POWER_SIM
-	//pthread_changePowerState(LOW);
+	pthread_changePowerState(LOW);
 	#endif 
 
 

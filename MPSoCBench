@@ -470,9 +470,9 @@ def heterogen(prep, nobuild, nproc, intercon):
 
 procs = ['arm', 'mips', 'powerpc', 'sparc']
 nprocs = ['1', '2', '4', '8', '16', '32', '64']
-sws = ['basicmath', 'dijkstra', 'hello', 'hello_world_mutex', 'fft', 'lu', 'ocean', 'sha', 
+sws = ['basicmath', 'dijkstra', 'fft', 'lu', 'ocean', 'sha', 
        'stringsearch', 'susancorners', 'susanedges', 'susansmoothing',
-       'water', 'water_spatial', 'multi_parallel', 'multi_8', 'multi_16', 'multi_network_automotive','multi_office_telecomm', 'multi_security']
+       'water', 'water_spatial', 'multi_parallel', 'multi_8', 'multi_16', 'multi_network_automotive','multi_office_telecomm', 'multi_security','hello_world_mutex']
 intercons = ['noc.at', 'noc.lt', 'router.lt', 'noc.hermes']
 
 
@@ -482,7 +482,6 @@ valid_platform = {'basicmath':{'1':True, '2':True, '4':True, '8':True, '16':True
                    'water':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
                    'dijkstra':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'hello_world_mutex':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
-                   'hello':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'fft':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':False, '64':False},
                    'stringsearch':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':True},
                    'susancorners':{'1':True, '2':True, '4':True, '8':True, '16':True, '32':True, '64':False},
