@@ -560,6 +560,7 @@ void acPthread_free(void *ptr)
 
 void pthread_changePowerState(int state)
 {
+
 	*dfs = state;
 }
 

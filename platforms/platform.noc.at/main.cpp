@@ -357,11 +357,13 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 processors[i]->IC.powersc_connect();
-		 processors[i]->DC.powersc_connect();
+		 //processors[i]->IC.powersc_connect();
+		 //processors[i]->DC.powersc_connect();
 	}
 	
-	noc.powersc_connect();
+	//noc.powersc_connect();
+	//mem.powersc_connect();
+	
 	processors[N_WORKERS-1]->ps.report();
 
 	#endif
@@ -374,6 +376,8 @@ int sc_main(int ac, char *av[])
 		 d += processors[i]->ps.getEnergyPerCore();
  	}
 	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(local_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(global_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	#endif
 
 	
@@ -385,8 +389,7 @@ int sc_main(int ac, char *av[])
 	noc.destroyComponents();
 
 
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	
 
 
 	for (int i=0; i<N_WORKERS; i++){
@@ -394,6 +397,10 @@ int sc_main(int ac, char *av[])
 	}
 	delete processors;
 
+
+	fclose(local_time_measures);
+	fclose(global_time_measures);
+	
 	return status; 
 }
 
@@ -414,16 +421,12 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
-	//fclose(local_time_measures);
-	//fclose(global_time_measures);
-
 
 }
     
 void report_end()
 {
-	//global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
-	//local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
+	
 
 
 	gettimeofday(&endTime, NULL);
@@ -434,9 +437,9 @@ void report_end()
 	printf("\nTotal Time Taken (seconds):\t%lf", (tE - tS)/1000000);
 
 	sc_core::sc_time time = sc_time_stamp();
-        fprintf(local_time_measures,"\nSimulation advance (seconds):\t%lf",time.to_seconds());		
-        fprintf(global_time_measures,"\nSimulation advance (seconds):\t%lf",time.to_seconds());		
-        printf("\nSimulation advance (seconds):\t%lf",time.to_seconds());		
+    fprintf(local_time_measures,"\nSimulation advance (seconds):\t%lf",time.to_seconds());		
+    fprintf(global_time_measures,"\nSimulation advance (seconds):\t%lf",time.to_seconds());		
+    printf("\nSimulation advance (seconds):\t%lf",time.to_seconds());		
 
 	printf("\nMPSoCBench: Ending the time simulation measurement.\n");
 

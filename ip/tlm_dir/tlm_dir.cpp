@@ -84,7 +84,7 @@ tlm_dir::tlm_dir(sc_module_name module_name, int n) :
     CPU_port = new sc_port<ac_tlm2_blocking_transport_if>[workers];
     value = 0;
 	dir = new Dir();
-	local_dir_file = fopen ("dir_acess.txt","a");
+	//local_dir_file = fopen ("dir_acess.txt","a");
     
 }
 
@@ -96,8 +96,8 @@ tlm_dir::~tlm_dir() {
      global_dir_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      
      fprintf(global_dir_file, "\nDir Access:\t%ld", count_dir);
-     fclose (local_dir_file);
-     fclose (global_dir_file);
+     //fclose (local_dir_file);
+     //fclose (global_dir_file);
   }
  delete dir;
 }

@@ -51,8 +51,8 @@ tlm_lock::~tlm_lock() {
      fprintf(global_lock_file, "\nLock Access:\t%ld", count_lock);
      printf("\nLock Access:\t%ld", count_lock);
 
-     fclose (local_lock_file);
-     fclose (global_lock_file);
+     //fclose (local_lock_file);
+     //fclose (global_lock_file);
   }
 
 }

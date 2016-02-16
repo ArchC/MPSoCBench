@@ -160,7 +160,7 @@ tlm_memory::~tlm_memory() {
         fprintf(local_memory_file, "\t%u", this->processorsWrites[it2]);
      }
      fprintf(local_memory_file, "\n************************************ Memory report ************************************");
-     fclose (local_memory_file);
+     //fclose (local_memory_file);
 
      global_memory_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      fprintf(global_memory_file, "\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
@@ -177,14 +177,14 @@ tlm_memory::~tlm_memory() {
      }
      fprintf(global_memory_file, "\n************************************ Memory report ************************************");
      printf("\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
-     fclose (global_memory_file);
+     //fclose (global_memory_file);
 
 
 
         #ifdef DRAMSIM2
         local_memory_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
         this->printStatus(local_memory_file, true, true);
-        fclose(local_memory_file);
+        //fclose(local_memory_file);
         printf("\n\nDRAMSim output written to file\n");
         this->printStatus(local_memory_file, true, false);
         #endif

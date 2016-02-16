@@ -61,8 +61,8 @@ tlm_lock::~tlm_lock() {
      global_lock_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      fprintf(local_lock_file, "\nLock Access:\t%ld", count_lock);
      fprintf(global_lock_file, "\nLock Access:\t%ld", count_lock);
-     fclose (local_lock_file);
-     fclose (global_lock_file);
+     //fclose (local_lock_file);
+    // fclose (global_lock_file);
   }
 
 

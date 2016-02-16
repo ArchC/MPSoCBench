@@ -57,7 +57,7 @@
 #define LOCK_DEBUG      0
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
-#define DFS_DEBUG       0
+#define DFS_DEBUG       1
 #define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS
@@ -69,12 +69,12 @@
 
 // TIMING STATIC PARAMETERS
 #define TIME_MEMORY    100
-#define TIME_DIR       2
-#define TIME_NODE      2
-#define TIME_ROUTER    2
-#define TIME_LOCK      2
-#define TIME_DFS       1
-#define TIME_INTR_CTRL 5
+#define TIME_DIR       20
+#define TIME_NODE      6
+#define TIME_ROUTER    20
+#define TIME_LOCK      20
+#define TIME_DFS       20
+#define TIME_INTR_CTRL 20
 
 
 // DVFS STATIC PARAMETERS
@@ -86,10 +86,10 @@
 
 // But if you want to desable DFS (using just a single power state), use HIGH=LOW=0 
 
-//#define OFF // already defined for NoCs
+
 #define HIGH 3
 #define LOW 0
-#define INITIAL_PW_STATE 3
+#define INITIAL_PW_STATE 0
 
 //#define DFS_AUTO_SELECTION_CPU_RATE
 //#define DFS_AUTO_SELECTION_ENERGY_STAMP
@@ -140,5 +140,4 @@
 // NoC Hermes STATIC PARAMETERS - NOT IN USE IN THIS VERSION
 #define LOCAL_MEM_SIZE  67108864
 #define TEXTAREA	0x00d16f
- 
 #endif

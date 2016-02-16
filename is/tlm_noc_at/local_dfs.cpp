@@ -85,13 +85,11 @@ void local_dfs::initializePowerStates()
 
   setInitialPowerState (INITIAL_PW_STATE);
 
-  //if (proc->getId() >= 0 && proc->getId() < 8)  setInitialPowerState (2);
-  //else if (proc->getId() >= 8 && proc->getId() < 16) setInitialPowerState (0);  
-  //else if (proc->getId() >= 11 && proc->getId() < 16) setInitialPowerState (3);  
+  //if (proc->getId() >= 0 && proc->getId() < 16)  setInitialPowerState (3);
+  //else if (proc->getId() >= 8 && proc->getId() < 16) setInitialPowerState (3);  
+  //else if (proc->getId() >= 8 && proc->getId() < 12) setInitialPowerState (2);  
+  //else if (proc->getId() >= 12 && proc->getId() < 16) setInitialPowerState (3);  
   
-  //if (proc->getId() >= 0 && proc->getId() < 6) setPowerState(0);
-  //if (proc->getId() >=6 && proc->getId() < 11) setPowerState(1);
-  //if (proc->getId() >=11 && proc->getId() < 16) setPowerState(2);
 
   
   }
@@ -154,16 +152,7 @@ void local_dfs::autoSelectionEnergyStamp ()
 {
   double t = sc_time_stamp().to_seconds();
   
-  /*if (!end_of_init_phase)
-  {
-      if (t >= FIRST_DELTA_T)
-      {
-         end_of_init_phase = true;
-         (proc->ps).initialize_energy_stamp();
-    
-      }
-  }*/
-  //else 
+ 
   if (!end_of_elab_phase)
   {  
     //if (t >= (lastTimeES + FIRST_DELTA_T + DELTA_T))
@@ -324,23 +313,6 @@ void local_dfs::remakeBounds()
   bounds[3].high = 100;
 
 
-
-/*
-  bounds[0].low  = 0;
-  bounds[0].high = min_cpu_usage_rate*100;
-
-  bounds[1].low  = bounds[0].high - 0.25*(bounds[0].high);
-  bounds[1].high = ((min_cpu_usage_rate+max_cpu_usage_rate)/2)*100;
-
-
-  bounds[2].low  = bounds[1].high - 0.25*(bounds[1].high);
-  bounds[2].high = (max_cpu_usage_rate*100);
-
-  bounds[3].low  = bounds[2].high - 0.25*(bounds[2].high);
-  bounds[3].high = 100;
-
-*/
-
   min_cpu_usage_rate = 1;
   max_cpu_usage_rate = 0;
 
@@ -434,6 +406,5 @@ void local_dfs::readBounds ()
 }
 
 
-#endif
 #endif
 

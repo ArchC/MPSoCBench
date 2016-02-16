@@ -501,9 +501,10 @@ void acPthread_free(void *ptr)
 
 void pthread_changePowerState(int state)
 {
-	//pthread_mutex_lock(&mutex_print);
-	//printf("\nem pthread_changePowerState , state %d",state);
-	//pthread_mutex_unlock(&mutex_print);
+	pthread_mutex_lock(&mutex_print);
+	printf("\nem pthread_changePowerState , state %d",state);
+	pthread_mutex_unlock(&mutex_print);
+	
 	*dfs = state;
 }
 
@@ -511,7 +512,7 @@ void pthread_changePowerState(int state)
 void pthread_turnOnProcessors()
 {
 
-	//printf("Acordando processadores");
+	
 	*intr_ctrl = ON;
 }
 

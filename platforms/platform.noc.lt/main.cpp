@@ -36,7 +36,6 @@ const char *archc_options="";
 #include  "tlm_intr_ctrl.h"
 //#include  "tlm_dir.h"
 
-
 using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
@@ -176,7 +175,6 @@ int sc_main(int ac, char *av[])
     	column = 0;
     }
     
-
 		// Connecting the interrupt controler (intr_ctrl) with the noc node [1][0] (noc 2x2) or [0][2] (other cases)
 		// third peripheral address space: 0x21000000...0x22000000-1
 		noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
@@ -189,9 +187,6 @@ int sc_main(int ac, char *av[])
 			line = 1;
 			column = 0;
 		}
-
-
-	
 
 	
 		#ifdef POWER_SIM 
@@ -331,8 +326,8 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
 		 processors[i]->ps.powersc_connect();
-		 //processors[i]->DC.powersc_connect();
-		 //processors[i]->IC.powersc_connect();
+		 processors[i]->DC.powersc_connect();
+		 processors[i]->IC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
 	#endif
@@ -344,9 +339,13 @@ int sc_main(int ac, char *av[])
 		 d += processors[i]->ps.getEnergyPerCore();
  	}
 	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(local_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(global_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	#endif
 
 
+
+	
 
 
 	// Checking the status 
@@ -361,6 +360,8 @@ int sc_main(int ac, char *av[])
 	delete processors;
 
 
+    fclose(local_time_measures);
+	fclose(global_time_measures);
 
 	return status; 
 
@@ -383,10 +384,7 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
-	//fclose(local_time_measures);
-	//fclose(global_time_measures);
-
-
+	
 }
     
 void report_end()
@@ -408,8 +406,7 @@ void report_end()
         printf("\nSimulation advance (seconds):\t%lf",time.to_seconds());		
 
 	printf("\nMPSoCBench: Ending the time simulation measurement.\n");
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	
 }
 
 

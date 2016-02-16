@@ -207,8 +207,8 @@ int sc_main(int ac, char *av[])
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
   		 processors[i]->ps.powersc_connect();
-  		 //processors[i]->IC.powersc_connect();
-  		 //processors[i]->DC.powersc_connect();
+  		 processors[i]->IC.powersc_connect();
+  		 processors[i]->DC.powersc_connect();
 	}
 	processors[N_WORKERS-1]->ps.report();
 	#endif
@@ -222,7 +222,13 @@ int sc_main(int ac, char *av[])
 		 d += processors[i]->ps.getEnergyPerCore();
  	}
 	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(local_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	fprintf(global_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	#endif
+
+
+
+
 
 	// Checking the status 
 	bool status = 0;
@@ -236,6 +242,9 @@ int sc_main(int ac, char *av[])
 	}
 	delete [] processors;
 	
+
+	fclose(local_time_measures);
+	fclose(global_time_measures);
 	return status; 
 
 
@@ -282,8 +291,7 @@ void report_end()
         printf("\nSimulation advance (seconds):\t%lf",time.to_seconds());		
 
 	printf("\nMPSoCBench: Ending the time simulation measurement.\n");
-	fclose(local_time_measures);
-	fclose(global_time_measures);
+	
 }
 
 

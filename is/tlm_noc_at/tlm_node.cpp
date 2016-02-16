@@ -386,8 +386,8 @@ void tlm_node::thread_node ()
 			}
 
 
-			if (NOC_DEBUG) printf("\nTHREAD NODE--> Thread of node %d,%d is calling wait (1)\n",getX(), getY());
-			wait(1,SC_NS);
+			if (NOC_DEBUG) printf("\nTHREAD NODE--> Thread of node %d,%d is calling wait (TIME_NODE)\n",getX(), getY());
+			wait(TIME_NODE,SC_NS);
 		}
 		
 		if (NOC_DEBUG) printf("\nTHREAD NODE--> Thread of node %d,%d is calling wait(event) (2)\n",getX(), getY());

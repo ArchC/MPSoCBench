@@ -89,12 +89,12 @@ tlm_dfs::~tlm_dfs()
   {
      local_dfs_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
      fprintf(local_dfs_file, "\ndfs Access:\t%ld", count_dfs);
-     fclose (local_dfs_file);
+     //fclose (local_dfs_file);
 
      global_dfs_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
      fprintf(global_dfs_file, "\ndfs Access:\t%ld", count_dfs);
      printf("\ndfs Access:\t%ld", count_dfs);
-     fclose (global_dfs_file);
+     //fclose (global_dfs_file);
   }
 
   for (int i=0; i<workers; i++)
@@ -192,11 +192,22 @@ void tlm_dfs::initializePowerStates(PROCESSOR_NAME** processors)
               printf("%d,",powerStates[i].listOfStates[j]);
             }    
           }
+
+
+          //if (DFS_DEBUG) printf("\nDFS: Initializing Processor %d with power state %d.",i,INITIAL_PW_STATE);
+          //int newFrequency = powerStates[i].listOfStates[INITIAL_PW_STATE];
+          //(powerStates[i].procPointer)->set_proc_freq(newFrequency);
+          //(powerStates[i].procPointer)->ps.setPowerState(INITIAL_PW_STATE);
+
       }
 
-
-
 }
+
+
+
+
+
+
 
 int tlm_dfs::getPowerState (int id)
 {
