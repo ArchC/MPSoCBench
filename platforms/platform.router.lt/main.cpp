@@ -226,10 +226,6 @@ int sc_main(int ac, char *av[])
 	fprintf(global_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	#endif
 
-
-
-
-
 	// Checking the status 
 	bool status = 0;
 	for (int i=0; i<N_WORKERS; i++)

@@ -36,6 +36,9 @@ using user::tlm_payload_extension;
 //using user::wrapper_master_to_noc;
 //using user::wrapper_slave_to_noc;
 
+int wrapper_master_slave_to_noc::counterDFS = 0;
+
+
 wrapper_master_slave_to_noc::wrapper_master_slave_to_noc():
   module_name("wrapper_master_slave"),
   sc_module((sc_module_name)module_name),
@@ -260,8 +263,12 @@ tlm::tlm_sync_enum wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload&
 #ifdef POWER_SIM
 void wrapper_master_slave_to_noc::initDFS (PROCESSOR_NAME* proc)
 {
-	
-    dfs = new local_dfs("dfs",proc);
+
+	char name[7];
+	sprintf(name, "%d", wrapper_master_slave_to_noc::counterDFS++);
+	strcat (name, "_dfs");
+
+	dfs = new local_dfs(proc,name);
     
 }
 #endif

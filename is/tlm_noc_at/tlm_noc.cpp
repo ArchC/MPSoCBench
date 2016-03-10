@@ -77,12 +77,29 @@ sc_module( module_name )
 
 void tlm_noc::create ()
 {
-
+	/*
 	mesh = new tlm_node*[numberOfLines];
-	
 	for (unsigned int i=0; i<numberOfLines; i++)
-        	mesh[i] = new tlm_node[numberOfColumns];
+	{
 		
+        mesh[i] = new tlm_node[numberOfColumns];
+	}
+	*/
+			
+	std::vector<tlm_node*> *tmp;
+	char charBuffer[100];
+	for (unsigned int i=0; i<numberOfLines; i++)
+	{	
+		tmp= new std::vector<tlm_node*>();
+		for (unsigned int j=0; j<numberOfColumns; j++)
+		{
+			snprintf(charBuffer, 100, "tlm_noc_%i_%i", i, j);
+			tmp->push_back(new tlm_node(charBuffer) );
+		}
+		mesh.push_back(tmp);
+	}
+	// (*mesh[i])[j]->counterN
+	
     wrapper = new wrapper_master_slave_to_noc[getNumberOfWrappers()];
     slaveEmptyNodes = new tlm_slave_node [getNumberOfSlaveEmptyNodes()];
 	masterEmptyNodes = new tlm_master_node [getNumberOfMasterEmptyNodes()];
@@ -140,25 +157,33 @@ void tlm_noc::destroyComponents ()
 		{
 			for (unsigned int j=0; j<numberOfColumns; j++)
 			{
-					fprintf(local_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, mesh[i][j].counterN);
-					fprintf(local_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, mesh[i][j].counterS);
-					fprintf(local_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, mesh[i][j].counterE);
-					fprintf(local_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, mesh[i][j].counterW);
-					fprintf(local_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, mesh[i][j].counterL);
-					fprintf(global_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, mesh[i][j].counterN);
-					fprintf(global_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, mesh[i][j].counterS);
-					fprintf(global_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, mesh[i][j].counterE);
-					fprintf(global_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, mesh[i][j].counterW);
-					fprintf(global_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, mesh[i][j].counterL);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, (*mesh[i])[j]->counterN);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, (*mesh[i])[j]->counterS);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, (*mesh[i])[j]->counterE);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, (*mesh[i])[j]->counterW);
+					fprintf(local_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, (*mesh[i])[j]->counterL);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through north port: \t%d", i, j, (*mesh[i])[j]->counterN);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through south port: \t%d", i, j, (*mesh[i])[j]->counterS);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through east port: \t%d", i, j, (*mesh[i])[j]->counterE);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through west port: \t%d", i, j, (*mesh[i])[j]->counterW);
+					fprintf(global_noc_file, "\nNode %d,%d-> packages through local port: \t%d", i, j, (*mesh[i])[j]->counterL);
 			
 			}	
 		}
 	}
 	
 	for (unsigned int i=0; i<numberOfLines; i++)
-		delete [] mesh[i];
+	{	
+		for (unsigned int j=0; j<numberOfColumns; j++)
+			delete (*mesh[i])[j];
+		delete mesh[i];
+	}
+	
+	
+	//for (unsigned int i=0; i<numberOfLines; i++)
+	//	delete [] mesh[i];
 
-	delete [] mesh;
+	//delete [] mesh;
 	
     delete [] masterEmptyNodes;
 	delete [] slaveEmptyNodes;
@@ -179,9 +204,9 @@ void tlm_noc::init()
 	{
 		for (unsigned int j=0; j<numberOfColumns; j++)
 		{
-			mesh[i][j].setStatus(OFF);
+			(*mesh[i])[j]->setStatus(OFF);
 			#ifdef POWER_SIM
-      		mesh[i][j].ps = &ps;
+      		(*mesh[i])[j]->ps = &ps;
 			#endif
 		}
 	}
@@ -215,7 +240,7 @@ void tlm_noc::bindingInternalPorts()
 		{	
 			// status
 			if (wrMS < getNumberOfPeripherals()) { 
-				mesh[i][j].setStatus(ON);
+				(*mesh[i])[j]->setStatus(ON);
 				wrapper[wrMS].setStatus(ON);
 			}
 			
@@ -223,31 +248,31 @@ void tlm_noc::bindingInternalPorts()
 			// position
 			wrapper[wrMS].setX(i);
 			wrapper[wrMS].setY(j);
-			mesh[i][j].setX(i);
-			mesh[i][j].setY(j);
+			(*mesh[i])[j]->setX(i);
+			(*mesh[i])[j]->setY(j);
 		
 			// bind node and wrapper
-			mesh[i][j].LOCAL_init_socket.bind(wrapper[wrMS].NODE_target_socket);
-        	wrapper[wrMS].NODE_init_socket.bind(mesh[i][j].LOCAL_target_socket);	
+			(*mesh[i])[j]->LOCAL_init_socket.bind(wrapper[wrMS].NODE_target_socket);
+        	wrapper[wrMS].NODE_init_socket.bind((*mesh[i])[j]->LOCAL_target_socket);	
 
 			wrMS++;
 
 			// binding internal ports
 			if (j<numberOfColumns-1) {	
 				if (NOC_DEBUG) printf("\nBinding E init socket of node %d,%d and W target socket of node %d,%d",i,j,i,j+1);
-				mesh[i][j].E_init_socket.bind(mesh[i][j+1].W_target_socket);
+				(*mesh[i])[j]->E_init_socket.bind((*mesh[i])[j+1]->W_target_socket);
 
 				
 			}
 			else { 
 				if (NOC_DEBUG) printf("\nBinding E init socket and E target socket of node %d,%d",i,j);
-				mesh[i][j].E_init_socket.bind(mesh[i][j].E_target_socket);
+				(*mesh[i])[j]->E_init_socket.bind((*mesh[i])[j]->E_target_socket);
 
 				
 			}
 			if (j>0){
 				if (NOC_DEBUG) printf("\nBinding W init socket of node %d,%d and E target socket of node %d,%d",i,j,i,j-1);
-				mesh[i][j].W_init_socket.bind(mesh[i][j-1].E_target_socket);
+				(*mesh[i])[j]->W_init_socket.bind((*mesh[i])[j-1]->E_target_socket);
 
 				
 				
@@ -255,7 +280,7 @@ void tlm_noc::bindingInternalPorts()
 			}
 			else { 
 				if (NOC_DEBUG) printf("\nBinding W init socket and W target socket of node %d,%d",i,j);
-				mesh[i][j].W_init_socket.bind(mesh[i][j].W_target_socket);
+				(*mesh[i])[j]->W_init_socket.bind((*mesh[i])[j]->W_target_socket);
 				
 				
 
@@ -263,26 +288,26 @@ void tlm_noc::bindingInternalPorts()
 
 			if (i>0){
 				if (NOC_DEBUG) printf("\nBinding N init socket of node %d,%d and S target socket of node %d,%d",i,j,i-1,j);
-				mesh[i][j].N_init_socket.bind(mesh[i-1][j].S_target_socket);
+				(*mesh[i])[j]->N_init_socket.bind((*mesh[i-1])[j]->S_target_socket);
 				
 				
 			}
 			else { 
 				if (NOC_DEBUG) printf("\nBinding N init socket and N target socket of node %d,%d",i,j);
-				mesh[i][j].N_init_socket.bind(mesh[i][j].N_target_socket);
+				(*mesh[i])[j]->N_init_socket.bind((*mesh[i])[j]->N_target_socket);
 
 				
 			}
 
 			if (i<numberOfLines-1){
 				if (NOC_DEBUG) printf("\nBinding S init socket of node %d,%d and N target socket of node %d,%d",i,j,i+1,j);
-				mesh[i][j].S_init_socket.bind(mesh[i+1][j].N_target_socket);
+				(*mesh[i])[j]->S_init_socket.bind((*mesh[i+1])[j]->N_target_socket);
 				
 				
 			}	
 			else { 
 				if (NOC_DEBUG) printf("\nBinding S init socket and S target socket of node %d,%d",i,j);
-				mesh[i][j].S_init_socket.bind(mesh[i][j].S_target_socket);
+				(*mesh[i])[j]->S_init_socket.bind((*mesh[i])[j]->S_target_socket);
 				
 				
 			}
@@ -404,7 +429,7 @@ void tlm_noc::print ()
 	{
 		for (int j=0; j<m; j++)
 		{
-			printf("\nmesh[%d][%d]: status-> %d  x->%d  y->%d",i,j,mesh[i][j].getStatus(),mesh[i][j].getX(),mesh[i][j].getY());
+			printf("\nmesh[%d][%d]: status-> %d  x->%d  y->%d",i,j,(*mesh[i])[j]->getStatus(),(*mesh[i])[j]->getX(),(*mesh[i])[j]->getY());
 			
 		}
 	}

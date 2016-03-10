@@ -24,6 +24,7 @@
 // PLATFORM STATIC PARAMETERS
 #define LOCAL_FILE_MEASURES_NAME "local_report.txt"
 #define GLOBAL_FILE_MEASURES_NAME "../../global_report.txt"
+
 #define MAX_WORKERS 64 	/* This is a arbitrary limit for the number of processors. If necessary, this value can be modified, but
  there is no guarantee that all applications will work properly */
 
@@ -57,7 +58,7 @@
 #define LOCK_DEBUG      0
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
-#define DFS_DEBUG       1
+#define DFS_DEBUG       0
 #define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS

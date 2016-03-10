@@ -20,7 +20,13 @@ class local_dfs:  public sc_module
 {
 public:
 
-   local_dfs(sc_module_name module_name, PROCESSOR_NAME*);
+
+
+
+   local_dfs(PROCESSOR_NAME*, sc_module_name module_name);
+   local_dfs(PROCESSOR_NAME*);
+
+
   ~local_dfs();
      
    void initializePowerStates();
@@ -66,7 +72,7 @@ private:
   #endif
 
   
-    
+  const char *module_name;
 
   #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
   double  lastTimeES;
@@ -79,6 +85,9 @@ private:
 };
 
 };
+
+
+
 
 #endif //LOCAL_DFS_H_
 
