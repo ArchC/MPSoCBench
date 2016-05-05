@@ -47,7 +47,8 @@
 #include "routing_table.h"
 #include "wrappers_noc.h"
 #include "../../defines.h"
-
+//#include <sysc/utils/sc_vector.h>
+#include <vector>
 //////////////////////////////////////////////////////////////////////////////
 
 using tlm::tlm_blocking_transport_if;
@@ -100,7 +101,11 @@ public:
   void preparingRoutingTable();
   void destroyComponents();
 
-  tlm_node **mesh;
+  //tlm_node **mesh;
+  //fcm
+  //sc_core::sc_vector<*sc_core::sc_vector<*tlm_node>> *mesh;
+  std::vector<std::vector<tlm_node*>*> mesh;
+  
   routing_table tableOfRouts; 
   tlm_slave_node  *slaveEmptyNodes;
   tlm_master_node *masterEmptyNodes;

@@ -50,14 +50,14 @@
 #define DELTA_IP_ADDRESS    0x00000100
 #define DELTA               16777216  // 16^6 = 0x1000000
 
-//#define DRAMSIM2	1
+#define DRAMSIM2	1
 
 // DEBUG FLAGS
 #define NOC_DEBUG       0
 #define LOCK_DEBUG      0
 #define MEMORY_DEBUG    0
 #define ROUTER_DEBUG    0
-#define DFS_DEBUG       1
+#define DFS_DEBUG       0
 #define INTR_CTRL_DEBUG 0
 
 // ROUTER STATIC PARAMETERS
