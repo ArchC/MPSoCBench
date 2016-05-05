@@ -24,6 +24,7 @@
 // PLATFORM STATIC PARAMETERS
 #define LOCAL_FILE_MEASURES_NAME "local_report.txt"
 #define GLOBAL_FILE_MEASURES_NAME "../../global_report.txt"
+
 #define MAX_WORKERS 64 	/* This is a arbitrary limit for the number of processors. If necessary, this value can be modified, but
  there is no guarantee that all applications will work properly */
 

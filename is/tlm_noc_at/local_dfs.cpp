@@ -9,8 +9,40 @@
 using user::local_dfs;
 
 
-local_dfs::local_dfs( sc_module_name module_name, PROCESSOR_NAME* proc):
+local_dfs::local_dfs(PROCESSOR_NAME* proc, sc_module_name module_name ):
 sc_module( module_name )
+{
+  
+  this->proc   = proc;
+  this->numberOfStates = 0;
+  this->listOfStates = NULL;  
+
+  #ifdef  DFS_AUTO_SELECTION_CPU_RATE
+  this->fwTime = 0;
+  this->bwTime = 0;
+  this->bounds = NULL;
+  this->deltaCounter = 0;
+  this->cpu_wait_time = 0;
+  this->cpu_usage_rate = 0;
+  this->max_cpu_usage_rate = 0;
+  this->min_cpu_usage_rate = 1;
+  #endif 
+
+  #ifdef  DFS_AUTO_SELECTION_ENERGY_STAMP
+  this->lastTimeES = 0;
+  this->end_of_elab_phase = false;
+  this->end_of_init_phase = false;
+  energyStamp = NULL;
+  #endif
+
+  initializePowerStates();
+}
+
+
+
+local_dfs::local_dfs(PROCESSOR_NAME* proc):
+module_name("dfs"),
+sc_module((sc_module_name)module_name)
 {
   
   this->proc   = proc;
@@ -53,6 +85,9 @@ local_dfs::~local_dfs()
 
   delete [] listOfStates;
 }
+
+
+
 
 void local_dfs::initializePowerStates()
 {

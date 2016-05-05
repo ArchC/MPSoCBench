@@ -42,6 +42,7 @@
 
 #include <systemc>
 #include <tlm.h>
+
 #include "ac_tlm_protocol.H"
 #include "tlm_payload_extension.h"
 //#include "tlm_payload_dir_extension.H"
@@ -134,6 +135,10 @@ public:
   void initDFS (PROCESSOR_NAME* proc);
   #endif
 
+
+  static int counterDFS;
+
+
 private:
 
   unsigned int posX;
@@ -145,14 +150,13 @@ private:
   long int numberOfHops;
   long int numberOfPackages;
   /* NUMBER OF HOPS */
-
-
-
-  
   
   
 };
 
 
 };
+
+
+
 #endif
