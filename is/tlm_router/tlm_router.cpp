@@ -95,12 +95,15 @@ tlm_router::~tlm_router()
   if (measures) 
   {
      local_router_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
-     fprintf(local_router_file, "\nRouter Access:\t%ld", count_traffic);
-     fclose (local_router_file);
-
      global_router_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
+
+
+     fprintf(local_router_file, "\nRouter Access:\t%ld", count_traffic);
      fprintf(global_router_file, "\nRouter Access:\t%ld", count_traffic);
      printf("\nRouter Access:\t%ld", count_traffic);
+     
+
+     fclose (local_router_file);
      fclose (global_router_file);
 
   }

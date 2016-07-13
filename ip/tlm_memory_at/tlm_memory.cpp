@@ -126,8 +126,15 @@ tlm_memory::~tlm_memory() {
   {
      
      local_memory_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
-     fprintf(local_memory_file, "\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
+     global_memory_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
+
+
+     printf("\n************************************ Memory report ************************************");
+     printf("\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
+     printf("\nDetailed memory reports in the local_report.txt file.");
      
+     fprintf(local_memory_file, "\n************************************ Memory report ************************************");
+     fprintf(local_memory_file, "\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
      fprintf(local_memory_file, "\nReads and writes per core:");
      fprintf(local_memory_file, "\nTotal reads\tTotal writes");
      
@@ -138,10 +145,10 @@ tlm_memory::~tlm_memory() {
       if(this->processorsWrites[it] > 0)
         fprintf(local_memory_file, "\t%u", this->processorsWrites[it2]);
      }
-     fprintf(local_memory_file, "\n************************************ Memory report ************************************");
+     
      //fclose (local_memory_file);
 
-     global_memory_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
+     fprintf(global_memory_file, "\n************************************ Memory report ************************************");
      fprintf(global_memory_file, "\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
      /* Impressão detalhada de reads/writes por core */
      fprintf(global_memory_file, "\nReads and writes per core:");
@@ -154,19 +161,17 @@ tlm_memory::~tlm_memory() {
       if(this->processorsWrites[it] > 0)
         fprintf(global_memory_file, "\t%u", this->processorsWrites[it2]);
      }
-     fprintf(global_memory_file, "\n************************************ Memory report ************************************");
-     printf("\nMemory Reads:\t%ld \nMemory Writes:\t%ld",count_read_memory, count_write_memory);
-     //fclose (global_memory_file);
-
      
+    
         #ifdef DRAMSIM2
-        local_memory_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
         this->printStatus(local_memory_file, true, true);
-        //fclose(local_memory_file);
+        this->printStatus(global_memory_file,true, true);
         printf("\n\nDRAMSim output:\n");
         this->printStatus(local_memory_file, true, false);
         #endif
 
+     fclose (global_memory_file);
+     fclose (local_memory_file);
 
   }
 

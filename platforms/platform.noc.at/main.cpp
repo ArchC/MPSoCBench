@@ -276,7 +276,7 @@ int sc_main(int ac, char *av[])
 	}
 
 	noc.preparingRoutingTable();
-	noc.print();
+	//noc.print();
 
 
 	// *****************************************************************************************
@@ -313,13 +313,9 @@ int sc_main(int ac, char *av[])
 		
 	}
 
- 
-
-	// *******************************************************************************************
+ 	// *******************************************************************************************
 	// Starting Simulation
         // *******************************************************************************************
-
-
 
 	// Beggining of time measurement
 	report_start(av[0],av[1],av[2]);
@@ -327,7 +323,8 @@ int sc_main(int ac, char *av[])
 	// Beggining of simulation
     sc_start();
 
-	
+	global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
+	local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
 	// ******************************************************************************************
 	// Printing Simulation Statistics and Finishing
     // ******************************************************************************************
@@ -343,6 +340,8 @@ int sc_main(int ac, char *av[])
 	report_end();
 
 
+	fclose(global_time_measures);
+	fclose(local_time_measures);
 
 	// Printing statistics
 	#ifdef AC_STATS
@@ -370,6 +369,8 @@ int sc_main(int ac, char *av[])
 
 	
 	#ifdef POWER_SIM
+	global_time_measures = fopen(GLOBAL_FILE_MEASURES_NAME,"a");
+	local_time_measures = fopen(LOCAL_FILE_MEASURES_NAME,"a");
 	double d = 0;
 	for (int i=0; i<N_WORKERS; i++){
    		 // Connect Power Information from ArchC with PowerSC
@@ -378,6 +379,9 @@ int sc_main(int ac, char *av[])
 	printf("\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	fprintf(local_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
 	fprintf(global_time_measures,"\n\nTOTAL ENERGY (ALL CORES): %.10f J\n\n ", d*0.000000001);
+	
+	fclose(global_time_measures);
+	fclose(local_time_measures);
 	#endif
 
 	
@@ -388,19 +392,11 @@ int sc_main(int ac, char *av[])
 
 	noc.destroyComponents();
 
-
-	
-
-
 	for (int i=0; i<N_WORKERS; i++){
 		delete processors[i];
 	}
 	delete processors;
 
-
-	fclose(local_time_measures);
-	fclose(global_time_measures);
-	
 	return status; 
 }
 
@@ -421,14 +417,14 @@ void report_start(char *platform, char* application, char *cores)
 	fprintf(global_time_measures,"\n\n************************************************************************");
 	fprintf(global_time_measures,"\nPlatform %s with %s cores running %s\n", platform, cores, application);
 	
+	fclose(local_time_measures);
+	fclose(global_time_measures);
 
 }
     
 void report_end()
 {
 	
-
-
 	gettimeofday(&endTime, NULL);
 	double tS = startTime.tv_sec*1000000 + (startTime.tv_usec);
 	double tE = endTime.tv_sec*1000000  + (endTime.tv_usec);

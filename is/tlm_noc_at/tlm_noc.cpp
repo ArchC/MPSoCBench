@@ -170,8 +170,14 @@ void tlm_noc::destroyComponents ()
 			
 			}	
 		}
+
+    	fclose(global_noc_file);
+    	fclose(local_noc_file);
+
+
 	}
 	
+
 	for (unsigned int i=0; i<numberOfLines; i++)
 	{	
 		for (unsigned int j=0; j<numberOfColumns; j++)
@@ -180,14 +186,12 @@ void tlm_noc::destroyComponents ()
 	}
 	
 	
-	//for (unsigned int i=0; i<numberOfLines; i++)
-	//	delete [] mesh[i];
-
-	//delete [] mesh;
-	
     delete [] masterEmptyNodes;
 	delete [] slaveEmptyNodes;
 	delete [] wrapper;
+
+
+
 }
 tlm_noc::~tlm_noc()
 {

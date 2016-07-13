@@ -94,10 +94,13 @@ tlm_dir::~tlm_dir() {
  if (measures) 
   {
      global_dir_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
-     
+     local_dir_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
+
      fprintf(global_dir_file, "\nDir Access:\t%ld", count_dir);
-     //fclose (local_dir_file);
-     //fclose (global_dir_file);
+     fprintf(local_dir_file, "\nDir Access:\t%ld", count_dir);
+
+     fclose (local_dir_file);
+     fclose (global_dir_file);
   }
  delete dir;
 }

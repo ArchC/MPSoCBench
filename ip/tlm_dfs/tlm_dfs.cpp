@@ -90,13 +90,14 @@ tlm_dfs::~tlm_dfs()
   if (measures) 
   {
      local_dfs_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
-     fprintf(local_dfs_file, "\ndfs Access:\t%ld", count_dfs);
-     //fclose (local_dfs_file);
-
      global_dfs_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
+
+     fprintf(local_dfs_file, "\ndfs Access:\t%ld", count_dfs);
      fprintf(global_dfs_file, "\ndfs Access:\t%ld", count_dfs);
      printf("\ndfs Access:\t%ld", count_dfs);
-     //fclose (global_dfs_file);
+     
+     fclose (local_dfs_file);
+     fclose (global_dfs_file);
 
   }
 
