@@ -2,21 +2,24 @@
 *  Copyright (c) 2010-2011, Elliott Cooper-Balis
 *                             Paul Rosenfeld
 *                             Bruce Jacob
-*                             University of Maryland 
+*                             University of Maryland
 *                             dramninjas [at] gmail [dot] com
 *  All rights reserved.
-*  
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions are met:
-*  
+*
 *     * Redistributions of source code must retain the above copyright notice,
 *        this list of conditions and the following disclaimer.
-*  
-*     * Redistributions in binary form must reproduce the above copyright notice,
-*        this list of conditions and the following disclaimer in the documentation
+*
+*     * Redistributions in binary form must reproduce the above copyright
+*notice,
+*        this list of conditions and the following disclaimer in the
+*documentation
 *        and/or other materials provided with the distribution.
-*  
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*AND
 *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -28,17 +31,12 @@
 *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************/
 
-
-
-
-
-
 #ifndef CMDQUEUE_H
 #define CMDQUEUE_H
 
-//CommandQueue.h
+// CommandQueue.h
 //
-//Header
+// Header
 //
 
 #include "BusPacket.h"
@@ -49,54 +47,53 @@
 
 using namespace std;
 
-namespace DRAMSim
-{
-class CommandQueue : public SimulatorObject
-{
-	CommandQueue();
-	ostream &dramsim_log;
+namespace DRAMSim {
+class CommandQueue : public SimulatorObject {
+  CommandQueue();
+  ostream &dramsim_log;
+
 public:
-	//typedefs
-	typedef vector<BusPacket *> BusPacket1D;
-	typedef vector<BusPacket1D> BusPacket2D;
-	typedef vector<BusPacket2D> BusPacket3D;
+  // typedefs
+  typedef vector<BusPacket *> BusPacket1D;
+  typedef vector<BusPacket1D> BusPacket2D;
+  typedef vector<BusPacket2D> BusPacket3D;
 
-	//functions
-	CommandQueue(vector< vector<BankState> > &states, ostream &dramsim_log);
-	virtual ~CommandQueue(); 
+  // functions
+  CommandQueue(vector<vector<BankState>> &states, ostream &dramsim_log);
+  virtual ~CommandQueue();
 
-	void enqueue(BusPacket *newBusPacket);
-	bool pop(BusPacket **busPacket);
-	bool hasRoomFor(unsigned numberToEnqueue, unsigned rank, unsigned bank);
-	bool isIssuable(BusPacket *busPacket);
-	bool isEmpty(unsigned rank);
-	void needRefresh(unsigned rank);
-	void print();
-	void update(); //SimulatorObject requirement
-	vector<BusPacket *> &getCommandQueue(unsigned rank, unsigned bank);
+  void enqueue(BusPacket *newBusPacket);
+  bool pop(BusPacket **busPacket);
+  bool hasRoomFor(unsigned numberToEnqueue, unsigned rank, unsigned bank);
+  bool isIssuable(BusPacket *busPacket);
+  bool isEmpty(unsigned rank);
+  void needRefresh(unsigned rank);
+  void print();
+  void update(); // SimulatorObject requirement
+  vector<BusPacket *> &getCommandQueue(unsigned rank, unsigned bank);
 
-	//fields
-	
-	BusPacket3D queues; // 3D array of BusPacket pointers
-	vector< vector<BankState> > &bankStates;
+  // fields
+
+  BusPacket3D queues; // 3D array of BusPacket pointers
+  vector<vector<BankState>> &bankStates;
+
 private:
-	void nextRankAndBank(unsigned &rank, unsigned &bank);
-	//fields
-	unsigned nextBank;
-	unsigned nextRank;
+  void nextRankAndBank(unsigned &rank, unsigned &bank);
+  // fields
+  unsigned nextBank;
+  unsigned nextRank;
 
-	unsigned nextBankPRE;
-	unsigned nextRankPRE;
+  unsigned nextBankPRE;
+  unsigned nextRankPRE;
 
-	unsigned refreshRank;
-	bool refreshWaiting;
+  unsigned refreshRank;
+  bool refreshWaiting;
 
-	vector< vector<unsigned> > tFAWCountdown;
-	vector< vector<unsigned> > rowAccessCounters;
+  vector<vector<unsigned>> tFAWCountdown;
+  vector<vector<unsigned>> rowAccessCounters;
 
-	bool sendAct;
+  bool sendAct;
 };
 }
 
 #endif
-
