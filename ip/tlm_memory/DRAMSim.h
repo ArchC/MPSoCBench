@@ -12,11 +12,14 @@
 *     * Redistributions of source code must retain the above copyright notice,
 *        this list of conditions and the following disclaimer.
 *
-*     * Redistributions in binary form must reproduce the above copyright notice,
-*        this list of conditions and the following disclaimer in the documentation
+*     * Redistributions in binary form must reproduce the above copyright
+*notice,
+*        this list of conditions and the following disclaimer in the
+*documentation
 *        and/or other materials provided with the distribution.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*AND
 *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -28,11 +31,11 @@
 *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************/
 
-
 #ifndef DRAMSIM_H
 #define DRAMSIM_H
 /*
- * This is a public header for DRAMSim including this along with libdramsim.so should
+ * This is a public header for DRAMSim including this along with libdramsim.so
+ * should
  * provide all necessary functionality to talk to an external simulator
  */
 #include "Callback.h"
@@ -40,32 +43,35 @@
 #include <string>
 using std::string;
 
-namespace DRAMSim
-{
+namespace DRAMSim {
 
-	class MultiChannelMemorySystem {
-		public:
-			bool addTransaction(bool isWrite, uint64_t addr);
-			bool addTransaction(Transaction *trans);
-			bool addTransaction(const Transaction &trans);
-			
-			void setCPUClockSpeed(uint64_t cpuClkFreqHz);
-			void update();
-			void printStats(FILE*, bool finalStats = false, bool = false);
-			bool willAcceptTransaction();
-			bool willAcceptTransaction(uint64_t addr);
-			std::ostream &getLogFile();
+class MultiChannelMemorySystem {
+public:
+  bool addTransaction(bool isWrite, uint64_t addr);
+  bool addTransaction(Transaction *trans);
+  bool addTransaction(const Transaction &trans);
 
-			void RegisterCallbacks(
-				TransactionCompleteCB *readDone,
-				TransactionCompleteCB *writeDone,
-				void (*reportPower)(double bgpower, double burstpower, double refreshpower, double actprepower));
-			int getIniBool(const std::string &field, bool *val);
-			int getIniUint(const std::string &field, unsigned int *val);
-			int getIniUint64(const std::string &field, uint64_t *val);
-			int getIniFloat(const std::string &field, float *val);
-	};
-	MultiChannelMemorySystem *getMemorySystemInstance(const string &dev, const string &sys, const string &pwd, const string &trc, unsigned megsOfMemory, std::string *visfilename=NULL);
+  void setCPUClockSpeed(uint64_t cpuClkFreqHz);
+  void update();
+  void printStats(FILE *, bool finalStats = false, bool = false);
+  bool willAcceptTransaction();
+  bool willAcceptTransaction(uint64_t addr);
+  std::ostream &getLogFile();
+
+  void RegisterCallbacks(TransactionCompleteCB *readDone,
+                         TransactionCompleteCB *writeDone,
+                         void (*reportPower)(double bgpower, double burstpower,
+                                             double refreshpower,
+                                             double actprepower));
+  int getIniBool(const std::string &field, bool *val);
+  int getIniUint(const std::string &field, unsigned int *val);
+  int getIniUint64(const std::string &field, uint64_t *val);
+  int getIniFloat(const std::string &field, float *val);
+};
+MultiChannelMemorySystem *
+getMemorySystemInstance(const string &dev, const string &sys, const string &pwd,
+                        const string &trc, unsigned megsOfMemory,
+                        std::string *visfilename = NULL);
 }
 
 #endif

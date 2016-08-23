@@ -2,21 +2,24 @@
 *  Copyright (c) 2010-2011, Elliott Cooper-Balis
 *                             Paul Rosenfeld
 *                             Bruce Jacob
-*                             University of Maryland 
+*                             University of Maryland
 *                             dramninjas [at] gmail [dot] com
 *  All rights reserved.
-*  
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions are met:
-*  
+*
 *     * Redistributions of source code must retain the above copyright notice,
 *        this list of conditions and the following disclaimer.
-*  
-*     * Redistributions in binary form must reproduce the above copyright notice,
-*        this list of conditions and the following disclaimer in the documentation
+*
+*     * Redistributions in binary form must reproduce the above copyright
+*notice,
+*        this list of conditions and the following disclaimer in the
+*documentation
 *        and/or other materials provided with the distribution.
-*  
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*AND
 *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -28,14 +31,12 @@
 *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *********************************************************************************/
 
-
-
 #ifndef MEMORYSYSTEM_H
 #define MEMORYSYSTEM_H
 
-//MemorySystem.h
+// MemorySystem.h
 //
-//Header file for JEDEC memory system wrapper
+// Header file for JEDEC memory system wrapper
 //
 
 #include "SimulatorObject.h"
@@ -47,43 +48,41 @@
 #include "CSVWriter.h"
 #include <deque>
 
-namespace DRAMSim
-{
-typedef CallbackBase<void,unsigned,uint64_t,uint64_t> Callback_t;
-class MemorySystem : public SimulatorObject
-{
-	ostream &dramsim_log;
+namespace DRAMSim {
+typedef CallbackBase<void, unsigned, uint64_t, uint64_t> Callback_t;
+class MemorySystem : public SimulatorObject {
+  ostream &dramsim_log;
+
 public:
-	//functions
-	MemorySystem(unsigned id, unsigned megsOfMemory, CSVWriter &csvOut_, ostream &dramsim_log_);
-	virtual ~MemorySystem();
-	void update();
-	bool addTransaction(Transaction *trans);
-	bool addTransaction(bool isWrite, uint64_t addr);
-	void printStats(FILE *file, bool finalStats, bool toFile);
-	bool WillAcceptTransaction();
-	void RegisterCallbacks(
-	    Callback_t *readDone,
-	    Callback_t *writeDone,
-	    void (*reportPower)(double bgpower, double burstpower, double refreshpower, double actprepower));
+  // functions
+  MemorySystem(unsigned id, unsigned megsOfMemory, CSVWriter &csvOut_,
+               ostream &dramsim_log_);
+  virtual ~MemorySystem();
+  void update();
+  bool addTransaction(Transaction *trans);
+  bool addTransaction(bool isWrite, uint64_t addr);
+  void printStats(FILE *file, bool finalStats, bool toFile);
+  bool WillAcceptTransaction();
+  void RegisterCallbacks(Callback_t *readDone, Callback_t *writeDone,
+                         void (*reportPower)(double bgpower, double burstpower,
+                                             double refreshpower,
+                                             double actprepower));
 
-	//fields
-	MemoryController *memoryController;
-	vector<Rank *> *ranks;
-	deque<Transaction *> pendingTransactions; 
+  // fields
+  MemoryController *memoryController;
+  vector<Rank *> *ranks;
+  deque<Transaction *> pendingTransactions;
 
-
-	//function pointers
-	Callback_t* ReturnReadData;
-	Callback_t* WriteDataDone;
-	//TODO: make this a functor as well?
-	static powerCallBack_t ReportPower;
-	unsigned systemID;
+  // function pointers
+  Callback_t *ReturnReadData;
+  Callback_t *WriteDataDone;
+  // TODO: make this a functor as well?
+  static powerCallBack_t ReportPower;
+  unsigned systemID;
 
 private:
-	CSVWriter &csvOut;
+  CSVWriter &csvOut;
 };
 }
 
 #endif
-

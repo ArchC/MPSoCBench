@@ -30,131 +30,82 @@
 //#include "routing_table.h"
 #include "../../defines.h"
 
-
-
 //////////////////////////////////////////////////////////////////////////////
 
 using tlm::tlm_blocking_transport_if;
-//using user::routing_table;
-
+// using user::routing_table;
 
 //////////////////////////////////////////////////////////////////////////////
 
-namespace user
-{
+namespace user {
 
-class tlm_node:
-  public sc_module,
-  public ac_tlm2_blocking_transport_if 
-{
+class tlm_node : public sc_module, public ac_tlm2_blocking_transport_if {
 public:
-
-  ac_tlm2_port N_port; 
+  ac_tlm2_port N_port;
   ac_tlm2_port S_port;
   ac_tlm2_port W_port;
-  ac_tlm2_port E_port; 
-  
+  ac_tlm2_port E_port;
+
   ac_tlm2_port LOCAL_port;
-  sc_export <ac_tlm2_blocking_transport_if> LOCAL_export;
+  sc_export<ac_tlm2_blocking_transport_if> LOCAL_export;
 
   const char *module_name;
 
   static unsigned int numberOfNodes;
 
-  //routing_table tableOfRouts;
+  // routing_table tableOfRouts;
 
-  
-  tlm_node(); 
+  tlm_node();
   tlm_node(sc_module_name module_name);
   ~tlm_node();
-  
 
-  inline void setStatus(int st){
-  this->status = st;
-  }
-  inline int  getId (){ 
-  return this->id;
-  }
-  inline int getStatus() {
-  return this->status;
-  }
-  
-  inline int getX() {
-    return this->posX;
-  }
-  inline int getY() {
-    return this->posY;
-  }
+  inline void setStatus(int st) { this->status = st; }
+  inline int getId() { return this->id; }
+  inline int getStatus() { return this->status; }
 
-  inline void setId(int a) {
-  this->id = a;
-  }
-  inline void setX(int a) {
-    this->posX = a;
-  }
-  inline void setY(int b) {
-    this->posY = b;
-  }
+  inline int getX() { return this->posX; }
+  inline int getY() { return this->posY; }
+
+  inline void setId(int a) { this->id = a; }
+  inline void setX(int a) { this->posX = a; }
+  inline void setY(int b) { this->posY = b; }
 
   void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
 
- 
 private:
-
   unsigned int id;
   unsigned int posX;
   unsigned int posY;
 
   unsigned int status;
-  
-
-
 };
 
-
-class tlm_empty_slave_node:
-  public sc_module,
-  public ac_tlm2_blocking_transport_if 
-{
+class tlm_empty_slave_node : public sc_module,
+                             public ac_tlm2_blocking_transport_if {
 public:
- 
-  sc_export <ac_tlm2_blocking_transport_if> LOCAL_export;
+  sc_export<ac_tlm2_blocking_transport_if> LOCAL_export;
 
   const char *module_name;
 
-  tlm_empty_slave_node(); 
-  tlm_empty_slave_node(sc_module_name mod_name); 
+  tlm_empty_slave_node();
+  tlm_empty_slave_node(sc_module_name mod_name);
 
-  ~tlm_empty_slave_node(){}
-  void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
-  
+  ~tlm_empty_slave_node() {}
+  void b_transport(ac_tlm2_payload &payload, sc_core::sc_time &time_info) {}
 };
 
-
-
-class tlm_empty_master_node:
-  public sc_module,
-  public ac_tlm2_blocking_transport_if 
-{
+class tlm_empty_master_node : public sc_module,
+                              public ac_tlm2_blocking_transport_if {
 public:
- 
-  ac_tlm2_port LOCAL_port; 
+  ac_tlm2_port LOCAL_port;
 
   const char *module_name;
 
-  tlm_empty_master_node(); 
-  tlm_empty_master_node(sc_module_name mod_name); 
+  tlm_empty_master_node();
+  tlm_empty_master_node(sc_module_name mod_name);
   ~tlm_empty_master_node() {}
-  void b_transport(ac_tlm2_payload& payload, sc_core::sc_time& time_info){ }
-  
+  void b_transport(ac_tlm2_payload &payload, sc_core::sc_time &time_info) {}
+};
 };
 
-
-
-
-
-
-
-};
-
-#endif 
+#endif

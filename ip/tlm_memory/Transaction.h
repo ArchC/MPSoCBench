@@ -12,11 +12,14 @@
 *     * Redistributions of source code must retain the above copyright notice,
 *        this list of conditions and the following disclaimer.
 *
-*     * Redistributions in binary form must reproduce the above copyright notice,
-*        this list of conditions and the following disclaimer in the documentation
+*     * Redistributions in binary form must reproduce the above copyright
+*notice,
+*        this list of conditions and the following disclaimer in the
+*documentation
 *        and/or other materials provided with the distribution.
 *
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+*AND
 *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
@@ -31,83 +34,64 @@
 #ifndef TRANSACTION_H
 #define TRANSACTION_H
 
-//Transaction.h
+// Transaction.h
 //
-//Header file for transaction object
+// Header file for transaction object
 
 #include "SystemConfiguration.h"
 #include "BusPacket.h"
 
 using std::ostream;
 
-namespace DRAMSim
-{
-enum TransactionType
-{
-	DATA_READ,
-	DATA_WRITE,
-	RETURN_DATA
-};
+namespace DRAMSim {
+enum TransactionType { DATA_READ, DATA_WRITE, RETURN_DATA };
 
-class Transaction
-{
-	Transaction();
+class Transaction {
+  Transaction();
+
 public:
-	//fields
-	TransactionType transactionType;
-	uint64_t address;
-	void *data;
-	uint64_t timeAdded;
-	uint64_t timeReturned;
+  // fields
+  TransactionType transactionType;
+  uint64_t address;
+  void *data;
+  uint64_t timeAdded;
+  uint64_t timeReturned;
 
+  friend ostream &operator<<(ostream &os, const Transaction &t);
+  // functions
+  Transaction(TransactionType transType, uint64_t addr, void *data);
+  Transaction(const Transaction &t);
 
-	friend ostream &operator<<(ostream &os, const Transaction &t);
-	//functions
-	Transaction(TransactionType transType, uint64_t addr, void *data);
-	Transaction(const Transaction &t);
-
-	BusPacketType getBusPacketType()
-	{
-		switch (transactionType)
-		{
-			case DATA_READ:
-			if (rowBufferPolicy == ClosePage)
-			{
-				return READ_P;
-			}
-			else if (rowBufferPolicy == OpenPage)
-			{
-				return READ;
-			}
-			else
-			{
-				ERROR("Unknown row buffer policy");
-				abort();
-			}
-			break;
-		case DATA_WRITE:
-			if (rowBufferPolicy == ClosePage)
-			{
-				return WRITE_P;
-			}
-			else if (rowBufferPolicy == OpenPage)
-			{
-				return WRITE;
-			}
-			else
-			{
-				ERROR("Unknown row buffer policy");
-				abort();
-			}
-			break;
-		default:
-			std::cout << transactionType << std::endl;
-			ERROR("This transaction type doesn't have a corresponding bus packet type");
-			abort();
-		}
-	}
+  BusPacketType getBusPacketType() {
+    switch (transactionType) {
+    case DATA_READ:
+      if (rowBufferPolicy == ClosePage) {
+        return READ_P;
+      } else if (rowBufferPolicy == OpenPage) {
+        return READ;
+      } else {
+        ERROR("Unknown row buffer policy");
+        abort();
+      }
+      break;
+    case DATA_WRITE:
+      if (rowBufferPolicy == ClosePage) {
+        return WRITE_P;
+      } else if (rowBufferPolicy == OpenPage) {
+        return WRITE;
+      } else {
+        ERROR("Unknown row buffer policy");
+        abort();
+      }
+      break;
+    default:
+      std::cout << transactionType << std::endl;
+      ERROR(
+          "This transaction type doesn't have a corresponding bus packet type");
+      abort();
+    }
+  }
 };
-
 }
 
 #endif

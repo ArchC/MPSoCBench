@@ -1,19 +1,21 @@
 /********************************************************************************
-	MPSoCBench Benchmark Suite
-	Authors: Liana Duenha
-	Supervisor: Rodolfo Azevedo
-	Date: July-2012
-	www.archc.org/benchs/mpsocbench
+        MPSoCBench Benchmark Suite
+        Authors: Liana Duenha
+        Supervisor: Rodolfo Azevedo
+        Date: July-2012
+        www.archc.org/benchs/mpsocbench
 
-	Computer Systems Laboratory (LSC)
-	IC-UNICAMP
-	http://www.lsc.ic.unicamp.br/
+        Computer Systems Laboratory (LSC)
+        IC-UNICAMP
+        http://www.lsc.ic.unicamp.br/
 
 
-	This source code is part of the MPSoCBench Benchmark Suite, which is a free
-	source-code benchmark for evaluation of Electronic Systemc Level designs.
-	This benchmark is distributed with hope that it will be useful, but
-	without any warranty.
+        This source code is part of the MPSoCBench Benchmark Suite, which is a
+free
+        source-code benchmark for evaluation of Electronic Systemc Level
+designs.
+        This benchmark is distributed with hope that it will be useful, but
+        without any warranty.
 
 *********************************************************************************/
 
@@ -58,7 +60,6 @@
 #include "ac_tlm2_port.H"
 #include "../../defines.h"
 
-
 #include "IniReader.h"
 
 #ifdef DRAMSIM2
@@ -66,49 +67,44 @@
 using namespace DRAMSim;
 #endif
 
-
-
 using tlm::tlm_blocking_transport_if;
 
 /// Namespace to isolate memory from ArchC
-namespace user
-{
+namespace user {
 
-class tlm_memory:
-  public sc_module,
-  public ac_tlm2_blocking_transport_if // Using ArchC TLM 2.0 protocol
-{
+class tlm_memory
+    : public sc_module,
+      public ac_tlm2_blocking_transport_if // Using ArchC TLM 2.0 protocol
+      {
 public:
+  sc_export<ac_tlm2_blocking_transport_if> target_export;
 
-  sc_export< ac_tlm2_blocking_transport_if > target_export;
+  tlm_memory(sc_module_name module_name, unsigned int i,
+             unsigned int k); // = 536870912);
 
-  tlm_memory( sc_module_name module_name , unsigned int i, unsigned int k); // = 536870912);
-
-   /*
-   * Implementation of TLM blocking transport method that
-   * handle packets (ac_tlm_payload) of the protocol doing apropriate actions.
-   * This method must be implemented (required by SystemC TLM).
-   */
+  /*
+  * Implementation of TLM blocking transport method that
+  * handle packets (ac_tlm_payload) of the protocol doing apropriate actions.
+  * This method must be implemented (required by SystemC TLM).
+  */
   void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
 
   ~tlm_memory();
 
-   /* memory direct access functions  - useful to load the application in memory */
-   bool direct_read(int *data, unsigned int address);
-   bool direct_write(int *data, unsigned int address);
-   ac_tlm_rsp_status read(int *data, unsigned int address);
-   ac_tlm_rsp_status write(int *data,unsigned int address);
-   unsigned int start_address() const;
-   unsigned int end_address() const;
+  /* memory direct access functions  - useful to load the application in memory
+   */
+  bool direct_read(int *data, unsigned int address);
+  bool direct_write(int *data, unsigned int address);
+  ac_tlm_rsp_status read(int *data, unsigned int address);
+  ac_tlm_rsp_status write(int *data, unsigned int address);
+  unsigned int start_address() const;
+  unsigned int end_address() const;
 
-   #ifdef DRAMSIM2
-   void printStatus(FILE*, bool = false, bool = false) const;
-   #endif
-
+#ifdef DRAMSIM2
+  void printStatus(FILE *, bool = false, bool = false) const;
+#endif
 
 private:
-
-
   uint8_t *memory;
   unsigned int m_start_address;
   unsigned int m_end_address;
@@ -116,17 +112,15 @@ private:
   vector<unsigned int> processorsReads;
   vector<unsigned int> processorsWrites;
 
-  ac_tlm_rsp_status writem( const uint32_t & , const unsigned char * , unsigned int);
-  ac_tlm_rsp_status readm( const uint32_t & , unsigned char*, unsigned int);
+  ac_tlm_rsp_status writem(const uint32_t &, const unsigned char *,
+                           unsigned int);
+  ac_tlm_rsp_status readm(const uint32_t &, unsigned char *, unsigned int);
 
-  #ifdef DRAMSIM2
+#ifdef DRAMSIM2
   MultiChannelMemorySystem *DRAMSim_mem;
-  void alignTransactionAddress(uint64_t&);
-  #endif
-
-
+  void alignTransactionAddress(uint64_t &);
+#endif
+};
 };
 
-};
-
-#endif //TLM_MEMORY_H_
+#endif // TLM_MEMORY_H_
