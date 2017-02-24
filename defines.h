@@ -45,13 +45,15 @@
 // If you want to update these values, be carefull maintaining the coherency with the tlm_router, tlm_noc_at and tlm_noc_lt
 // routing definitions (see is/tlm_router, is/tlm_noc_lt, is/tlm_noc_at)
 #define BASE_MEMORY_ADDRESS 536870912 // 0x20000000 -  last memory byte address is 536870911
+
 #define LOCK_ADDRESS        0x20000000
 #define INTR_CTRL_ADDRESS   0X21000000
-#define DFS_ADDRESS	        0x22000000
+#define DIR_ADDRESS         0x22000000
+#define DFS_ADDRESS         0x23000000
 #define DELTA_IP_ADDRESS    0x00000100
 #define DELTA               16777216  // 16^6 = 0x1000000
 
-#define DRAMSIM2	1
+//#define DRAMSIM2
 
 // DEBUG FLAGS
 #define NOC_DEBUG       0

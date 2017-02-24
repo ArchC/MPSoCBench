@@ -42,7 +42,9 @@ const char *archc_options = "";
 #include "ac_utils.H"
 #include "ac_tlm_protocol.H"
 #include "tlm_intr_ctrl.h"
-//#include "tlm_dir.h"
+#include "tlm_diretorio.h"
+
+
 
 //#define AC_DEBUG
 
@@ -51,7 +53,7 @@ using user::tlm_noc;
 using user::tlm_lock;
 using user::wrapper_master_slave_to_noc;
 using user::tlm_intr_ctrl;
-// using user::tlm_dir;
+using user::tlm_diretorio;
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -72,6 +74,12 @@ void report_start(char *, char *, char *);
 void report_end();
 void load_elf(PROCESSOR_NAME &, tlm_memory &, char *, unsigned int,
               unsigned int);
+
+int inc (int &line, int &column, int &r)
+{
+  column = (column+1)%r;
+  if (column == 0) line++;  
+}
 
 int sc_main(int ac, char *av[]) {
 
@@ -118,6 +126,7 @@ int sc_main(int ac, char *av[]) {
   tlm_memory mem("mem", 0, MEM_SIZE - 1); // memory
   tlm_lock locker("lock");                // locker
   tlm_intr_ctrl intr_ctrl("intr_ctrl", N_WORKERS);
+  tlm_diretorio dir("dir");
 
 #ifdef POWER_SIM
   tlm_dfs dfs("dfs", N_WORKERS, processors); // dfs
@@ -149,7 +158,8 @@ int sc_main(int ac, char *av[]) {
   // NumberOfLines and numberOfColumns define the mesh topology
 
   int masters = N_WORKERS;
-  int slaves = 3; // mem, lock, intr_ctrl
+  //int slaves = 3; // mem, lock, intr_ctrl
+  int slaves = 4; // mem, lock, intr_ctrl, dir
 
 #ifdef POWER_SIM
   slaves++; // dfs
@@ -175,62 +185,70 @@ int sc_main(int ac, char *av[]) {
   // NoC [0][0] -> MEM
   noc.wrapper[wrMS].LOCAL_init_socket.bind(mem.LOCAL_target_socket);
   noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(
-      noc.wrapper[wrMS].LOCAL_target_socket);
+  noc.wrapper[wrMS].LOCAL_target_socket);
   wrMS++;
   emptyMasters++;
-  noc.tableOfRouts.newEntry(0, 0, MEM_SIZE); // the third argument is the last
+  noc.tableOfRouts.newEntry(line, column, MEM_SIZE); // the third argument is the last
                                              // address of the range address of
                                              // LOCK device
+
+  inc(line,column,r);
 
   // NoC [0][1] -> LOCK
   noc.wrapper[wrMS].LOCAL_init_socket.bind(locker.LOCAL_target_socket);
   noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(
-      noc.wrapper[wrMS].LOCAL_target_socket);
+  noc.wrapper[wrMS].LOCAL_target_socket);
   wrMS++;
   emptyMasters++;
-  noc.tableOfRouts.newEntry(0, 1);
+  noc.tableOfRouts.newEntry(line, column);
 
-  if (r == 2) {
+  inc(line,column,r);
+
+  /*if (r == 2) {
     line = 1;
     column = 0;
   } else {
     line = 0;
     column = 2;
-  }
+  }*/
 
   // NoC [0][2]-> INTR_CTRL
+
   noc.wrapper[wrMS].LOCAL_init_socket.bind(intr_ctrl.LOCAL_target_socket);
   noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(
-      noc.wrapper[wrMS].LOCAL_target_socket);
+  noc.wrapper[wrMS].LOCAL_target_socket);
+  wrMS++;
+  emptyMasters++;
+  noc.tableOfRouts.newEntry(line, column); // the third argument is the last
+                                           // address of the range address of
+                                           // LOCK device
+  inc(line,column,r);
+  
+ 
+  noc.wrapper[wrMS].LOCAL_init_socket.bind(dir.LOCAL_target_socket);
+  noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(
+  noc.wrapper[wrMS].LOCAL_target_socket);
   wrMS++;
   emptyMasters++;
   noc.tableOfRouts.newEntry(line, column); // the third argument is the last
                                            // address of the range address of
                                            // LOCK device
 
-  column++;
-
-  if (r == 3) {
-    line = 1;
-    column = 0;
-  }
+  inc(line,column,r);
 
 #ifdef POWER_SIM
   // DFS will be binded with NoC[1][0] in case of NoC 3x3, or NoC[0][4] in other
   // NoCs
   noc.wrapper[wrMS].LOCAL_init_socket.bind(dfs.LOCAL_target_socket);
   noc.masterEmptyNodes[emptyMasters].LOCAL_master_init_socket.bind(
-      noc.wrapper[wrMS].LOCAL_target_socket);
+  noc.wrapper[wrMS].LOCAL_target_socket);
   wrMS++;
   emptyMasters++;
   noc.tableOfRouts.newEntry(line, column);
-  column++;
 
-  if (r == 4) {
-    // in case of NoC 5x5, the next peripheral must be on node [1][0]
-    line = 1;
-    column = 0;
-  }
+  inc(line,column,r);
+
+     
 #endif
 
   // Connecting processors and noc-mesh
@@ -283,7 +301,6 @@ int sc_main(int ac, char *av[]) {
     for (int j = 0; j < ac; j++) {
       arguments[i][j] = new char[strlen(av[j]) + 1];
       arguments[i][j] = av[j];
-      // printf ("%s\n",arguments[i][j]);
     }
   }
 

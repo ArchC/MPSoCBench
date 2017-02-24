@@ -60,7 +60,6 @@ designs.
 #include <systemc>
 #include "ac_module.H"
 #include "ac_tlm_protocol.H"
-#include "ac_tlm_protocol.H"
 #include "tlm_utils/simple_target_socket.h"
 #include "../../defines.h"
 
@@ -79,7 +78,6 @@ public:
   tlm_utils::simple_target_socket<tlm_dfs> LOCAL_target_socket;
 
   // sc_export<ac_tlm2_blocking_transport_if> target_export;
-
   tlm_dfs(sc_module_name module_name, int, PROCESSOR_NAME **);
   ~tlm_dfs();
 

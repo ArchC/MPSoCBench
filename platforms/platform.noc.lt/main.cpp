@@ -36,13 +36,14 @@ const char *archc_options = "";
 #include "tlm_dfs.h"
 #include "tlm_noc.h"
 #include "tlm_intr_ctrl.h"
-//#include  "tlm_dir.h"
+#include "tlm_diretorio.h"
+
 
 using user::tlm_memory;
 using user::tlm_noc;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
-// using user::tlm_dir;
+using user::tlm_diretorio;
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -60,12 +61,18 @@ FILE *local_time_measures;
 FILE *global_time_measures;
 
 bool first_load;
-
 // Functions
 void report_start(char *, char *, char *);
 void report_end();
 void load_elf(PROCESSOR_NAME &, tlm_memory &, char *, unsigned int,
               unsigned int);
+
+int inc (int &line, int &column, int &r)
+{
+  column = (column+1)%r;
+  if (column == 0) line++;  
+}
+
 
 int sc_main(int ac, char *av[]) {
 
@@ -111,6 +118,7 @@ int sc_main(int ac, char *av[]) {
   tlm_memory mem("mem", 0, MEM_SIZE - 1); // memory
   tlm_lock locker("lock");                // locker
   tlm_intr_ctrl intr_ctrl("intr_ctrl", N_WORKERS);
+  tlm_diretorio dir("dir");
 
 #ifdef POWER_SIM
   tlm_dfs dfs("dfs", N_WORKERS, processors); // dfs
@@ -134,7 +142,8 @@ int sc_main(int ac, char *av[]) {
   // NumberOfLines and numberOfColumns define the mesh topology
 
   int masters = N_WORKERS;
-  int slaves = 3; // mem, lock , intr_ctrl
+  //int slaves = 3; // mem, lock , intr_ctrl
+  int slaves = 4; // mem, lock , intr_ctrl, diretório
 
 #ifdef POWER_SIM
   slaves++; // dfs
@@ -154,20 +163,23 @@ int sc_main(int ac, char *av[]) {
   int column = 0;
 
   noc.wrapper[wr].LOCAL_port(mem.target_export);
-  noc.tableOfRouts.newEntry(0, 0, MEM_SIZE);
+  noc.tableOfRouts.newEntry(line, column, MEM_SIZE);
   wr++;
 
+  inc(line,column,r);
+  
   noc.wrapper[wr].LOCAL_port(locker.target_export);
-  noc.tableOfRouts.newEntry(0, 1);
+  noc.tableOfRouts.newEntry(line, column);
   wr++;
 
-  line = 0;
-  column = 2;
+  inc(line,column,r);
 
+  /*line = 0;
+  column = 2;
   if (r == 2) {
     line = 1;
     column = 0;
-  }
+  }*/
 
   // Connecting the interrupt controler (intr_ctrl) with the noc node [1][0]
   // (noc 2x2) or [0][2] (other cases)
@@ -175,22 +187,36 @@ int sc_main(int ac, char *av[]) {
   noc.wrapper[wr].LOCAL_port(intr_ctrl.target_export);
   noc.tableOfRouts.newEntry(line, column);
   wr++;
-  column++;
+  inc (line,column,r);
+
+  /*column++;
 
   if (r == 3) {
     line = 1;
     column = 0;
-  }
+  }*/
+
+  noc.wrapper[wr].LOCAL_port(dir.target_export);
+  noc.tableOfRouts.newEntry(line, column);
+  wr++;
+  inc (line,column,r);
+  /*column++;
+
+ if (r == 4) {
+    line = 1;
+    column = 0;
+  }*/
 
 #ifdef POWER_SIM
   noc.wrapper[wr].LOCAL_port(dfs.target_export);
   wr++;
   noc.tableOfRouts.newEntry(line, column);
-  column++;
+  inc (line,column,r);
+  /*column++;
   if (r == 4) {
     line = 1;
     column = 0;
-  }
+  }*/
 #endif
 
   int proc = 0;
@@ -472,3 +498,4 @@ void load_elf(PROCESSOR_NAME &proc, tlm_memory &mem, char *filename,
 
   close(fd);
 }
+

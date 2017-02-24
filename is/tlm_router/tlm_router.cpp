@@ -67,7 +67,8 @@ tlm_router::tlm_router(sc_module_name module_name)
       MEM_port("MEM_port", 536870912U), LOCK_port("LOCK_PORT", 0U),
       INTR_CTRL_port("INTR_CTRL_port", 0U),
       // DIR_port ("DIR_port", 0U),
-      DFS_port("DFS_port", 1073741824U) {
+      DFS_port("DFS_port", 1073741824U),
+      DIR_port ("DIR_port", 0U) {
   target_export(*this);
 }
 #else // if POWER_SIM is defined, the router do not have a DFS port
@@ -75,7 +76,8 @@ tlm_router::tlm_router(sc_module_name module_name)
     : sc_module(module_name), target_export("target_export"),
       MEM_port("MEM_port", 536870912U), INTR_CTRL_port("INTR_CTRL_port", 0U),
       // DIR_port ("DIR_port", 0U),
-      LOCK_port("LOCK_PORT", 0U) {
+      LOCK_port("LOCK_PORT", 0U),
+      DIR_port ("DIR_port", 0U) {
   target_export(*this);
 }
 #endif
@@ -126,14 +128,16 @@ void tlm_router::b_transport(ac_tlm2_payload &payload,
     }
     INTR_CTRL_port->b_transport(payload, time_info);
   }
-// else if ((addr == DIR_ADDRESS))
-//{
-//  if (ROUTER_DEBUG)
-//  {
-//    printf("\ntlm_router is transporting using DIR_port");
-//  }
-//    DIR_port->b_transport(payload, time_info);
-//}
+
+  else if ((addr == DIR_ADDRESS))
+  {
+    
+    if (ROUTER_DEBUG)
+    {
+      printf("\ntlm_router is transporting using DIR_port");
+    }
+      DIR_port->b_transport(payload, time_info);
+  }
 
 #ifdef POWER_SIM
   else if (addr == DFS_ADDRESS) {
