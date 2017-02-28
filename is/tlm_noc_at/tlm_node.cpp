@@ -181,6 +181,11 @@ void tlm_node::thread_node() {
         printf("\nTHREAD NODE--> Node %d,%d", getX(), getY());
       removeFromBuffer(payload, phase, time_info);
 
+      ac_payload_extension *teste_ex;
+      payload.get_extension(teste_ex);
+      printf("\nrule do pacote em thread_node = %d", teste_ex->getRule());
+
+
       tlm_payload_extension *ex;
       payload.get_extension(ex);
 
@@ -380,6 +385,9 @@ void tlm_node::thread_node() {
 void tlm_node::addToBuffer(ac_tlm2_payload &p, tlm::tlm_phase &phase,
                            sc_core::sc_time &t) {
 
+
+
+
   if (numberOfPackagesInBuffer == SIZE_OF_BUFFER_PACKAGES) {
     if (NOC_DEBUG)
       printf("\nADD INTO BUFFER --> Node %d,%d is trying to add package into "
@@ -424,6 +432,12 @@ void tlm_node::removeFromBuffer(ac_tlm2_payload &p, tlm::tlm_phase &phase,
     p.set_data_ptr(data_pointer);
 
     p.deep_copy_from(beginListPackage->payload);
+
+    ac_payload_extension *teste_ex;
+    p.get_extension(teste_ex);
+    printf("\nrule do pacote em removeFromBuffer do node apos copia profunda= %d", teste_ex->getRule());
+
+
 
     t = beginListPackage->time;
     phase = beginListPackage->phase;
@@ -531,6 +545,12 @@ packageType::packageType(ac_tlm2_payload &p, tlm::tlm_phase &ph,
   payload.set_data_ptr(data_pointer);
 
   payload.deep_copy_from(p);
+
+  ac_payload_extension *teste_ex;
+  payload.get_extension(teste_ex);
+  printf("\nrule do pacote em packageType do node apos copia profunda= %d", teste_ex->getRule());
+
+
 
   time = t;
   phase = ph;

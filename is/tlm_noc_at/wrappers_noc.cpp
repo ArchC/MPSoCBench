@@ -28,6 +28,10 @@
 
 #include "wrappers_noc.h"
 
+//TESTTTTT
+ #include "ac_payload_extension.H"
+ //
+
 using user::wrapper_master_slave_to_noc;
 using user::tlm_payload_extension;
 // using user::wrapper_master_to_noc;
@@ -99,7 +103,13 @@ wrapper_master_slave_to_noc::nb_transport_fw(ac_tlm2_payload &payload,
            "package",
            getX(), getY(), getStatus());
 
+ 
+  ac_payload_extension *teste_ex;
+  payload.get_extension(teste_ex);
+  printf("\nrule do pacote fw do wrapper= %d", teste_ex->getRule());
+
   tlm_payload_extension *ex;
+ 
   payload.get_extension(ex);
 
   if (ex == NULL) {
@@ -211,6 +221,17 @@ wrapper_master_slave_to_noc::nb_transport_bw(ac_tlm2_payload &payload,
            getX(), getY(), getStatus());
 
   tlm::tlm_sync_enum status;
+
+
+  ac_payload_extension *teste_ex;
+  
+  payload.get_extension(teste_ex);
+
+  if (teste_ex == 0) { 
+    printf("\nteste_ex em wrapper_noc == 0"); 
+    exit(1);
+  }
+  printf("\nrule do pacote em bw do wrapper= %d", teste_ex->getRule());
 
   tlm_payload_extension *ex;
   payload.get_extension(ex);

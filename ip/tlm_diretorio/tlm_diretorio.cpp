@@ -58,9 +58,7 @@
 
 
 #include "tlm_diretorio.h"
-#include "tlm_payload_dir_extension.h"
-using user::tlm_payload_dir_extension;
-
+#include "ac_payload_extension.H"
 
 // If you don't want to measure dir access, modify measures_dir to 0
 #define measures 1
@@ -92,8 +90,10 @@ tlm_diretorio::~tlm_diretorio() {
  if (measures) 
   {
      global_dir_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
-     
-     fprintf(global_dir_file, "\nLock Access:\t%ld", count_dir);
+     local_dir_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
+     fprintf(global_dir_file, "\nDir Access:\t%ld", count_dir);
+     fprintf(local_dir_file, "\nDir Access:\t%ld", count_dir);
+     printf("\nDir Access:\t%ld", count_dir);
      fclose (local_dir_file);
      fclose (global_dir_file);
   }
@@ -120,24 +120,29 @@ uint32_t tlm_diretorio::readm(uint32_t &d )
 
 void tlm_diretorio::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_info ) {
 
-
-	//printf("\n\nChegou pacote3 para o diretoiro....");
-	tlm_payload_dir_extension *payloadExt;
+    
+   ac_payload_extension *payloadExt;
    time_info = time_info + sc_core::sc_time(1,SC_NS);
    int nCache=-1; 
    bool validation=false;
    payload.get_extension(payloadExt);
+   //printf("\ntlm_diretorio rule = %d", payloadExt->getRule());
+
    if(payloadExt != 0)
    {
+   		count_dir++;
+
 	    nCache = payloadExt->getnumberCache(); //id do processador
 		uint32_t address =-1;
 		address= payloadExt->getAddress(); //endereco do dado armazenado
 		int cacheIndex = payloadExt->getCacheIndex(); //indice do vetor da cache
 		int regra = payloadExt->getRule(); //comando requisitado
 		if(regra == 0){
+
 			int nWay = payloadExt->getNWay();
 			int index_size = payloadExt->getIndex_size();
-			dir->start(nWay, index_size);
+			//printf("\nem tlm_diretorio index = %d, associatividade = %d", index_size, nWay);  
+			dir->start(index_size, nWay);
 		}
 		if(regra == 1) //Cache leu dado da memoria, atualizar valor no diretorio
 		{
@@ -151,21 +156,17 @@ void tlm_diretorio::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &tim
 		{
 			validation = dir->checkValidation(nCache, address, cacheIndex);
 			payloadExt->setValidation(validation);
+			//printf("\ntlm_diretorio check: validation = %d", validation);
 		}
 	}
-   tlm_command command = payload.get_command();
-   uint32_t addr = (uint32_t) payload.get_address();
+	else 
+	{
+		printf ("\nERROR: Empty payload extension in tlm_diretorio::b_transport()");
+		exit(0);
+	}
   
-   unsigned char* data_pointer = payload.get_data_ptr();
-  
-   unsigned int len = payload.get_data_length();
-   
-   unsigned int resp;
-
-   payload.set_response_status(tlm::TLM_OK_RESPONSE);    
-   
-
-   return;
+    payload.set_response_status(tlm::TLM_OK_RESPONSE);    
+    return;
     
   }
 

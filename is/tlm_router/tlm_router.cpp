@@ -132,6 +132,14 @@ void tlm_router::b_transport(ac_tlm2_payload &payload,
   else if ((addr == DIR_ADDRESS))
   {
     
+    /*ac_payload_extension* teste_ex;
+    payload.get_extension(teste_ex);
+    if (teste_ex == 0) 
+      printf("\nextension vazia em tlm_router b_transport");
+    printf("\ntlm_router::read rule = %d", teste_ex->getRule());
+    */
+
+
     if (ROUTER_DEBUG)
     {
       printf("\ntlm_router is transporting using DIR_port");

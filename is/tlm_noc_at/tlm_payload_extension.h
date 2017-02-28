@@ -123,6 +123,9 @@ public:
     this->firstBackward = new_ext->firstBackward;
     this->direction = new_ext->direction;
     this->numberOfHops = new_ext->numberOfHops;
+
+    // is this delete necessary?
+    delete new_ext;
   }
 
 private:

@@ -58,8 +58,7 @@
 
 
 #include "tlm_diretorio.h"
-#include "tlm_payload_dir_extension.h"
-using user::tlm_payload_dir_extension;
+#include "ac_payload_extension.H"
 
 
 // If you don't want to measure dir access, modify measures_dir to 0
@@ -83,7 +82,8 @@ tlm_diretorio::tlm_diretorio(sc_module_name module_name) :
     //target_export( *this );
     value = 0;
 	dir = new Diretorio();
-	local_dir_file = fopen ("dir_acess.txt","a");
+	//dir->start(2,64);
+	//local_dir_file = fopen ("dir_acess.txt","a");
     
 }
 
@@ -93,67 +93,68 @@ tlm_diretorio::~tlm_diretorio() {
  if (measures) 
   {
      global_dir_file = fopen (GLOBAL_FILE_MEASURES_NAME,"a");
-     
-     fprintf(global_dir_file, "\nLock Access:\t%ld", count_dir);
+     local_dir_file = fopen (LOCAL_FILE_MEASURES_NAME,"a");
+     fprintf(global_dir_file, "\nDir Access:\t%ld", count_dir);
+     fprintf(local_dir_file, "\nDir Access:\t%ld", count_dir);
+     printf("\nDir Access:\t%ld", count_dir);
      fclose (local_dir_file);
      fclose (global_dir_file);
   }
  delete dir;
 }
 
-bool tlm_diretorio::read_dir()
-{
-	return true;
-}
-bool tlm_diretorio::write_dir()
-{
-	return true;
-}
-uint32_t tlm_diretorio::readm(uint32_t &d )
-{
-        if(d != 0x0)
-		return 0x1;
-
-	else
-		return d;
-
-}
-
 void tlm_diretorio::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &time_info ) {
 
 
-	//printf("\n\nChegou pacote3 para o diretoiro....");
-	tlm_payload_dir_extension *payloadExt;
+   
+   ac_payload_extension *payloadExt;
    time_info = time_info + sc_core::sc_time(1,SC_NS);
    int nCache=-1; 
    bool validation=false;
    payload.get_extension(payloadExt);
+
    if(payloadExt != 0)
    {
+
+   		count_dir++;
 	    nCache = payloadExt->getnumberCache(); //id do processador
-		uint32_t address =-1;
-		address= payloadExt->getAddress(); //endereco do dado armazenado
+		uint32_t address = payloadExt->getAddress(); //endereco do dado armazenado
 		int cacheIndex = payloadExt->getCacheIndex(); //indice do vetor da cache
 		int regra = payloadExt->getRule(); //comando requisitado
+
 		if(regra == 0){
 			int nWay = payloadExt->getNWay();
 			int index_size = payloadExt->getIndex_size();
 			dir->start(nWay, index_size);
+			printf("\ntlm_diretorio::b_transport()->rule 0 - starting directory");
 		}
+
 		if(regra == 1) //Cache leu dado da memoria, atualizar valor no diretorio
 		{
+			printf("\ntlm_diretorio::b_transport()->rule 1");
 			dir->validate(nCache, address, cacheIndex);
 		}
 		if(regra==2) //aconteceu escrita na memoria, invalidar todos os outros processadores diferentes de nCache
 		{
+			printf("\ntlm_diretorio::b_transport()->rule 2");
 			dir->unvalidate(nCache, address, cacheIndex);
 		}
 		if(regra == 3) //Verificar se dado da cache esta Valido
 		{
+			
 			validation = dir->checkValidation(nCache, address, cacheIndex);
 			payloadExt->setValidation(validation);
+			printf("\ntlm_diretorio::b_transport()->rule 3 validation = %d", validation);
+
 		}
 	}
+	else 
+	{
+		printf ("\nERROR: Empty payload extension in tlm_diretorio::b_transport().");
+		exit(0);
+	}
+
+   /*
    tlm_command command = payload.get_command();
    uint32_t addr = (uint32_t) payload.get_address();
   
@@ -162,6 +163,7 @@ void tlm_diretorio::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &tim
    unsigned int len = payload.get_data_length();
    
    unsigned int resp;
+   */
 
    payload.set_response_status(tlm::TLM_OK_RESPONSE);    
    

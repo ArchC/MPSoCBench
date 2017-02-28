@@ -1,30 +1,27 @@
 #include "Diretorio.h"
 
-
-
 Diretorio::Diretorio()
 {
-	started=0;
+	
 	totalOfCaches=64;
-	index_size = 1024;
 	log.open("dirLog.txt", fstream::out);
 	for(int i=0; i<totalOfCaches;i++){
 		cacheMemVector[i].numberCache = i;
 	}
-	start(2, index_size);
+	
 
 }
 
-void Diretorio::start(int n, int index)
+void Diretorio::start(int index, int nWay)
 {
-	if(started != 0)
-		return;
-	started++;
 	index_size = index;
 	for(int i=0; i<totalOfCaches;i++){
-		cacheMemVector[i].nWay = n;
+		cacheMemVector[i].nWay = nWay;
 		cacheMemVector[i].alocate_blocks(index_size);
 	}
+	printf("\nstartando diretorio index = %d, assoc=%d", index, nWay);
+
+
 }
 
 Diretorio::~Diretorio()
@@ -54,7 +51,7 @@ bool Diretorio::validate(int numberCache, uint32_t address, int cacheAddress)
 					}
 				}
 			}
-				//log << "validou-se numberCacheessador " << numberCache << " cacheAddress: " << cacheAddress << " endereço: " << address << endl;
+				log << "validou-se numberCacheessador " << numberCache << " cacheAddress: " << cacheAddress << " endereço: " << address << endl;
 	cacheMod[0] = n;
 			return true;
 
@@ -71,10 +68,10 @@ bool Diretorio::checkValidation(int numberCache, uint32_t address, int cacheInde
 			if(cacheMemVector[numberCache].checkValidation(address, cacheIndex))
 			{
 
-				//log << "Checagem do numberCacheessador: " << i << " endereço: " << address << " é Valido" <<endl;
+				log << "Checagem do numberCache: " << numberCache << " endereço: " << address << " é Valido" <<endl;
 				return true;
 			}
-		//log << "Checagem do numberCacheessador: " << numberCache << " endereço: " << address << " é Invalido" <<endl;
+		
 	return false;
 }
 
