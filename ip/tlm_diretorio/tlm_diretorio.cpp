@@ -81,7 +81,7 @@ tlm_diretorio::tlm_diretorio(sc_module_name module_name) :
     value = 0;
 	dir = new Diretorio();
 	local_dir_file = fopen ("dir_acess.txt","a");
-    
+    started=false;
 }
 
 /// Destructor
@@ -137,12 +137,14 @@ void tlm_diretorio::b_transport( ac_tlm2_payload &payload, sc_core::sc_time &tim
 		address= payloadExt->getAddress(); //endereco do dado armazenado
 		int cacheIndex = payloadExt->getCacheIndex(); //indice do vetor da cache
 		int regra = payloadExt->getRule(); //comando requisitado
-		if(regra == 0){
+		//cout <<endl << address << " " << nCache << " " << cacheIndex <<endl;
+		if(regra == 0 && !started){
 
 			int nWay = payloadExt->getNWay();
 			int index_size = payloadExt->getIndex_size();
 			//printf("\nem tlm_diretorio index = %d, associatividade = %d", index_size, nWay);  
 			dir->start(index_size, nWay);
+			started = true;
 		}
 		if(regra == 1) //Cache leu dado da memoria, atualizar valor no diretorio
 		{

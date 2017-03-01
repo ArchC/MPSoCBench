@@ -7,6 +7,7 @@ class cacheMem
 	public:
 		int numberCache;
 		int nWay;
+		int cacheModIndex;
 		cacheMem(){};
 		void alocate_blocks(int index_size);
 		cacheMem(int n){nWay=n;};

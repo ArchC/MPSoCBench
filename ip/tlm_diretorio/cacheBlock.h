@@ -1,8 +1,7 @@
 
 #ifndef CACHEBLOCK_H
 #define CACHEBLOCK_H
-#include "common.h"
-
+#include <stdint.h>
 
 class cacheBlock
 {

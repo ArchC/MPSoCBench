@@ -73,7 +73,7 @@ class tlm_diretorio :
 public:
 
    sc_export< ac_tlm2_blocking_transport_if > target_export;	
-   
+   bool started;
    uint32_t readm (uint32_t & );
    void b_transport(ac_tlm2_payload &, sc_core::sc_time &);
    bool read_dir();

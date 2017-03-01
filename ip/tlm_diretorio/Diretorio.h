@@ -1,15 +1,19 @@
-#ifndef DIRETORIO_H
-#define DIRETORIO_H
+#ifndef DIR_H
+#define DIR_H
+
+#define MAX_NUMBER_OF_CACHES 64
+#define MAX_INDEX_SIZE 1024
+
+#include <stdio.h>
 #include "cacheMem.h"
-//#include "common.h"
 
 class Diretorio
 {
 	public:
-		fstream log;
-		int totalOfCaches, index_size, started;
-		cacheMem cacheMemVector[64];
-		int cacheMod[65];
+		//fstream log;
+		int totalOfCaches, index_size;
+		bool started;
+		cacheMem cacheMemVector[MAX_NUMBER_OF_CACHES];
 		Diretorio();
 		Diretorio(int p){totalOfCaches=p;}
 		virtual ~Diretorio();
@@ -23,4 +27,4 @@ class Diretorio
 	private:
 };
 
-#endif // DIRETORIO_H
+#endif // DIR_H

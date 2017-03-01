@@ -1,6 +1,7 @@
 #include "cacheMem.h"
 #include "cacheBlock.h"
-
+#include <iostream>
+using namespace std;
 
 cacheMem::~cacheMem()
 {
@@ -36,11 +37,13 @@ bool cacheMem::validate(uint32_t address, int index)
 {
 	if(index>MAXBLOCKS)
 		return false;
+	//cout << "VALIDATE DIR " << numberCache <<  " index: " << index << " ADDR: " << address <<endl;
 	blocks[index].validate(address);
 	return true;
 }
 bool cacheMem::checkValidation(uint32_t address, int cacheIndex)
 {
+    //cout << "DIR cacheIndex: " << cacheIndex;
 	if(blocks[cacheIndex].address == address)
 		return blocks[cacheIndex].checkValidation(address);
 	return false;
@@ -52,6 +55,8 @@ bool cacheMem::invalidate(uint32_t address, int cacheBlockIndex)
 	for(int i=0; i<nWay;i++)
 	{
 		if(blocks[cacheBlockIndex+i].address == address && blocks[cacheBlockIndex+i].state != 'I'){
+            //cout << "INVALIDATE DIR: "<< numberCache << " cacheIndex: " << cacheBlockIndex+i  << " ADDR: " << address  <<endl;
+            cacheModIndex = cacheBlockIndex+i;
 			blocks[cacheBlockIndex+i].invalidate();
 			i=nWay;
 			return true;
@@ -65,8 +70,8 @@ void cacheMem::writeSetState(uint32_t address, int cacheBlockIndex)
 
 	for(int i=0; i<nWay;i++)
 	{
-		if(blocks[cacheBlockIndex+i].address == address){
-			blocks[cacheBlockIndex+i].setStateBlock('M');
+		if(blocks[cacheBlockIndex+i].address == address && blocks[cacheBlockIndex+i].state == 'S'){
+			blocks[cacheBlockIndex+i].state = 'M';
 			return;
 		}
 	}
@@ -78,7 +83,7 @@ bool cacheMem::readSetState(uint32_t address, int cacheBlockIndex)
 	for(int i=0; i<nWay;i++)
 	{
 		if(blocks[cacheBlockIndex+i].address == address && blocks[cacheBlockIndex+i].state == 'M'){
-			blocks[cacheBlockIndex+i].setStateBlock('S');
+			blocks[cacheBlockIndex+i].state = 'S';
 			return true;
 		}
 	}
