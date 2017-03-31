@@ -36,15 +36,14 @@ const char *archc_options = "";
 #include "tlm_lock.h"
 #include "tlm_dfs.h"
 #include "tlm_intr_ctrl.h"
-#include "tlm_diretorio.h"
+//#include "tlm_diretorio.h"
 
-//#include  "tlm_dir.h"
 
 using user::tlm_memory;
 using user::tlm_router;
 using user::tlm_lock;
 using user::tlm_intr_ctrl;
-using user::tlm_diretorio;
+//using user::tlm_diretorio;
 
 #ifdef POWER_SIM
 using user::tlm_dfs;
@@ -100,7 +99,7 @@ int sc_main(int ac, char *av[]) {
   tlm_router router("router");            // router
   tlm_lock locker("locker");              // locker
   tlm_intr_ctrl intr_ctrl("intr_ctrl", N_WORKERS);
-  tlm_diretorio dir("dir");
+  //tlm_diretorio dir("dir");
 
 
 #ifdef POWER_SIM
@@ -111,8 +110,8 @@ int sc_main(int ac, char *av[]) {
   router.MEM_port(mem.target_export);
   router.LOCK_port(locker.target_export);
   router.INTR_CTRL_port(intr_ctrl.target_export);
-  router.DIR_port(dir.target_export);
-// router.DIR_port (dir.target_export);
+  //router.DIR_port(dir.target_export);
+
 
 #ifdef POWER_SIM
   router.DFS_port(dfs.target_export);

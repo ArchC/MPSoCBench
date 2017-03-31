@@ -71,8 +71,8 @@ public:
   ac_tlm2_port MEM_port;
   ac_tlm2_port LOCK_port;
   ac_tlm2_port INTR_CTRL_port;
-  ac_tlm2_port DIR_port;
-// ac_tlm2_port DIR_port;
+  //ac_tlm2_port DIR_port;
+
 #ifdef POWER_SIM
   ac_tlm2_port DFS_port;
 #endif

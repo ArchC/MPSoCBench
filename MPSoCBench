@@ -209,7 +209,7 @@ def makefile(proc, nproc, sw, power, intercon, plat_rundir):
         pw_flag = ""
         make = make + "export POWER_SIM_FLAG := \n" 
 
-    make = make + "export ACSIM_FLAGS := -abi -ndc -pl" + pw_flag + "\n"; 
+    make = make + "export ACSIM_FLAGS := -abi -ndc" + pw_flag + "\n"; 
     
     if intercon == 'noc.at':
         make = make + "export WAIT_TRANSPORT_FLAG := -DWAIT_TRANSPORT\nexport TRANSPORT := nonblock\n"
